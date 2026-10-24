@@ -2,7 +2,7 @@
    Signed-in students only, so every payment is tied to an account. */
 import {json, start, currentUser} from "../../lib/auth.js";
 import {PLANS, COURSES, priceFor, paymentsOn, ensureBilling, accessFor, stripe} from "../../lib/billing.js";
-export async function onRequestPost({request, env}) {
+async function handle({request, env}) {
   const s = await start(request, env); if (s.error) return s.error;
   const u = await currentUser(env, request); if (!u) return json({error: "Create a free account first so your purchase is saved to it."}, 401);
   if (!paymentsOn(env)) return json({error: "Checkout isn't open yet. Check back soon."}, 503);
@@ -26,5 +26,11 @@ export async function onRequestPost({request, env}) {
   if (P.mode === "subscription") body.subscription_data = {metadata: meta};
   else { body.payment_intent_data = {metadata: meta}; if (!cust) body.customer_creation = "always"; }
   try { const ses = await stripe(env, "checkout/sessions", body); return json({url: ses.url}); }
-  catch (e) { console.error("Stripe checkout failed:", e && e.message); return json({error: "Checkout couldn't start. Try again in a minute."}, 502); }
+  catch (e) { console.error("Stripe checkout failed:", e && e.message); return json({error: "Checkout couldn't start (" + String((e && e.message) || "unknown").slice(0, 160) + "). Try again in a minute."}, 502); }
+}
+
+/* any unexpected crash (database, config) comes back as a readable message instead of a blank server error */
+export async function onRequestPost(ctx) {
+  try { return await handle(ctx); }
+  catch (e) { console.error("Checkout crashed:", e && e.message); return json({error: "Checkout hit a setup problem: " + String((e && e.message) || e).slice(0, 160)}, 500); }
 }
