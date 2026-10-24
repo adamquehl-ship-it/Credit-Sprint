@@ -20,11 +20,11 @@ CS.PLANS = [
 ];
 CS.PRO_PERKS = [
   ["pen","Unlimited full-length practice exams"],
-  ["spark","AI tutor and AI scoring on every FRQ"],
   ["calc","Unlimited calculation drills and Number Crunch"],
   ["sword","All boss battles and every game mode"],
   ["chart","Detailed score reports by unit and skill"],
-  ["paw","+10% bonus pet growth on every correct answer"]
+  ["paw","+10% bonus pet growth on every correct answer"],
+  ["spark","AI tutor and AI scoring on every FRQ (coming soon)"]
 ];
 CS.isPro = () => S().tier === "pro";
 
@@ -42,7 +42,7 @@ window.addEventListener("hashchange", checkWelcome);
 CS.upgradeCard = () => {
   const s = S();
   if (CS.isPro()) return "";
-  if (s.upHide && s.upHide > Date.now()) return `<button class="up-mini" data-up="open">${I("bolt")} <b>Go Pro</b><span class="muted small">Unlimited exams, AI tutor and FRQ scoring</span><span class="up-cta">See plans →</span></button>`;
+  if (s.upHide && s.upHide > Date.now()) return `<button class="up-mini" data-up="open">${I("bolt")} <b>Go Pro</b><span class="muted small">Unlimited exams, every game and score reports</span><span class="up-cta">See plans →</span></button>`;
   const days = Math.max(0, Math.round((new Date(s.plan.date+"T12:00:00") - new Date())/CS.DAY));
   return `<div class="up-card">
     <div class="stack" style="gap:8px;flex:1;min-width:240px">
@@ -58,7 +58,7 @@ CS.upgradeCard = () => {
     </div></div>`;
 };
 CS.upgradeSide = () => CS.isPro() ? `<div class="sidecard pro-on"><span class="eyebrow" style="color:var(--good)">${I("check")} Pass Plan</span><span class="small muted">Every Pro feature unlocked.</span></div>`
-  : `<button class="sidecard up-side" data-up="open"><span class="eyebrow" style="color:var(--accent)">${I("bolt")} Free plan</span><b class="small">Upgrade to Pass Plan</b><span class="tiny muted">AI tutor, FRQ scoring, unlimited exams</span></button>`;
+  : `<button class="sidecard up-side" data-up="open"><span class="eyebrow" style="color:var(--accent)">${I("bolt")} Free plan</span><b class="small">Upgrade to Pass Plan</b><span class="tiny muted">Unlimited exams, every game, score reports</span></button>`;
 
 function modal(html){ const w = document.createElement("div"); w.className = "modal-wrap"; w.innerHTML = `<div class="modal" role="dialog" aria-modal="true" style="max-width:720px">${html}</div>`; document.body.appendChild(w); w.addEventListener("click", e => { if (e.target === w) w.remove(); }); return w; }
 CS.openUpgrade = (pick) => {

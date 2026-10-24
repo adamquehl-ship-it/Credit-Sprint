@@ -616,3 +616,10 @@ select,input[type=date]{font:inherit;color:var(--ink);background:var(--surface);
 .guest-bar svg{width:18px;height:18px;flex:none;color:var(--warn,#B45309)}
 .league-card.locked .lg{filter:blur(2.5px);opacity:.7;pointer-events:none;user-select:none}
 @media (max-width:560px){.guest-bar{padding-inline:16px}.guest-bar .btn{width:100%}}
+
+/* profile pictures */
+.acct-av.has-img{background:none!important;overflow:hidden;padding:0}
+.acct-av img,.lg .av.img img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.lg .av.img{padding:0;overflow:hidden;background:var(--rule);border:0;cursor:pointer;font:inherit}
+.lg li.me .av.img{cursor:default}
+button.av.img:focus-visible{outline:2px solid var(--accent);outline-offset:2px}

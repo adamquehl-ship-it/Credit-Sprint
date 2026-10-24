@@ -83,6 +83,8 @@ try {
 /* migrate old mistakes format (number) to spaced-review records */
 Object.keys(S.mistakes||{}).forEach(k => { if (typeof S.mistakes[k] === "number") S.mistakes[k] = {n:S.mistakes[k], due:0}; });
 CS.S = () => S;
+/* features that are built but switched off until launch. Set to false to turn one on. */
+CS.SOON = {ai: true, pfp: true};
 CS.mistakesDue = () => Object.entries(S.mistakes).filter(([k,m]) => (m.due||0) <= Date.now()).map(([k])=>k);
 CS.save = () => { try {
   window.CS_STORE.set(KEY, JSON.stringify(S));

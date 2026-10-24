@@ -410,9 +410,9 @@ function quiz(p){
     <div class="opts">${q.opts.map((o,j)=>{ const cls = done ? (o.ok?"right":(j===r.picked?"wrong":"")) : "";
       return `<button class="opt ${cls}" data-j="${j}" ${done?"disabled":""}><span class="k">${L[j]}</span><span>${esc(o.t)}</span>${done&&(o.ok||j===r.picked)?`<span class="why">${esc(o.w)}</span>`:""}</button>`; }).join("")}</div>
     ${done?`${q.id[0]==="q"?`<details class="small"><summary class="muted">Why the other choices are wrong</summary><ul style="margin:8px 0 0;padding-left:1.2em">${q.opts.filter((o,j)=>!o.ok&&j!==r.picked).map(o=>`<li><b>${esc(o.t)}:</b> ${esc(o.w)}</li>`).join("")}</ul></details>`:""}
-      <div class="row-wrap"><button class="btn" id="q-next">${r.i+1<qs.length?"Next question":"See results"} <span class="kbd" style="color:inherit;border-color:currentColor">Enter</span></button><button class="btn ghost" id="q-tutor">${I("spark")}Explain it differently</button></div><div id="q-tutor-box"></div>`:`<p class="faint small">Press <span class="kbd">1</span>–<span class="kbd">5</span> to answer.</p>`}`;
+      <div class="row-wrap"><button class="btn" id="q-next">${r.i+1<qs.length?"Next question":"See results"} <span class="kbd" style="color:inherit;border-color:currentColor">Enter</span></button>${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI tutor · coming soon</button>` : `<button class="btn ghost" id="q-tutor">${I("spark")}Explain it differently</button>`}</div><div id="q-tutor-box"></div>`:`<p class="faint small">Press <span class="kbd">1</span>–<span class="kbd">5</span> to answer.</p>`}`;
   if (!done) $$(".opt", p).forEach(b => b.onclick = () => pick(+b.dataset.j));
-  else { $("#q-next").onclick = next; $("#q-next").focus({preventScroll:true}); $("#q-tutor").onclick = () => CS.tutor($("#q-tutor-box"), {q:q.q, options:q.opts.map(o=>o.t), correct:q.opts.find(o=>o.ok).t, picked:q.opts[r.picked].t, why:q.opts.find(o=>o.ok).w}); }
+  else { $("#q-next").onclick = next; $("#q-next").focus({preventScroll:true}); if ($("#q-tutor")) $("#q-tutor").onclick = () => CS.tutor($("#q-tutor-box"), {q:q.q, options:q.opts.map(o=>o.t), correct:q.opts.find(o=>o.ok).t, picked:q.opts[r.picked].t, why:q.opts.find(o=>o.ok).w}); }
   function pick(j){ r.picked = j; const ok = q.opts[j].ok; if (ok) { r.score++; r.combo = (r.combo||0)+1; } else r.combo = 0; CS.record(q, ok); CS.refresh(); quiz(p); }
   function next(){ r.i++; r.picked = null; quiz(p); }
   r.key = e => { if (r.picked == null && ["1","2","3","4","5"].includes(e.key)) pick(+e.key-1); else if (r.picked != null && e.key === "Enter") { e.preventDefault(); next(); } };
@@ -637,7 +637,7 @@ render.frq = () => {
         ${G?`<div class="stack" style="gap:8px"><span class="eyebrow">Graph task</span><p><b>${esc(G.task)}</b></p><div id="frq-graph" style="max-width:520px"></div></div>`:""}
         <label for="frq-draft" class="eyebrow">Your written answer</label>
         <textarea id="frq-draft" placeholder="(a) ...&#10;(b) ...&#10;Sketch graphs on paper, then describe them here.">${esc(st.draft)}</textarea>
-        <div class="row-wrap"><button class="btn" id="frq-ai">${I("spark")}Get AI feedback</button><button class="btn ghost" id="frq-toggle">${st.show?"Hide rubric":"Score it myself"}</button></div>
+        <div class="row-wrap">${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI feedback · coming soon</button>` : `<button class="btn" id="frq-ai">${I("spark")}Get AI feedback</button>`}<button class="btn ${CS.SOON.ai ? "" : "ghost"}" id="frq-toggle">${st.show?"Hide rubric":"Score it myself"}</button></div>
         <div id="frq-ai-out"></div>
         <div ${st.show?"":"hidden"} class="stack" style="gap:14px">
           <div class="spread"><h3>Rubric: check each point you earned</h3><b id="frq-score">${got} / ${f.rubric.length}</b></div>
@@ -649,7 +649,7 @@ render.frq = () => {
   $("#frq-draft").oninput = e => { st.draft = e.target.value; CS.save(); };
   $("#frq-toggle").onclick = () => { st.show = !st.show; if (st.show && !st.scored) { st.scored = true; CS.addXP(30); } CS.refresh(); render.frq(); };
   if (G) CS.drawGraph($("#frq-graph"), G.mk, {expect:G.expect, why:G.why, x:G.x, y:G.y, labels:G.labels, onDone:(ok)=>{ CS.addXP(ok?15:5); CS.refresh(); }});
-  $("#frq-ai").onclick = async () => {
+  if ($("#frq-ai")) $("#frq-ai").onclick = async () => {
     const out = $("#frq-ai-out"), ans = $("#frq-draft").value.trim();
     if (ans.length < 20) { out.innerHTML = `<div class="feedback bad">Write an answer to each part first, then ask for feedback.</div>`; return; }
     out.innerHTML = `<div class="feedback">${I("spark")} Scoring your answer against the rubric…</div>`;

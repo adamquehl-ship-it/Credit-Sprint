@@ -71,3 +71,11 @@ Cloudflare Pages, connected to this repository. Framework preset: None. Build co
 
 ## Trademarks
 AP® and CLEP® are trademarks registered by the College Board, which is not affiliated with, and does not endorse, this site. Every page that mentions them carries this notice in the footer. Don't put "AP" or "CLEP" in the domain, company name or ads; before paid launch, consider sending the College Board samples of how the marks are used (their trademark guidelines describe the 4–6 week review).
+
+## Profile pictures
+
+Signed-in students can upload a profile picture for leaderboards (account window → Upload a picture).
+- The browser crops and shrinks it to a 128×128 JPEG. The server removes hidden photo data such as EXIF location.
+- **Automatic screening:** every upload is checked by Claude (vision) before it's saved. Anything not school-appropriate, or showing personal information, is refused. This uses the same `ANTHROPIC_API_KEY` secret as the AI tutor. Without that key, uploads are refused, so the check is never skipped. Optional: set `MODERATION_MODEL` to change the model.
+- Students can tap someone else's picture to report it. It disappears for them right away, and 3 reports hide it for everyone until the owner uploads a new one.
+- Pictures are stored in the D1 database. The `avatars` and `avatar_reports` tables are created automatically, so there's no setup step.

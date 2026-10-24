@@ -145,6 +145,13 @@ function practiceLeague(){
 }
 CS.leagueData = () => (CS.liveLeague && CS.liveLeague()) || practiceLeague();
 const timeLeft = endKey => { const ms = new Date(endKey+"T00:00:00") - new Date(), d = Math.floor(ms / CS.DAY), h = Math.floor(ms % CS.DAY / 36e5); return d > 0 ? `${d}d ${h}h left` : `${h}h left`; };
+/* league avatar: profile picture when there is one (tap someone else's to report it), else their initial */
+function avCell(m){
+  const src = m.av && m.id && CS.avatarSrc ? CS.avatarSrc(m.id, m.av) : null;
+  if (src) return m.me ? `<span class="av img"><img src="${esc(src)}" alt="" loading="lazy"></span>`
+    : `<button class="av img" data-av-report="${esc(m.id)}" data-name="${esc(m.name)}" title="Report picture" aria-label="${esc(m.name)}'s picture. Tap to report"><img src="${esc(src)}" alt="" loading="lazy"></button>`;
+  return `<span class="av" style="${m.me?"":`background:hsl(${(m.name.charCodeAt(0)*37)%360} 70% 88%);color:hsl(${(m.name.charCodeAt(0)*37)%360} 60% 30%)`}">${esc(m.name[0])}</span>`;
+}
 CS.leagueCard = () => {
   if (window.CS_STORE && window.CS_STORE.guest && !CS.account) { const lg = CS.LEAGUES[0];
     return `<div class="panel qcard league-card locked" style="--lg:${lg.c}">
@@ -157,7 +164,7 @@ CS.leagueCard = () => {
   const myRank = L.members.findIndex(m => m.me) + 1, ahead = myRank > 1 ? L.members[myRank-2] : null;
   const rows = L.members.slice(0, 15).map((m, i) => { const r = i + 1;
     const z = (r === L.promote && L.tier < 4 && n > L.promote) ? `<li class="zone up">▲ Top ${L.promote} move up to ${CS.LEAGUES[L.tier+1].n}</li>` : (r === n - L.demote && L.tier > 0 && n > 5) ? `<li class="zone dn">▼ Bottom ${L.demote} drop to ${CS.LEAGUES[L.tier-1].n}</li>` : "";
-    return `<li class="${m.me?"me":""}"><span class="rk">${r}</span><span class="av" style="${m.me?"":`background:hsl(${(m.name.charCodeAt(0)*37)%360} 70% 88%);color:hsl(${(m.name.charCodeAt(0)*37)%360} 60% 30%)`}">${esc(m.name[0])}</span><span class="nm">${esc(m.name)}</span><span class="xp">${m.xp.toLocaleString()} XP</span></li>${z}`; }).join("");
+    return `<li class="${m.me?"me":""}"><span class="rk">${r}</span>${avCell(m)}<span class="nm">${esc(m.name)}</span><span class="xp">${m.xp.toLocaleString()} XP</span></li>${z}`; }).join("");
   return `<div class="panel qcard league-card" style="--lg:${lg.c}">
     <div class="spread"><div class="stack" style="gap:0"><span class="eyebrow" style="color:var(--lg)">${L.practice?"Practice league":"Weekly league"}</span><b>${lg.n} League</b></div><span class="tag">${timeLeft(L.endsAt)}</span></div>
     ${ahead ? `<span class="small" style="color:var(--good);font-weight:700">${(ahead.xp - L.members[myRank-1].xp + 1).toLocaleString()} XP to pass ${esc(ahead.name)}</span>` : myRank === 1 ? `<span class="small" style="color:var(--good);font-weight:700">You're in first place this week.</span>` : ""}

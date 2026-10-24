@@ -48,6 +48,34 @@ async function pull(preferServer){
 async function loadLeague(){ try { live = await api("league"); if (CS.go && !$("#v-home").hidden) CS.go("home", {keepScroll:true}); } catch(e) { live = null; } }
 CS.liveLeague = () => live && live.members ? {practice:false, tier:live.tier, members:live.members, promote:live.promote, demote:live.demote, endsAt:live.endsAt} : null;
 
+/* ---------- profile pictures ---------- */
+const hiddenAv = () => { try { return JSON.parse(localStorage.getItem("creditsprint.hiddenAv") || "[]"); } catch(e) { return []; } };
+CS.avatarSrc = (id, v) => v && !hiddenAv().includes(id) ? "/api/avatar?id=" + encodeURIComponent(id) + "&v=" + encodeURIComponent(v) : null;
+function avHTML(a, cls = ""){ const src = a && a.avatar ? CS.avatarSrc(a.id, a.avatar) : null;
+  return src ? `<span class="acct-av has-img ${cls}"><img src="${esc(src)}" alt=""></span>` : `<span class="acct-av ${cls}">${esc(((a && a.name) || "?")[0])}</span>`; }
+/* crop to a centered square and shrink to 128×128 JPEG in the browser, so uploads stay tiny */
+function shrink(file){ return new Promise((ok, no) => {
+  if (!/^image\//.test(file.type)) return no(new Error("Choose an image file."));
+  if (file.size > 15e6) return no(new Error("That image is too large. Choose one under 15 MB."));
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => { const s = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement("canvas"); c.width = c.height = 128;
+    const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 128, 128);
+    x.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, 128, 128); URL.revokeObjectURL(url);
+    ok(c.toDataURL("image/jpeg", 0.82)); };
+  img.onerror = () => { URL.revokeObjectURL(url); no(new Error("That image couldn't be opened. Try a JPEG or PNG.")); };
+  img.src = url; }); }
+/* report someone else's picture: it disappears for you right away; three reports hide it for everyone */
+function reportAvatar(id, name){
+  const w = modal(), m = $(".modal", w);
+  m.innerHTML = `<h2>Report ${esc(name)}'s picture?</h2><p class="small muted">Report pictures that are inappropriate, show someone else, or share personal information. The picture is hidden for you right away, and pictures with several reports are removed.</p>
+    <div class="row-wrap"><button class="btn" id="rp-go" style="background:var(--bad)">Report picture</button><button class="btn ghost" data-x>Cancel</button></div>`;
+  $$("[data-x]", m).forEach(b => b.onclick = () => w.remove());
+  $("#rp-go", m).onclick = async () => { try { await api("avatar-report", {method:"POST", body:{id}}); } catch(e) {}
+    try { localStorage.setItem("creditsprint.hiddenAv", JSON.stringify(hiddenAv().concat(id).slice(-200))); } catch(e) {}
+    w.remove(); CS.toast("Thanks. That picture is hidden for you."); if (CS.go) CS.go("home", {keepScroll:true}); };
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-av-report]"); if (b) { e.preventDefault(); reportAvatar(b.dataset.avReport, b.dataset.name || "this student"); } });
+
 /* ---------- sidebar status ---------- */
 let status = "";
 function setStatus(t){ status = t; renderChip(); }
@@ -55,10 +83,10 @@ function renderChip(){
   const a = CS.account, top = $("#top-acct"), bar = $("#guest-bar");
   if (bar) { bar.hidden = !(window.CS_STORE.guest && !a);
     bar.innerHTML = `<span>${I("shield")}<b>Guest mode:</b> your progress is erased when you close this tab, and you can't join leagues.</span><button class="btn sm" data-account="signup">Sign up free to save it</button>`; }
-  if (top) top.innerHTML = a ? `<button class="top-acct on" data-account="open" title="Manage account"><span class="acct-av">${esc((a.name || "?")[0])}</span><span class="hide-sm">Account</span></button>`
+  if (top) top.innerHTML = a ? `<button class="top-acct on" data-account="open" title="Manage account">${avHTML(a)}<span class="hide-sm">Account</span></button>`
     : `<button class="btn sm top-acct" data-account="signup">Sign up</button>`;
   const el = $("#side-acct"); if (!el) return;
-  el.innerHTML = a ? `<button class="acct-chip on" data-account="open"><span class="acct-av">${esc((a.name || "?")[0])}</span><span class="stack" style="gap:0;min-width:0"><b class="small">${esc(a.name || "Add your name")}</b><span class="tiny muted">${esc(status || "Signed in")}</span></span></button>`
+  el.innerHTML = a ? `<button class="acct-chip on" data-account="open">${avHTML(a)}<span class="stack" style="gap:0;min-width:0"><b class="small">${esc(a.name || "Add your name")}</b><span class="tiny muted">${esc(status || "Signed in")}</span></span></button>`
     : `<button class="acct-chip" data-account="open"><span class="acct-av">${I("shield")}</span><span class="stack" style="gap:0;min-width:0"><b class="small">Sign in</b><span class="tiny muted">Save progress and join leagues</span></span></button>`;
 }
 CS.renderAccountChip = renderChip;
@@ -118,6 +146,7 @@ CS.openAccount = async (opts = {}) => {
   async function done(p){
     try { const r = await p; window.CS_STORE.join(); CS.account = r.user; renderChip(); w.remove();
       if (!r.user.name) askName(); else CS.toast(r.created ? "Account created. Your progress is now saved." : `Welcome back, ${r.user.name}.`);
+      api("me").then(x => { CS.account = x.user; renderChip(); }).catch(() => {});
       setStatus("Syncing…"); await pull(false); }
     catch(e) { err = e.data && e.data.needAge ? "Check the box to confirm you're 13 or older." : e.message; draw(); }
   }
@@ -133,13 +162,21 @@ function accountView(){
   draw();
   function draw(){
     m.innerHTML = `<div class="spread"><h2>Your account</h2><button class="btn ghost sm" data-x>Close</button></div>
-      <div class="row-wrap" style="gap:12px"><span class="acct-av lg">${esc((a.name||"?")[0])}</span><div class="stack" style="gap:2px"><b>${esc(a.name || "No name yet")}</b>
+      <div class="row-wrap" style="gap:12px">${avHTML(a, "lg")}<div class="stack" style="gap:2px"><b>${esc(a.name || "No name yet")}</b>
         <span class="small muted">${esc(a.email || (a.username ? "@" + a.username : "Google account"))} · ${esc(a.methods.map(x => ({email:"email code", google:"Google", password:"password"})[x]).join(", "))}</span><span class="tiny muted">${esc(status || "Synced")}</span></div></div>
+      ${CS.SOON.pfp ? `<div class="stack" style="gap:4px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Profile picture <span class="tag">Coming soon</span></span><span class="small muted">Soon you'll be able to add a picture that shows next to your name on leaderboards.</span></div>` : `<div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Profile picture</span>
+        <span class="small muted">Shows next to your name on leaderboards. Keep it school-appropriate: no other people, no personal info. Every picture is checked automatically before it appears, and reported pictures are removed.</span>
+        <div class="row-wrap"><label class="btn sm" for="ac-file" style="cursor:pointer">${a.avatar ? "Change picture" : "Upload a picture"}</label><input type="file" id="ac-file" accept="image/jpeg,image/png,image/webp" hidden>
+        ${a.avatar ? `<button class="btn ghost sm" id="ac-rmpic">Remove picture</button>` : ""}<span class="small" id="ac-picmsg"></span></div></div>`}
       <div class="row-wrap"><button class="btn ghost sm" id="ac-name">Change leaderboard name</button><button class="btn ghost sm" id="ac-sync">Sync now</button><button class="btn ghost sm" id="ac-out">Sign out</button></div>
-      <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Delete account</span><span class="small muted">Deletes your account, cloud progress and league history. Progress in this browser stays.</span>
+      <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Delete account</span><span class="small muted">Deletes your account, saved progress, profile picture and league history.</span>
         <div><button class="btn ghost sm" id="ac-del" style="${confirmDel?"border-color:var(--bad);color:var(--bad)":""}">${confirmDel?"Tap again to delete for good":"Delete my account"}</button></div></div>`;
     $$("[data-x]", m).forEach(b => b.onclick = () => w.remove());
     $("#ac-name", m).onclick = () => { w.remove(); askName(); };
+    if ($("#ac-file", m)) $("#ac-file", m).onchange = async e => { const f = e.target.files[0]; if (!f) return; const msg = $("#ac-picmsg", m); msg.textContent = "Uploading…";
+      try { const r = await api("avatar", {method:"PUT", body:{image: await shrink(f)}}); a.avatar = r.avatar; CS.account = a; renderChip(); draw(); CS.toast("Profile picture updated."); if (live) loadLeague(); }
+      catch(err) { msg.textContent = err.message; } };
+    const rm = $("#ac-rmpic", m); if (rm) rm.onclick = async () => { try { await api("avatar", {method:"DELETE"}); a.avatar = null; CS.account = a; renderChip(); draw(); if (live) loadLeague(); } catch(err) { $("#ac-picmsg", m).textContent = err.message; } };
     $("#ac-sync", m).onclick = async () => { setStatus("Syncing…"); await push(); draw(); };
     $("#ac-out", m).onclick = async () => { clearTimeout(syncT); try { await push(); } catch(e) {} try { await api("auth/logout", {method:"POST"}); } catch(e) {} CS.account = null; live = null; window.CS_STORE.leave(); w.remove(); location.reload(); };
     $("#ac-del", m).onclick = async () => { if (!confirmDel) { confirmDel = true; return draw(); } try { await api("me", {method:"DELETE"}); } catch(e) {} CS.account = null; live = null; window.CS_STORE.leave(); w.remove(); location.reload(); };
