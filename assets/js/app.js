@@ -11,9 +11,9 @@ const meter = (m, cls="") => `<div class="meter ${cls}" aria-hidden="true"><i st
 /* ---------- router + chrome ---------- */
 const NAV = [
   {k:"home", n:"Dashboard", ic:"home"}, {k:"learn", n:"Learn", ic:"book"}, {k:"practice", n:"Practice", ic:"target"},
-  {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets", ic:"paw"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}
+  {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets", ic:"paw"}, {k:"store", n:"Store", ic:"bag"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}
 ];
-const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets", frq:"Free response", plan:"Study plan"};
+const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets", store:"Store", frq:"Free response", plan:"Study plan"};
 const VIEWS = NAV.map(n=>n.k);
 let current = "home";
 CS.view = () => current;
@@ -25,6 +25,7 @@ CS.go = (v, opts={}) => {
   VIEWS.forEach(x => { $("#v-"+x).hidden = x !== v; });
   try { if (location.hash !== "#"+v) history.replaceState(null, "", "#"+v); } catch(e) {}
   render[v](opts);
+  if (v === "home" && CS.focusPass) CS.focusPass();
   CS.chrome();
   if (!opts.keepScroll) window.scrollTo({top:0});
 };
@@ -107,7 +108,7 @@ function settings(){
       <div class="stack"><span class="eyebrow">Appearance</span><div class="seg three" style="max-width:320px">${[["light","sun","Light"],["dark","moon","Dark"],["system","auto","System"]].map(([k,ic,n])=>`<button data-th="${k}" aria-pressed="${s.theme===k}">${I(ic)}${n}</button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Plan</span><div class="row-wrap">${CS.hasAccess()&&CS.planFor()?`<span class="tag good">${esc(CS.planName(CS.planFor()))}</span><span class="muted small">Every feature unlocked for ${esc(CS.C.name)}.</span>${CS.account&&CS.account.billing?`<button class="btn ghost sm" data-billing>Manage billing</button>`:""}`:`<span class="tag">Free</span><button class="btn sm" data-up="open">See plans</button>`}</div></div>
       <div class="stack"><span class="eyebrow">Account</span><div class="row-wrap">${CS.account?`<span class="tag good">Signed in</span><span class="small">${esc(CS.account.name||"")}</span>`:`<span class="muted small">Sign in to save progress across devices and join weekly leagues.</span>`}<button class="btn ghost sm" data-account="open">${CS.account?"Manage account":"Sign in"}</button></div></div>
-      <div class="stack"><span class="eyebrow">Color theme</span><div class="row-wrap">${CS.ACCENTS.map(a=>{ const ok = CS.level().lv >= a.lv; return `<button class="chip" data-ac="${a.k}" aria-pressed="${s.accent===a.k}" ${ok?"":"disabled"} title="${ok?a.n:`Unlocks at level ${a.lv}`}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a.c};vertical-align:-1px;margin-right:6px"></span>${a.n}${ok?"":` · Lv ${a.lv}`}</button>`; }).join("")}</div><span class="muted small">Level up to unlock more colors. You're level ${CS.level().lv}.</span></div>
+      <div class="stack"><span class="eyebrow">Color theme</span><div class="row-wrap">${CS.ACCENTS.concat((CS.GEM_THEMES||[]).filter(t=>(s.themes||[]).includes(t.k)).map(t=>({k:t.k,n:t.n,lv:0,c:t.c}))).map(a=>{ const ok = CS.level().lv >= a.lv; return `<button class="chip" data-ac="${a.k}" aria-pressed="${s.accent===a.k}" ${ok?"":"disabled"} title="${ok?a.n:`Unlocks at level ${a.lv}`}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a.c};vertical-align:-1px;margin-right:6px"></span>${a.n}${ok?"":` · Lv ${a.lv}`}</button>`; }).join("")}</div><span class="muted small">Level up to unlock more colors, or buy gem themes in the Store. You're level ${CS.level().lv}.</span></div>
       <div class="stack"><span class="eyebrow">Daily reminder</span><div class="row-wrap"><input type="time" id="st-time" value="${esc(s.remind)}" style="font:inherit;padding:7px 10px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink)">
         <a class="btn ghost sm" id="st-gcal" target="_blank" rel="noopener">Add to Google Calendar</a><button class="btn ghost sm" id="st-ics">Download calendar file</button></div>
         <span class="muted small">A daily 15-minute study block with an alert. Works with Apple, Google and Outlook calendars.</span><span class="small" id="st-ics-msg"></span></div>

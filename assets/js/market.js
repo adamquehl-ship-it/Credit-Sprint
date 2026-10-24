@@ -196,6 +196,23 @@ function renderMarket(el){
     act({action:"buy", id:l.id}, `You bought ${p.n}! It's in your collection.`); });
   $$("[data-mf]", el).forEach(b => b.onclick = () => { mktFilter = b.dataset.mf; loadMarket(); });
 }
+/* gift a pet from your collection to a friend (a free, friends-only offer they claim in their Market) */
+CS.giftPet = id => {
+  const p = PET[id]; if (!p) return;
+  if (!CS.account) { CS.toast("Sign up to gift pets to friends."); if (CS.openAccount) CS.openAccount({signup:true}); return; }
+  const names = CS.friendNames ? CS.friendNames() : [];
+  const w = document.createElement("div"); w.className = "modal-wrap";
+  w.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-label="Gift a pet"><div class="stack" style="gap:12px;align-items:center;text-align:center">
+    <span class="eyebrow">Gift a pet</span>${CS.petSVG(id, {size:110})}<h2 style="margin:0">${esc(p.n)}</h2><span class="small muted">${R[p.r].n} · you have ×${copies(id)}</span>
+    ${names.length ? `<label class="stack" style="gap:4px;width:100%;text-align:left"><span class="small"><b>Send to</b></span><select id="gf-to" style="font:inherit;padding:9px 10px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink)">${names.map(u => `<option value="${esc(u)}" ${CS.marketTarget===u?"selected":""}>@${esc(u)}</option>`).join("")}</select></label>
+      <span class="tiny muted">They'll see it in their Pet market as a free gift to claim. It leaves your collection now, and comes back if you cancel it before they claim it.</span>`
+      : `<p class="muted small">You don't have any friends added yet. Add a friend first, then you can send them pets.</p>`}
+    <div class="row-wrap" style="justify-content:center">${names.length ? `<button class="btn" id="gf-ok">Send gift</button>` : `<button class="btn" data-friends="friends" id="gf-fr">Find friends</button>`}<button class="btn ghost" id="gf-x">Cancel</button></div></div></div>`;
+  document.body.appendChild(w);
+  $("#gf-x", w).onclick = () => w.remove();
+  const fr = $("#gf-fr", w); if (fr) fr.addEventListener("click", () => w.remove());
+  const ok = $("#gf-ok", w); if (ok) ok.onclick = () => { const to = $("#gf-to", w).value; w.remove(); act({action:"list", pet:id, rarity:p.r, price:0, to}, `Gift sent to @${to}! They can claim ${p.n} in their Pet market.`); };
+};
 /* check for sales when the app opens (signed in) */
 const prevAfter = CS.afterAccount;
 CS.afterAccount = () => { if (prevAfter) prevAfter(); setTimeout(loadMarket, 800); };

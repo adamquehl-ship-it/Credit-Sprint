@@ -25,22 +25,27 @@ CS.seasonInfo = (key = CS.today()) => {
 };
 CS.seasonXP = si => { let x = 0; for (let d = 0; d < LEN; d++) x += S().days[CS.addDays(si.start, d)] || 0; return x; };
 
-/* ---------- season pass ---------- */
-CS.TIERS = [50, 120, 220, 350, 500, 700, 950, 1250];
-const FREE = ["gems:50","egg","gems:75","freeze","gems:100","egg","gems:150","egg:rare"];
-const PASS = ["egg:rare","gems:150","egg:rare","gems:200","egg:epic","gems:250","egg:epic","egg:legendary"];
-const label = r => { const [k, v] = r.split(":"); return k === "gems" ? `${v} gems` : k === "freeze" ? "Streak freeze" : v ? `${CS.RARITY_NAME(v)}+ egg` : "Mystery egg"; };
+/* ---------- season pass: 50 tiers, 15,000 season XP in total (tier n costs 55 + 10 x (n-1) XP) ---------- */
+const NT = 50;
+CS.TIERS = (() => { let t = 0; return Array.from({length:NT}, (_, i) => (t += 55 + 10*i)); })();
+/* free lane: gems most tiers, a streak freeze every 7th, eggs to the nest every 5th/10th. Pass lane: gems, plus an INSTANT-hatch egg every 5th tier */
+const FREE = Array.from({length:NT}, (_, i) => { const n = i+1;
+  return n === 50 ? "egg:rare" : n % 10 === 0 ? "egg:uncommon" : n % 5 === 0 ? "egg" : n % 7 === 0 ? "freeze" : "gems:" + (15 + n); });
+const PASS = Array.from({length:NT}, (_, i) => { const n = i+1;
+  return n === 50 ? "egg:legendary:i" : n % 5 === 0 ? "egg:" + (n >= 35 ? "epic" : n >= 15 ? "rare" : "uncommon") + ":i" : "gems:" + (20 + 2*n); });
+CS.PASS_GEMS = () => [FREE, PASS].map(L => L.reduce((a, r) => a + (r.startsWith("gems") ? +r.split(":")[1] : 0), 0));
+const label = r => { const [k, v, i] = r.split(":"); return k === "gems" ? `${v} gems` : k === "freeze" ? "Streak freeze" : v ? `${i ? "Instant " : ""}${CS.RARITY_NAME(v)}+ egg` : "Mystery egg"; };
 const icon = r => r.startsWith("gems") ? "💎" : r === "freeze" ? "❄️" : r.includes("legendary") ? "🌟" : r.includes("epic") ? "🔮" : r.includes("rare") ? "💠" : "🥚";
 function grant(r){
-  const s = S(), [k, v] = r.split(":");
+  const s = S(), [k, v, inst] = r.split(":");
   if (k === "gems") s.gems = (s.gems || 0) + +v;
-  else if (k === "freeze") s.freezes = Math.min(3, (s.freezes || 0) + 1);
-  else if (k === "egg") CS.giveEgg(v);
+  else if (k === "freeze") { if ((s.freezes || 0) >= 3) s.gems = (s.gems || 0) + 60; else s.freezes = (s.freezes || 0) + 1; }
+  else if (k === "egg") { if (inst) CS.giveInstantEgg(v); else CS.giveEgg(v); }
   CS.save();
 }
 /* Pass lane: open for Pro, and for everyone while checkout isn't set up yet (beta) */
 CS.passOpen = () => CS.hasAccess ? CS.hasAccess() : true;
-function claims(si){ const s = S(); s.seasons = s.seasons || {}; return s.seasons[si.id] || (s.seasons[si.id] = {free:[], pass:[]}); }
+function claims(si){ const s = S(); s.seasons = s.seasons || {}; const key = si.id + "v2"; return s.seasons[key] || (s.seasons[key] = {free:[], pass:[]}); }
 CS.seasonClaimable = () => { const si = CS.seasonInfo(), xp = CS.seasonXP(si), c = claims(si);
   return CS.TIERS.reduce((n, t, i) => n + (xp >= t && !c.free.includes(i) ? 1 : 0) + (xp >= t && CS.passOpen() && !c.pass.includes(i) ? 1 : 0), 0); };
 
@@ -113,21 +118,24 @@ CS.seasonCard = () => {
   const nextI = CS.TIERS.findIndex(t => xp < t), tierNow = nextI < 0 ? CS.TIERS.length : nextI;
   const lo = tierNow ? CS.TIERS[tierNow-1] : 0, hi = nextI < 0 ? CS.TIERS[CS.TIERS.length-1] : CS.TIERS[nextI];
   const cell = (lane, r, i) => { const got = c[lane].includes(i), reach = xp >= CS.TIERS[i], lock = lane === "pass" && !open;
-    const st = got ? "got" : lock ? "lock" : reach ? "ready" : "";
-    return `<button class="sp-cell ${lane} ${st}" data-claim="${lane}:${i}" ${got || (!reach && !lock) ? "disabled" : ""} title="${lock?"Unlock with Pass Plan":reach?(got?"Claimed":"Claim"):`Reach ${CS.TIERS[i]} season XP`}">
-      <span class="ri">${lock?"🔒":icon(r)}</span><span class="rl">${label(r)}</span>${st==="ready"?`<span class="claim">Claim</span>`:got?`<span class="ok">✓</span>`:""}</button>`; };
+    const st = got ? "got" : lock ? "lock" : reach ? "ready" : "", inst = r.split(":")[2];
+    return `<button class="sp-cell ${lane} ${st}" data-claim="${lane}:${i}" ${got || (!reach && !lock) ? "disabled" : ""} title="${lock?"Unlock with Pass Plan":reach?(got?"Claimed":"Claim"):`Reach ${CS.TIERS[i].toLocaleString()} season XP`}">
+      <span class="ri">${lock?"🔒":icon(r)}</span><span class="rl">${label(r)}</span>${inst?`<span class="sp-inst" title="Hatches the moment you claim it">⚡</span>`:""}${st==="ready"?`<span class="claim">Claim</span>`:got?`<span class="ok">✓</span>`:""}</button>`; };
+  const n = CS.seasonClaimable(), focus = Math.max(0, Math.min(NT - 1, tierNow - 1));
   return `<div class="panel qcard season-card">
     <div class="spread"><div class="stack" style="gap:0"><span class="eyebrow">Season ${si.num} · ${esc(si.theme.n)}</span><b>Season pass</b></div><span class="tag">${si.left} day${si.left===1?"":"s"} left</span></div>
     <div class="stack" style="gap:6px"><div class="spread small"><b>Tier ${tierNow} of ${CS.TIERS.length}</b><span class="muted">${xp.toLocaleString()} / ${hi.toLocaleString()} season XP</span></div>
       <div class="meter mint"><i style="width:${Math.min(100, (xp - lo) / Math.max(1, hi - lo) * 100)}%"></i></div></div>
-    <div class="sp-grid"><span></span><span class="lane">Free</span><span class="lane pass">Pass${beta?` <em>free in beta</em>`:""}</span>
-      ${CS.TIERS.map((t, i) => `<span class="sp-n ${xp >= t ? "on" : ""}">${i+1}</span>${cell("free", FREE[i], i)}${cell("pass", PASS[i], i)}`).join("")}</div>
+    <div class="spread"><span class="tiny muted">⚡ Pass-lane eggs hatch the moment you claim them.</span>${n?`<button class="btn sm" data-claimall>Claim all (${n})</button>`:""}</div>
+    <div class="sp-scroll" data-focus="${focus}"><div class="sp-grid"><span class="sp-h"></span><span class="lane sp-h">Free</span><span class="lane pass sp-h">Pass${beta?` <em>free in beta</em>`:""}</span>
+      ${CS.TIERS.map((t, i) => `<span class="sp-n ${xp >= t ? "on" : ""}" data-tier="${i}">${i+1}</span>${cell("free", FREE[i], i)}${cell("pass", PASS[i], i)}`).join("")}</div></div>
     <div class="shop"><span class="small"><b>💎 ${(s.gems||0).toLocaleString()}</b> gems</span>
-      <button class="btn ghost sm" data-shop="freeze" ${(s.gems||0) < 150 || (s.freezes||0) >= 3 ? "disabled" : ""}>❄️ Streak freeze · 150</button>
-      <button class="btn ghost sm" data-shop="egg" ${(s.gems||0) < 250 ? "disabled" : ""}>🥚 Mystery egg · 250</button></div>
-    <span class="tiny muted">Every 2 weeks a new season starts with a new map theme and fresh rewards. All XP from both courses counts.</span>
+      <button class="btn ghost sm" data-go="store">${I("bag")} Spend gems in the Store</button></div>
+    <span class="tiny muted">Every 2 weeks a new season starts with a new map theme and fresh rewards. All XP from every course counts.</span>
   </div>`;
 };
+/* scroll the long reward list to your current tier */
+CS.focusPass = () => { const sc = document.querySelector(".sp-scroll"); if (!sc) return; const el = sc.querySelector(`[data-tier="${sc.dataset.focus}"]`); if (el) sc.scrollTop = Math.max(0, el.offsetTop - sc.offsetTop - 40); };
 
 /* ---------- weekly league ---------- */
 CS.LEAGUES = [{n:"Bronze", c:"#B45309"}, {n:"Silver", c:"#64748B"}, {n:"Emerald", c:"#059669"}, {n:"Sapphire", c:"#2563EB"}, {n:"Diamond", c:"#7C3AED"}];
@@ -198,20 +206,22 @@ CS.questBlock = () => {
 };
 
 /* ---------- clicks ---------- */
-const rerender = () => { if (CS.go) CS.go("home", {keepScroll:true}); };
+const rerender = () => { if (CS.go) CS.go("home", {keepScroll:true}); setTimeout(() => CS.focusPass && CS.focusPass(), 30); };
 document.addEventListener("click", e => {
   const ch = e.target.closest("[data-chest]");
   if (ch && !ch.disabled) { const s = S(); s.chests = s.chests || {}; const i = +ch.dataset.chest; if (s.chests[i]) return;
-    s.chests[i] = CS.today(); s.gems = (s.gems || 0) + 40; CS.save(); CS.toast(`Chest opened: +40 gems!`); rerender(); return; }
+    s.chests[i] = CS.today(); s.gems = (s.gems || 0) + 40; CS.save();
+    if (Math.random() < 0.15) { CS.toast("Chest opened: +40 gems and a lucky instant egg!"); CS.giveInstantEgg("uncommon"); } else CS.toast("Chest opened: +40 gems!");
+    rerender(); return; }
+  if (e.target.closest("[data-claimall]")) { const si = CS.seasonInfo(), c = claims(si), xp = CS.seasonXP(si); let n = 0;
+    CS.TIERS.forEach((t, i) => { if (xp < t) return;
+      if (!c.free.includes(i)) { c.free.push(i); grant(FREE[i]); n++; }
+      if (CS.passOpen() && !c.pass.includes(i)) { c.pass.push(i); grant(PASS[i]); n++; } });
+    if (n) CS.toast(`Claimed ${n} season reward${n===1?"":"s"}!`); rerender(); return; }
   const cl = e.target.closest("[data-claim]");
   if (cl) { const [lane, i] = cl.dataset.claim.split(":"), si = CS.seasonInfo(), c = claims(si), xp = CS.seasonXP(si);
     if (lane === "pass" && !CS.passOpen()) { if (CS.openUpgrade) CS.openUpgrade("exam"); return; }
     if (cl.disabled || xp < CS.TIERS[+i] || c[lane].includes(+i)) return;
     const r = (lane === "free" ? FREE : PASS)[+i]; c[lane].push(+i); grant(r); CS.toast(`Season reward: ${label(r)}!`); rerender(); return; }
-  const sh = e.target.closest("[data-shop]");
-  if (sh && !sh.disabled) { const s = S();
-    if (sh.dataset.shop === "freeze" && (s.gems||0) >= 150 && (s.freezes||0) < 3) { s.gems -= 150; s.freezes = (s.freezes||0) + 1; CS.save(); CS.toast("Bought a streak freeze."); }
-    if (sh.dataset.shop === "egg" && (s.gems||0) >= 250) { s.gems -= 250; CS.giveEgg(); CS.toast("Bought a mystery egg. It's in your nest."); }
-    rerender(); }
 });
 })();

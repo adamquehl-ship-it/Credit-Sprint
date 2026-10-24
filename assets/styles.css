@@ -760,3 +760,22 @@ button.av.img:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .su-stat{display:flex;flex-direction:column;gap:2px;border:1.5px solid color-mix(in srgb,var(--cc) 35%,var(--rule));border-left:4px solid var(--cc);border-radius:10px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
 .su-stat b{color:var(--ink);font-size:.86rem}
 .su-stat>span{white-space:nowrap}
+
+/* ---------- season pass (50 tiers) + store ---------- */
+.sp-scroll{position:relative;max-height:380px;overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+.sp-grid .sp-h{position:sticky;top:0;z-index:2;background:var(--surface);padding:2px 0}
+.sp-inst{font-size:.8rem;color:#B45309;flex:none}
+.st-head{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.st-bal{display:flex;flex-direction:column;align-items:flex-end}.st-bal b{font-size:1.5rem}
+.st-h{margin:0;font-size:1.05rem}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.st-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.st-art{position:relative;display:flex}.st-badge{position:absolute;left:44px;top:0;color:#fff;font-size:.68rem;font-weight:800;border-radius:6px;padding:1px 6px}
+.st-row{display:flex;gap:10px;align-items:center}.st-mini{display:grid;place-items:center;width:42px;flex:none}
+.st-themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.st-theme{display:flex;flex-direction:column;gap:8px}.st-theme.on{outline:2px solid var(--accent)}
+.st-sw{height:62px;border-radius:12px;display:flex;align-items:flex-end;gap:5px;padding:8px}.st-sw span{width:22px;height:22px;border-radius:7px;border:2px solid rgba(255,255,255,.7)}
+.panel.st-head{display:flex;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.panel.st-row{display:flex;flex-direction:row;align-items:center;gap:12px}
+.panel.st-card{display:flex;flex-direction:column;align-items:flex-start}
+.st-row .st-mini{display:grid}

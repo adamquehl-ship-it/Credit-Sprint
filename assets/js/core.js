@@ -63,7 +63,7 @@ CS.defaultDate = exam => {
    badges, plan, appearance) live in a shared record so they follow you between Macro and Micro. */
 const COURSE = window.CS_COURSE; CS.C = COURSE; CS.COURSE = COURSE.k;
 const KEY = COURSE.key, SHARED_KEY = "creditsprint.shared";
-CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered","gems","seasons","league","account","creds"];
+CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered","gems","themes","seasons","league","account","creds"];
 const fresh = () => ({v:3, exam:"ap", onboarded:false, goal:60, theme:"system", dateSet:false,
   accent:"indigo", cram:{}, remind:"19:00", name:"",
   answers:{}, mistakes:{}, diag:null, cards:{}, reviews:0, frq:{}, plan:{date:CS.defaultDate("ap")},
@@ -112,7 +112,10 @@ CS.ACCENTS = [
 CS.applyTheme = () => {
   const r = document.documentElement;
   const a = CS.ACCENTS.find(x=>x.k===S.accent);
-  if (a && a.k !== "indigo" && CS.levelOf(S.xp).lv >= a.lv) r.setAttribute("data-accent", a.k); else r.removeAttribute("data-accent");
+  const g = (CS.GEM_THEMES || []).find(x=>x.k===S.accent);
+  if (a && a.k !== "indigo" && CS.levelOf(S.xp).lv >= a.lv) r.setAttribute("data-accent", a.k);
+  else if (g && (S.themes || []).includes(g.k)) r.setAttribute("data-accent", g.k);
+  else r.removeAttribute("data-accent");
   if (S.theme === "light" || S.theme === "dark") r.setAttribute("data-theme", S.theme); else r.removeAttribute("data-theme");
 };
 
@@ -247,6 +250,8 @@ const P = {
   spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
   heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" fill="currentColor"/>',
   tf:'<path d="M4 12.5 8 16.5 15 7.5"/><path d="M15 15l5 5M20 15l-5 5"/>',
+  bag:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  gem:'<path d="M6 4h12l4 6-10 11L2 10z"/><path d="M2 10h20M9 4l-2 6 5 11 5-11-2-6"/>',
   shield:'<path d="M12 3 19 6v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/>',
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   paw:'<circle cx="7" cy="10" r="2.2"/><circle cx="11" cy="6.5" r="2.2"/><circle cx="15.5" cy="7" r="2.2"/><circle cx="18.5" cy="11" r="2.2"/><path d="M12 12.5c-3 0-6 3.5-6 6 0 1.6 1.4 2.5 3 2.5 1.2 0 2-.6 3-.6s1.8.6 3 .6c1.6 0 3-.9 3-2.5 0-2.5-3-6-6-6z"/>',
