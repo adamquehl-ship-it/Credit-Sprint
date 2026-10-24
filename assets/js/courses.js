@@ -18,4 +18,6 @@ try {
 } catch(e) {}
 window.CS_COURSE_PICKED = !!(k && C[k]);
 window.CS_COURSE = C[k] || C.macro;
+/* append the build version so updated data files aren't served from an old browser cache */
+if (window.CS_V) Object.values(C).forEach(c => { c.data = c.data.map(f => f + "?v=" + window.CS_V); });
 })();

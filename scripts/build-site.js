@@ -3,6 +3,8 @@
    Run from the repo root:  node scripts/build-site.js  */
 const fs = require("fs"), path = require("path"), vm = require("vm");
 const ROOT = path.join(__dirname, ".."), SITE = "https://creditsprintprep.com";
+/* cache-busting version: changes on every build so browsers fetch fresh CSS/JS after an update */
+const VER = Date.now().toString(36);
 const load = (dir, files) => { const ctx = {window:{}}; vm.createContext(ctx); files.forEach(f => vm.runInContext(fs.readFileSync(path.join(ROOT,dir,f),"utf8"), ctx)); return ctx.window; };
 const W = load("assets/data", ["questions.js","questions2.js","fifth.js","content.js","content2.js","drills.js","content3.js"]);
 const WM = load("assets/data/micro", ["questions.js","questions2.js","content.js","content2.js","drills.js"]);
@@ -40,7 +42,7 @@ function page({title, desc, canon, depth=0, body, ld}){
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
 <style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<link rel="stylesheet" href="${up}assets/styles.css"><link rel="stylesheet" href="${up}assets/site.css">
+<link rel="stylesheet" href="${up}assets/styles.css?v=${VER}"><link rel="stylesheet" href="${up}assets/site.css?v=${VER}">
 ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 </head>
 <body><div class="site">
@@ -301,4 +303,7 @@ const today = new Date().toISOString().slice(0,10);
 urls.push("/app.html");
 fs.writeFileSync(path.join(ROOT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(ROOT,"robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
-console.log("Built", urls.length, "pages");
+/* stamp the same version into app.html's CSS and script links */
+const appPath = path.join(ROOT, "app.html");
+fs.writeFileSync(appPath, fs.readFileSync(appPath, "utf8").replace(/\?v=[a-z0-9]+/g, "?v="+VER).replace(/window\.CS_V="[a-z0-9]*"/, 'window.CS_V="'+VER+'"'));
+console.log("Built", urls.length, "pages", "· version", VER);
