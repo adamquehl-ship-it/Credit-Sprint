@@ -62,22 +62,24 @@ CS.renderAccountChip = renderChip;
 /* ---------- sign-in modal ---------- */
 function modal(){ const w = document.createElement("div"); w.className = "modal-wrap"; w.innerHTML = `<div class="modal acct-modal" role="dialog" aria-modal="true" aria-label="Account"></div>`;
   document.body.appendChild(w); w.addEventListener("click", e => { if (e.target === w) w.remove(); }); return w; }
-CS.openAccount = async () => {
+CS.openAccount = async (opts = {}) => {
+  const ask = !!opts.prompt;
+  if (ask) { if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } } if (!cfg.accounts || CS.account) return; }
   const w = modal(), m = $(".modal", w);
   if (!online()) { m.innerHTML = closeRow("Accounts") + `<p class="muted">Accounts work on creditsprintprep.com once the database is set up. Your progress is safe in this browser in the meantime.</p>`; wire(); return; }
   if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } }
   if (!cfg.accounts) { m.innerHTML = closeRow("Accounts") + `<p class="muted">Accounts are coming soon. Your progress is saved in this browser, and the practice league works without signing in.</p>`; wire(); return; }
   if (CS.account) return accountView();
-  let tab = cfg.email ? "email" : cfg.google ? "google" : "password", step = "email", email = "", mode = "login", err = "";
+  let tab = cfg.google ? "google" : cfg.email ? "email" : "password", step = "email", email = "", mode = ask ? "new" : "login", err = "";
   draw();
   function closeRow(t){ return `<div class="spread"><h2>${esc(t)}</h2><button class="btn ghost sm" data-x>Close</button></div>`; }
   function wire(){ $$("[data-x]", m).forEach(b => b.onclick = () => w.remove()); }
   function draw(){
     const tabs = [["email","Email code",cfg.email],["google","Google",!!cfg.google],["password","Username",cfg.password]].filter(t => t[2]);
-    m.innerHTML = closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>
+    m.innerHTML = (ask ? closeRow("Create your free account") + `<p class="muted small">Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
       <div class="seg" role="tablist" style="max-width:420px">${tabs.map(([k,n]) => `<button role="tab" data-tab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>
       <div class="stack" id="acct-body" style="gap:12px"></div>${err?`<div class="feedback bad">${esc(err)}</div>`:""}
-      <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>`;
+      <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>${ask ? `<button class="btn ghost sm" data-x style="align-self:flex-start">Maybe later. Keep studying without an account</button>` : ""}`;
     wire(); $$("[data-tab]", m).forEach(b => b.onclick = () => { tab = b.dataset.tab; err = ""; draw(); });
     const body = $("#acct-body", m);
     if (tab === "email" && step === "email") {
@@ -148,5 +150,14 @@ document.addEventListener("click", e => { if (e.target.closest("[data-account]")
 /* ---------- boot: who's signed in? ---------- */
 renderChip();
 if (online()) api("me").then(r => { CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); push(); })
-  .catch(() => { CS.account = null; renderChip(); });
+  .catch(e => { CS.account = null; renderChip(); if (e.status === 401) promptSignup(); });
+
+/* ask signed-out students to make an account once per visit, after onboarding closes */
+function promptSignup(){
+  try { if (sessionStorage.getItem("cs.asked")) return; } catch(e) {}
+  let tries = 0;
+  const go = () => { if (CS.account) return; if (document.querySelector(".modal-wrap")) { if (++tries < 600) setTimeout(go, 1000); return; }
+    try { sessionStorage.setItem("cs.asked", "1"); } catch(e) {} CS.openAccount({prompt:true}); };
+  setTimeout(go, 1200);
+}
 })();
