@@ -218,6 +218,8 @@ CS.levelUp = lv => {
 
 /* ---------- icons (24px stroke) ---------- */
 const P = {
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   dna:'<path d="M7 3c0 6 10 6 10 12M17 3c0 6-10 6-10 12M7 21c0-3 3-4.5 5-6M17 21c0-3-3-4.5-5-6"/><path d="M8.5 6h7M8.5 12h7M9 18h6"/>',
   lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   home:'<path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',

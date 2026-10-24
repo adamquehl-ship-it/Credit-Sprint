@@ -3,6 +3,8 @@
    everywhere else the app keeps working offline with a practice league. */
 (function(){
 "use strict";
+/* what a free account opens up, course by course (counts come from course-stats.js) */
+const suStats = () => window.CS_COURSE_STATS ? `<div class="su-stats">${Object.values(window.CS_COURSES).map(c => `<span class="su-stat" style="--cc:${c.col}"><b>${CS.esc ? CS.esc(c.name) : c.name}</b><span>${window.CS_STATLINE(c.k)}</span></span>`).join("")}</div>` : "";
 const CS = window.CS, $ = CS.$, $$ = CS.$$, esc = CS.esc, I = CS.icon;
 const S = () => CS.S();
 const STORE_KEYS = () => ({shared:"creditsprint.shared", courses:Object.fromEntries(Object.values(window.CS_COURSES).map(c => [c.k, c.key]))});
@@ -109,7 +111,7 @@ CS.openAccount = async (opts = {}) => {
   function wire(){ $$("[data-x]", m).forEach(b => b.onclick = () => w.remove()); }
   function draw(){
     const tabs = [["email","Email code",cfg.email],["google","Google",!!cfg.google],["password","Username",cfg.password]].filter(t => t[2]);
-    m.innerHTML = (signup ? closeRow("Create your free account") + `<p class="muted small">Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
+    m.innerHTML = (signup ? closeRow("Create your free account") + `<p class="muted small">Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` + suStats() : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
       <div class="seg" role="tablist" style="max-width:420px">${tabs.map(([k,n]) => `<button role="tab" data-tab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>
       <div class="stack" id="acct-body" style="gap:12px"></div>${err?`<div class="feedback bad">${esc(err)}</div>`:""}
       <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>${ask ? `<button class="btn ghost sm" data-x style="align-self:flex-start">Maybe later. Keep studying without an account</button>` : ""}`;

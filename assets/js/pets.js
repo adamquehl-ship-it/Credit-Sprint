@@ -97,35 +97,35 @@ const MICRO = [
 
 /* ---------- Biology pet set (same odds per rarity) ---------- */
 const BIO = [
- {id:"hbhamster", n:"Hydrogen Bond Hamster", u:1, r:"common", p:6.5, c1:"#E6A15C", c2:"#FDE8CF", ears:"round", extra:["whiskers"], bio:"Sticks to every other hamster in the burrow. Cohesion, but fluffier."},
- {id:"polarbear", n:"Polarity Polar Bear", u:1, r:"common", p:6, c1:"#F1F5F9", c2:"#FFFFFF", ears:"round", extra:["fluff","bignose"], bio:"Slightly negative on one end, slightly positive on the other. Dissolves every awkward silence."},
- {id:"mitomouse", n:"Mitochondria Mouse", u:3, r:"common", p:6.5, c1:"#F97316", c2:"#FFEDD5", ears:"round", extra:["whiskers","sparkle"], bio:"The powerhouse of the burrow. Turns every crumb into ATP."},
- {id:"osmofrog", n:"Osmosis Frog", u:2, r:"common", p:6, c1:"#22C55E", c2:"#DCFCE7", ears:"none", extra:["bigeyes","wave"], bio:"Puffs up in fresh water and shrivels in salt water. Always heading toward lower water potential."},
- {id:"riborabbit", n:"Ribosome Rabbit", u:6, r:"common", p:6, c1:"#C4B5FD", c2:"#F5F3FF", ears:"long", extra:["whiskers"], bio:"Reads three letters at a time and hops off with a brand-new protein."},
- {id:"chlorocham", n:"Chlorophyll Chameleon", u:3, r:"common", p:6, c1:"#16A34A", c2:"#BBF7D0", ears:"none", extra:["curltail","bigeyes"], bio:"Green because it reflects green light. Absorbs red and blue for lunch."},
- {id:"gametefish", n:"Gamete Goldfish", u:5, r:"common", p:6, c1:"#F59E0B", c2:"#FEF3C7", ears:"none", extra:["fins","bigeyes"], bio:"Carries exactly half the usual chromosomes, and it's very proud of being haploid."},
- {id:"chainfox", n:"Food Chain Fox", u:8, r:"common", p:6, c1:"#EA580C", c2:"#FFEDD5", ears:"pointy", extra:["foxtail"], bio:"A secondary consumer that keeps only about 10% of the energy it eats. Always hungry."},
- {id:"enzbeaver", n:"Enzyme Beaver", u:3, r:"uncommon", p:4, c1:"#92400E", c2:"#FDE68A", ears:"small", extra:["teeth"], bio:"Lowers the activation energy of every dam project. Never gets used up."},
- {id:"membjelly", n:"Membrane Jellyfish", u:2, r:"uncommon", p:4, c1:"#F0ABFC", c2:"#FDF4FF", ears:"none", extra:["tentacles","translucent"], bio:"Selectively permeable: lets oxygen through, keeps ions out unless they knock on a channel."},
- {id:"checkchip", n:"Checkpoint Chipmunk", u:4, r:"uncommon", p:4, c1:"#B45309", c2:"#FEF3C7", ears:"round", extra:["bushytail","sign"], sign:"G1 ✓", bio:"Guards the G1 checkpoint. No damaged DNA gets past this chipmunk."},
- {id:"punnettpanda", n:"Punnett Panda", u:5, r:"uncommon", p:4, c1:"#FFFFFF", c2:"#F8FAFC", ears:"black", extra:["patches"], bio:"Black and white, never gray. A walking example of codominance."},
- {id:"codoncorgi", n:"Codon Corgi", u:6, r:"uncommon", p:3.5, c1:"#F59E0B", c2:"#FFFBEB", ears:"pointy", extra:["tie"], bio:"Fetches one amino acid for every three-letter codon. Stops at UAA, UAG and UGA."},
- {id:"nichenewt", n:"Niche Newt", u:8, r:"uncommon", p:4, c1:"#F97316", c2:"#FED7AA", ears:"none", extra:["curltail","bigeyes"], bio:"Found its perfect niche under one particular log. Shares it with nobody."},
- {id:"driftdolphin", n:"Drift Dolphin", u:7, r:"uncommon", p:4, c1:"#60A5FA", c2:"#DBEAFE", ears:"none", extra:["fins","wave"], bio:"Its pod's allele frequencies change by pure chance. Small populations drift the most."},
- {id:"krebscrab", n:"Krebs Cycle Crab", u:3, r:"rare", p:3, c1:"#DC2626", c2:"#FECACA", ears:"none", extra:["claws","stalkeyes"], bio:"Walks in circles all day, releasing CO₂ and loading NADH."},
- {id:"helixhorse", n:"Double Helix Seahorse", u:6, r:"rare", p:3, c1:"#8B5CF6", c2:"#EDE9FE", ears:"none", extra:["curltail","fins"], bio:"Its tail twists into a perfect antiparallel helix. A pairs with T, always."},
- {id:"signalfly", n:"Signal Firefly", u:4, r:"rare", p:3, c1:"#FACC15", c2:"#FEF9C3", ears:"none", extra:["wings","biolum"], bio:"Flashes a signal, and the message is amplified through every firefly in the meadow."},
- {id:"homeoowl", n:"Homeostasis Owl", u:4, r:"rare", p:2.5, c1:"#78716C", c2:"#F5F5F4", ears:"tufts", extra:["beak","bigeyes"], bio:"Wise enough to keep everything at its set point. Negative feedback is its favorite."},
- {id:"keywolf", n:"Keystone Wolf", u:8, r:"rare", p:2.5, c1:"#64748B", c2:"#E2E8F0", ears:"pointy", extra:["teeth"], bio:"Few in number, huge in impact. Remove it and the whole valley changes."},
- {id:"selecttiger", n:"Selection Tiger", u:7, r:"epic", p:2, c1:"#F97316", c2:"#FFF7ED", ears:"round", extra:["whiskers","patches"], bio:"Its stripes were shaped by millions of years of natural selection. Fitness = offspring."},
- {id:"plasmidpeacock", n:"Recombinant Peacock", u:6, r:"epic", p:2, c1:"#0EA5E9", c2:"#BAE6FD", ears:"crest", extra:["beak","sparkle"], bio:"Picked up a glowing gene from a plasmid. Biotechnology's showiest success."},
- {id:"photostag", n:"Photosynthesis Stag", u:3, r:"epic", p:2, c1:"#65A30D", c2:"#ECFCCB", ears:"pointy", extra:["antlers","sprout"], bio:"Its antlers sprout leaves that turn sunlight into sugar. Lives on light and CO₂."},
- {id:"lifephoenix", n:"Phoenix of Life", u:7, r:"legendary", p:1.1, c1:"#EF4444", c2:"#FDE68A", ears:"crest", extra:["beak","wings","flametips","sparkle"], bio:"Rises again after every mass extinction, leading an adaptive radiation."},
- {id:"fossiltitan", n:"Fossil Record Titan", u:7, r:"legendary", p:0.9, c1:"#A8A29E", c2:"#E7E5E4", ears:"elephant", extra:["trunk","tusks","crown"], bio:"Every layer of rock tells its family history. Living proof of descent with modification."},
- {id:"biohydra", n:"Regenerating Hydra", u:4, r:"mythical", p:0.6, c1:"#0D9488", c2:"#99F6E4", custom:"hydra", marks:["2n","2n","2n"], bio:"Cut off a head and the stem cells grow two more. Mitosis on overdrive."},
- {id:"cambrian", n:"Cambrian Leviathan", u:7, r:"mythical", p:0.5, c1:"#7C3AED", c2:"#C4B5FD", custom:"leviathan", mark:"DNA", bio:"Burst out of the Cambrian explosion and never stopped diversifying."},
- {id:"symbioswan", n:"Symbiosis Swan", u:8, r:"mythical", p:0.35, c1:"#F0FDF4", c2:"#86EFAC", custom:"swan", bio:"Glides in perfect mutualism with everything in the lake. Both sides always win."},
- {id:"luca", n:"LUCA, the First Ancestor", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#10B981", custom:"celestial", runes:["A","T","G","C","U","∞","Δ","☼"], bio:"The last universal common ancestor of every living thing. Roughly 1 in 2,000 eggs."}
+ {id:"b_tardi", body:"tardigrade", n:"Tardi the Water Bear", u:1, r:"common", p:6.5, c1:"#D9A066", c2:"#FDE8CF", custom:"bio", bio:"Survives boiling, freezing and outer space by drying itself into a tun. Nothing rattles it."},
+ {id:"b_drop", body:"droplet", n:"Dewdrop", u:1, r:"common", p:6, c1:"#7DD3FC", c2:"#E0F2FE", custom:"bio", bio:"Always holding hands with the droplet next door. Hydrogen bonds make it the stickiest friend you have."},
+ {id:"b_mito", body:"mito", n:"Mitzi the Mitochondrion", u:3, r:"common", p:6.5, c1:"#FB923C", c2:"#FFEDD5", custom:"bio", bio:"Folds its inner membrane into cristae so it can pump out more ATP. Yes, it's the powerhouse."},
+ {id:"b_amoeba", body:"amoeba", n:"Blobbert the Amoeba", u:2, r:"common", p:6, c1:"#A7F3D0", c2:"#ECFDF5", custom:"bio", bio:"Never the same shape twice. Wraps its pseudopods around lunch and calls it phagocytosis."},
+ {id:"b_bacil", body:"bacillus", n:"Rod the Bacillus", u:2, r:"common", p:6, c1:"#C4B5FD", c2:"#F5F3FF", custom:"bio", bio:"No nucleus, no problem. Spins its flagellum like a propeller and splits in two every 20 minutes."},
+ {id:"b_chloro", body:"chloro", n:"Chloe the Chloroplast", u:3, r:"common", p:6, c1:"#4ADE80", c2:"#DCFCE7", custom:"bio", bio:"Stacks its thylakoids into neat grana and turns sunlight into sugar all afternoon."},
+ {id:"b_shroom", body:"mushroom", n:"Spore Cap", u:8, r:"common", p:6, c1:"#EF4444", c2:"#FEF2F2", custom:"bio", bio:"A decomposer that returns nutrients to the soil. Its real body is a hidden web of hyphae underground."},
+ {id:"b_sprout", body:"sprout", n:"Sprig the Seedling", u:4, r:"common", p:6, c1:"#86EFAC", c2:"#F0FDF4", custom:"bio", bio:"Bends toward the window thanks to auxin. Phototropism is its whole personality."},
+ {id:"b_para", body:"paramecium", n:"Para the Slipper", u:2, r:"uncommon", p:4, c1:"#93C5FD", c2:"#EFF6FF", custom:"bio", bio:"Rows itself around with thousands of cilia and bails out extra water with a contractile vacuole."},
+ {id:"b_chain", body:"chain", n:"Polly Peptide", u:6, r:"uncommon", p:4, c1:"#F472B6", c2:"#FCE7F3", custom:"bio", bio:"A string of amino acids still deciding how to fold. Shape decides function, so it's taking its time."},
+ {id:"b_neuron", body:"neuron", n:"Zap the Neuron", u:4, r:"uncommon", p:4, c1:"#FACC15", c2:"#FEF9C3", custom:"bio", bio:"Fires all-or-nothing action potentials down its axon. Talks to friends by tossing neurotransmitters."},
+ {id:"b_bee", body:"bee", n:"Buzz the Pollinator", u:8, r:"uncommon", p:4, c1:"#FBBF24", c2:"#1F2937", custom:"bio", bio:"Trades pollination for nectar. A mutualism so good that whole ecosystems depend on it."},
+ {id:"b_diatom", body:"diatom", n:"Glassy the Diatom", u:8, r:"uncommon", p:3.5, c1:"#5EEAD4", c2:"#F0FDFA", custom:"bio", bio:"Lives in a glass house of silica and makes a big share of the oxygen you breathe."},
+ {id:"b_coral", body:"coral", n:"Reefy the Coral", u:8, r:"uncommon", p:4, c1:"#FB7185", c2:"#FFE4E6", custom:"bio", bio:"Shares its home with algae that feed it sugar. Too much heat and they leave, and the coral bleaches."},
+ {id:"b_axo", body:"axolotl", n:"Axel the Axolotl", u:4, r:"uncommon", p:4, c1:"#F9A8D4", c2:"#FDF2F8", custom:"bio", bio:"Regrows lost limbs with stem cells and keeps its frilly gills for life."},
+ {id:"b_helix", body:"helix", n:"Twisty the Double Helix", u:6, r:"rare", p:3, c1:"#8B5CF6", c2:"#EDE9FE", custom:"bio", bio:"Two antiparallel strands, held by base pairs. A with T, G with C, never anything else."},
+ {id:"b_comb", body:"combjelly", n:"Prism the Comb Jelly", u:7, r:"rare", p:3, c1:"#A5F3FC", c2:"#ECFEFF", custom:"bio", bio:"Beats rows of combs that scatter light into rainbows. One of the oldest animal lineages."},
+ {id:"b_star", body:"starfish", n:"Stella the Sea Star", u:7, r:"rare", p:3, c1:"#F97316", c2:"#FFEDD5", custom:"bio", bio:"A keystone predator. Take it off the rocks and the mussels take over the whole shore."},
+ {id:"b_fly", body:"butterfly", n:"Morpho the Metamorph", u:4, r:"rare", p:2.5, c1:"#3B82F6", c2:"#DBEAFE", custom:"bio", bio:"Started as a caterpillar and let hormones rebuild its whole body. Its blue comes from structure, not pigment."},
+ {id:"b_golgi", body:"golgi", n:"Gogo the Golgi", u:2, r:"rare", p:2.5, c1:"#F59E0B", c2:"#FEF3C7", custom:"bio", bio:"Folds, tags and ships proteins in little vesicles. The post office of the cell."},
+ {id:"b_radio", body:"radiolarian", n:"Radia the Radiolarian", u:7, r:"epic", p:2, c1:"#E879F9", c2:"#FAE8FF", custom:"bio", bio:"Builds a lacy glass skeleton with spines in every direction. Its shells pile up into ocean ooze."},
+ {id:"b_mitosis", body:"mitosis", n:"Twins in Telophase", u:4, r:"epic", p:2, c1:"#60A5FA", c2:"#DBEAFE", custom:"bio", bio:"Two identical cells halfway through saying goodbye. Same chromosomes, same jokes."},
+ {id:"b_trap", body:"flytrap", n:"Snapper the Flytrap", u:8, r:"epic", p:2, c1:"#65A30D", c2:"#FCA5A5", custom:"bio", bio:"Grows in nitrogen-poor bogs, so it catches its nitrogen with snap-shut leaves."},
+ {id:"b_tree", body:"tree", n:"Elder Oak of Life", u:7, r:"legendary", p:1.1, c1:"#15803D", c2:"#86EFAC", custom:"bio", bio:"Every branch is a lineage and every fork is a common ancestor. The whole phylogeny in one trunk."},
+ {id:"b_angler", body:"angler", n:"Lumen the Anglerfish", u:8, r:"legendary", p:0.9, c1:"#334155", c2:"#67E8F9", custom:"bio", bio:"Lights up the deep sea with glowing symbiotic bacteria. Whoever follows the light becomes dinner."},
+ {id:"b_phage", body:"phage", n:"Phage Prime", u:6, r:"mythical", p:0.6, c1:"#94A3B8", c2:"#E2E8F0", custom:"bio", bio:"Lands on a bacterium, injects its DNA and takes over the factory. Not alive, but unstoppable."},
+ {id:"b_coel", body:"coelacanth", n:"The Living Fossil", u:7, r:"mythical", p:0.5, c1:"#1E3A8A", c2:"#93C5FD", custom:"bio", bio:"Thought extinct for 66 million years, then caught off South Africa in 1938. Its fleshy fins hint at the first legs."},
+ {id:"b_vent", body:"tubeworm", n:"Abyss Tubeworm", u:3, r:"mythical", p:0.35, c1:"#DC2626", c2:"#F8FAFC", custom:"bio", bio:"No mouth and no gut. Bacteria inside it run chemosynthesis on volcanic vent chemicals, with no sunlight at all."},
+ {id:"luca", body:"luca", n:"LUCA, the First Ancestor", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#10B981", custom:"bio", bio:"The last universal common ancestor of every living thing. Roughly 1 in 2,000 eggs."}
 ];
 CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
@@ -366,6 +366,7 @@ CS.petSVG = (pid, opt={}) => {
 const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${glow||"#1F2430"}"/><circle cx="${x+1.4}" cy="${y-1.4}" r="${r*.35}" fill="#fff"/>`;
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const CUSTOM = {
+  bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
       <ellipse cx="${x}" cy="${y}" rx="${r*1.15}" ry="${r}" fill="${p.c1}" stroke="#7F1D1D" stroke-width="1.5"/>

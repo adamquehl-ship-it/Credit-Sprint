@@ -39,7 +39,7 @@ CS.chrome = () => {
   $("#nav").innerHTML = NAV.map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n}</span>${n.k==="practice"&&nm?`<span class="count">${nm}</span>`:n.k==="cards"&&due?`<span class="count">${due}</span>`:""}</button>`).join("");
   $("#tabbar").innerHTML = NAV.filter(n=>["home","learn","practice","games","pets"].includes(n.k)).map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n==="Dashboard"?"Home":n.n==="Flashcards"?"Cards":n.n}</span></button>`).join("");
   $("#title").textContent = TITLES[current];
-  $("#course-pill").innerHTML = `<i style="background:${CS.C.col}"></i><span>${esc(CS.C.short)}<span class="hide-sm">${S().exam==="clep"?" · CLEP®":" · AP®"}</span></span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>`;
+  $("#course-pill").innerHTML = `<span class="cpill-ico" style="background:${CS.C.col}">${I(CS.C.icon||"book")}</span><span class="cpill-txt"><small>Course</small><b>${esc(CS.C.short)}<span class="hide-sm">${S().exam==="clep"?" · CLEP®":" · AP®"}</span></b></span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>`;
   $("#chips").innerHTML = `
     <span class="chip-stat ${st?"flame":"dim"}" title="${st}-day streak${s.freezes?` · ${s.freezes} streak freeze${s.freezes>1?"s":""}`:""}">${I("flame")}${st}${s.freezes?`<span class="tiny faint" style="margin-left:2px">+${s.freezes}${I("shield","ico")}</span>`:""}</span>
     <span class="chip-stat hide-sm" title="Today's goal: ${today}/${s.goal} XP">${ring(today/s.goal)}${today}/${s.goal}</span>
@@ -77,16 +77,16 @@ function onboarding(){
     m.innerHTML = `<div class="row-wrap">${CS.logo("mark")}<span class="eyebrow">Welcome to Credit Sprint</span></div>
       <h2>Let's set up your sprint to college credit</h2>
       <div class="stack"><span class="eyebrow">Which course?</span>
-        <div class="opt-grid course-opts">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><b>${esc(c.name)}</b><span class="muted small">${esc(c.blurb)}</span></button>`).join("")}</div>
-        <span class="muted tiny">You can add the other course any time. Your streak, XP and pets carry over.</span></div>
+        <div class="opt-grid course-opts">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><b>${esc(c.name)}</b><span class="muted small">${esc(c.blurb)}</span>${CS_STATLINE(c.k)?`<span class="ob-stat">${esc(CS_STATLINE(c.k, true))}</span>`:""}</button>`).join("")}</div>
+        <span class="muted tiny">You can add other courses any time. Your streak, XP and pets carry over.</span></div>
       <div class="stack"><span class="eyebrow">Which exam are you taking?</span>
-        <div class="opt-grid"><button data-ex="ap" aria-pressed="${ex==="ap"}"><b>${esc(CS.C.ap)}</b><span class="muted small">60 multiple choice + 3 free response</span></button>
-        <button data-ex="clep" aria-pressed="${ex==="clep"}"><b>${esc(CS.C.clepShort)}</b><span class="muted small">About 80 multiple choice in 90 minutes</span></button></div></div>
+        <div class="opt-grid"><button data-ex="ap" aria-pressed="${ex==="ap"}"><b>${esc(CS.C.ap)}</b><span class="muted small">${esc(CS.C.apFmt||"")}</span></button>
+        <button data-ex="clep" aria-pressed="${ex==="clep"}"><b>${esc(CS.C.clepShort)}</b><span class="muted small">${esc(CS.C.clepFmt||"")}</span></button></div></div>
       <div class="stack"><label class="eyebrow" for="ob-date">Exam date</label>
         <input type="date" id="ob-date" value="${esc(date)}" style="max-width:220px">
         <span class="muted small">${ex==="ap"?"We'll assume May 1 until you set the date from your school's AP® schedule.":"CLEP® exams can be scheduled any time. Pick your target date."}</span></div>
       <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n,d])=>`<button data-goal="${v}" aria-pressed="${goal===v}"><b>${n} · ${v} XP</b><span class="muted small">${d}</span></button>`).join("")}</div></div>
-      <div class="row-wrap"><button class="btn lg" id="ob-diag">Start with a 10-minute diagnostic</button><button class="btn ghost" id="ob-skip">Explore first</button></div>`;
+      <div class="row-wrap"><button class="btn lg" id="ob-diag">Start with a ${Math.round(CS.UNITS.length*1.6)}-minute diagnostic</button><button class="btn ghost" id="ob-skip">Explore first</button></div>`;
     $$("[data-ex]", m).forEach(b => b.onclick = () => { ex = b.dataset.ex; if (!s.dateSet) date = CS.defaultDate(ex); draw(); });
     $$("[data-crs]", m).forEach(b => b.onclick = () => { if (b.dataset.crs !== CS.COURSE) { s.exam = ex; CS.switchCourse(b.dataset.crs); } });
     $$("[data-goal]", m).forEach(b => b.onclick = () => { goal = +b.dataset.goal; draw(); });
@@ -144,7 +144,7 @@ render.home = () => {
   const next = !s.diag ? {go:"practice", mode:"diagnostic", t:"Take the diagnostic"} : !dcDone ? {go:"games", game:"daily", t:"Play today's challenge"} : {go:"practice", mode:"unit", unit:wu.id, t:`Practice Unit ${wu.id}`};
   const tasks = [
     {k:"daily", done:dcDone, h:"Daily challenge", p:"5 questions, same for everyone today.", xp:"+50 XP", go:"games", game:"daily"},
-    !s.diag ? {k:"diag", done:!!t.diag, h:"Take the diagnostic", p:"Find your weak units in 10 minutes.", xp:"+120 XP", go:"practice", mode:"diagnostic"}
+    !s.diag ? {k:"diag", done:!!t.diag, h:"Take the diagnostic", p:`Find your weak units in ${Math.round(CS.UNITS.length*1.6)} minutes.`, xp:"+120 XP", go:"practice", mode:"diagnostic"}
             : {k:"quiz", done:!!t.quiz, h:`Unit ${wu.id} quiz: ${wu.short}`, p:`Your weakest unit (${CS.pct(CS.mastery(wu.id))}).`, xp:"+110 XP", go:"practice", mode:"unit", unit:wu.id},
     CS.mistakesDue().length ? {k:"mist", done:!!t.mist, h:`Review ${CS.mistakesDue().length} missed question${CS.mistakesDue().length===1?"":"s"}`, p:"Spaced review: they come back at 1, 3 and 7 days.", xp:"+40 XP", go:"practice", mode:"mistakes"} :
     {k:"cards", done:!!t.cards, h: due ? `Review ${Math.min(due,15)} flashcards` : "Flashcards are clear", p: due ? `${due} due. Spaced repetition does the scheduling.` : "Study ahead in any unit.", xp:"+45 XP", go:"cards"}
@@ -484,12 +484,13 @@ function drawMode(body){
 /* diagnostic */
 let D = null;
 function diagnostic(body){
+  const DN = CS.UNITS.length * 2, DMIN = Math.round(DN * 0.8);
   body.innerHTML = `<div class="panel" id="p-run"></div>`; const p = $("#p-run");
   if (!D) {
     const last = S().diag;
-    p.innerHTML = `<span class="eyebrow">Diagnostic · 12 questions · about 10 minutes</span><h2>Find your weak units</h2>
+    p.innerHTML = `<span class="eyebrow">Diagnostic · ${DN} questions · about ${DMIN} minutes</span><h2>Find your weak units</h2>
       <p style="max-width:62ch">Two questions from each unit, no hints until the end. Your results set your mastery levels, your study plan and your score estimate.</p>
-      ${last?`<p class="muted">Last taken ${esc(new Date(last.at).toLocaleDateString())}: <b>${last.score}/12</b>.</p>`:""}
+      ${last?`<p class="muted">Last taken ${esc(new Date(last.at).toLocaleDateString())}: <b>${last.score}/${last.n||DN}</b>.</p>`:""}
       <div><button class="btn lg" id="d-start">${last?"Retake diagnostic":"Start diagnostic"}</button></div>`;
     $("#d-start").onclick = () => { D = {i:0, picks:[], qs: CS.UNITS.flatMap(u=>CS.shuffle(CS.QS.filter(q=>q.u===u.id)).slice(0,2)).map(CS.prepQ)}; diagnostic(body); };
     return;
@@ -504,9 +505,9 @@ function diagnostic(body){
   }
   const by = {}; let score = 0;
   D.qs.forEach((q,i)=>{ const ok = q.opts[D.picks[i]].ok; if (ok) score++; (by[q.u]=by[q.u]||[]).push(ok); });
-  if (!D.saved) { D.qs.forEach((q,i)=>CS.record(q, q.opts[D.picks[i]].ok)); S().diag = {at:Date.now(), score}; markTask("diag"); markTask("quiz"); CS.addXP(20); CS.refresh(); D.saved = true; }
+  if (!D.saved) { D.qs.forEach((q,i)=>CS.record(q, q.opts[D.picks[i]].ok)); S().diag = {at:Date.now(), score, n:D.qs.length}; markTask("diag"); markTask("quiz"); CS.addXP(20); CS.refresh(); D.saved = true; }
   const missed = D.qs.map((q,i)=>({q, pick:D.picks[i]})).filter(x=>!x.q.opts[x.pick].ok);
-  p.innerHTML = `<div class="row-wrap" style="gap:24px;align-items:end"><div><span class="eyebrow">Your score</span><div class="result-big">${score}/12</div></div>
+  p.innerHTML = `<div class="row-wrap" style="gap:24px;align-items:end"><div><span class="eyebrow">Your score</span><div class="result-big">${score}/${D.qs.length}</div></div>
       <div class="row-wrap"><button class="btn" data-go="plan">See my study plan</button><button class="btn ghost" id="d-again">Retake</button></div></div>
     <div class="rows">${CS.UNITS.map(u=>{ const c=(by[u.id]||[]).filter(Boolean).length; return `<div class="row"><span>${u.id}. ${esc(u.name)}</span>${meter(c/2)}<span><b>${c}/2</b></span></div>`; }).join("")}</div>
     ${missed.length?`<h3>Review what you missed</h3>`+missed.map(({q,pick})=>{ const c = q.opts.find(o=>o.ok); return `<div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px">
@@ -754,31 +755,44 @@ CS.coursesBar = () => {
         <span class="cc-ico">${I(c.icon)}</span>
         <span class="stack" style="gap:3px;flex:1;min-width:0"><span class="row-wrap" style="gap:8px"><b>${esc(c.name)}</b>${cur?`<span class="tag good">Studying now</span>`:sm.started?"":`<span class="tag">New</span>`}</span>
           <span class="muted small">${esc(courseLine(sm))}</span>
+          ${CS_STATLINE(c.k)?`<span class="cc-stat">${esc(CS_STATLINE(c.k))}</span>`:""}
           <span class="cc-meter"><i style="width:${Math.round((sm.avg||0)*100)}%"></i></span></span>
         <span class="cc-go">${cur?"Continue":sm.started?"Switch →":"Start free →"}</span></button>`; }).join("")}</div></section>`;
 };
 function coursePicker(){
-  let pop = $("#course-pop"); if (pop) { pop.remove(); return; }
-  pop = document.createElement("div"); pop.id = "course-pop"; pop.className = "course-pop"; pop.setAttribute("role","menu");
-  pop.innerHTML = `<span class="eyebrow">Switch course</span>` + Object.values(window.CS_COURSES).map(c => { const sm = CS.courseSummary(c.k), cur = c.k === CS.COURSE;
-    return `<button role="menuitem" data-course="${c.k}" class="${cur?"cur":""}" style="--cc:${c.col};--cs:${c.soft}"><span class="cc-ico sm">${I(c.icon)}</span><span class="stack" style="gap:1px;min-width:0"><b class="small">${esc(c.name)}</b><span class="tiny muted">${esc(courseLine(sm))}</span></span>${cur?I("check"):""}</button>`; }).join("");
+  let pop = $("#course-pop"); if (pop) { closeCoursePicker(); return; }
+  const mob = window.innerWidth <= 620;
+  const sc = document.createElement("div"); sc.id = "course-scrim"; sc.className = "course-scrim"; sc.onclick = closeCoursePicker; document.body.appendChild(sc);
+  pop = document.createElement("div"); pop.id = "course-pop"; pop.className = "course-pop" + (mob ? " sheet" : ""); pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Courses");
+  const row = c => { const sm = CS.courseSummary(c.k), cur = c.k === CS.COURSE, m = Math.round((sm.avg||0)*100);
+    const stat = !sm.started ? "Not started" : `${sm.answered} answered · ${m}% mastery`;
+    return `<button data-course="${c.k}" class="cp-row ${cur?"cur":""}" style="--cc:${c.col};--cs:${c.soft}" ${cur?'aria-current="true"':""}>
+      <span class="cp-ico">${I(c.icon||"book")}</span>
+      <span class="cp-main"><span class="cp-name">${esc(c.name)}${cur?`<span class="cp-badge">Current</span>`:""}</span>
+        <span class="cp-sub">${esc(c.blurb||"")}</span>
+        <span class="cp-meta"><span>${c.nUnits||""} units · ${esc(CS_STATLINE(c.k)||"AP® & CLEP®")}</span><span>${esc(stat)}</span></span>
+        <span class="cp-bar"><i style="width:${m}%"></i></span></span>
+      <span class="cp-go">${cur?I("check"):`<span class="cp-btn">${sm.started?"Switch":"Start"}</span>`}</span></button>`; };
+  const groups = {}; Object.values(window.CS_COURSES).forEach(c => (groups[c.cat||"Courses"] = groups[c.cat||"Courses"] || []).push(c));
+  pop.innerHTML = `<div class="cp-head"><div><b>Courses</b><span class="tiny muted">Streak, XP, pets and creds carry across every course.</span></div><button class="cp-x" aria-label="Close">${I("x")}</button></div>
+    <div class="cp-list">${Object.entries(groups).map(([g,cs]) => `<span class="cp-group">${esc(g)}</span>` + cs.map(row).join("")).join("")}</div>
+    <div class="cp-foot">${I("spark")}<span>More subjects are on the way.</span></div>`;
   document.body.appendChild(pop);
-  const r = $("#course-pill").getBoundingClientRect(); pop.style.top = (r.bottom + 6) + "px"; pop.style.left = Math.max(8, Math.min(window.innerWidth - 300, r.left)) + "px";
-  setTimeout(() => document.addEventListener("click", function off(e){ if (!pop.contains(e.target)) { pop.remove(); document.removeEventListener("click", off); } }), 0);
+  if (!mob) { const r = $("#course-pill").getBoundingClientRect(); pop.style.top = (r.bottom + 8) + "px"; pop.style.left = Math.max(8, Math.min(window.innerWidth - 428, r.left)) + "px"; }
+  $(".cp-x", pop).onclick = closeCoursePicker;
+  $("#course-pill").setAttribute("aria-expanded","true");
+  document.addEventListener("keydown", cpEsc);
+  const f = $(".cp-row.cur", pop) || $(".cp-row", pop); if (f) f.focus({preventScroll:true});
 }
-document.addEventListener("click", e => { const b = e.target.closest("[data-course]"); if (!b) return; if (b.dataset.course === CS.COURSE) { const p = $("#course-pop"); if (p) p.remove(); if (current !== "home") CS.go("home"); return; } CS.switchCourse(b.dataset.course); });
+function cpEsc(e){ if (e.key === "Escape") closeCoursePicker(); }
+function closeCoursePicker(){ const p = $("#course-pop"), s = $("#course-scrim"); if (p) p.remove(); if (s) s.remove(); document.removeEventListener("keydown", cpEsc); const b = $("#course-pill"); if (b) b.setAttribute("aria-expanded","false"); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-course]"); if (!b) return; if (b.dataset.course === CS.COURSE) { closeCoursePicker(); if (current !== "home") CS.go("home"); return; } CS.switchCourse(b.dataset.course); });
 
 /* ---------- boot ---------- */
 CS.applyFreezes();
 $("#side-brand").innerHTML = CS.logo("mark") + `<span><b>Credit Sprint</b><small>${esc(CS.C.name)}</small></span>`;
 document.documentElement.setAttribute("data-subject", CS.COURSE);
-/* course tabs: one tap to switch subjects (each keeps its own progress; streak, XP, pets and creds are shared) */
-function renderCourseTabs(){
-  const el = $("#course-tabs"); if (!el) return;
-  el.innerHTML = `<div class="ct-in">${Object.values(window.CS_COURSES).map(c => { const cur = c.k === CS.COURSE, sm = CS.courseSummary(c.k);
-    return `<button class="ct ${cur?"on":""}" data-ctab="${c.k}" aria-current="${cur?"page":"false"}" style="--cc:${c.col}" title="${esc(c.name)}${sm && sm.answered ? ` · ${sm.answered} answered` : ""}">${I(c.icon||"book")}<span>${esc(c.name)}</span></button>`; }).join("")}</div>`;
-  $$("[data-ctab]", el).forEach(b => b.onclick = () => { if (b.dataset.ctab !== CS.COURSE) CS.switchCourse(b.dataset.ctab); });
-}
+function renderCourseTabs(){ const el = $("#course-tabs"); if (el) el.remove(); }
 renderCourseTabs();
 /* course switcher in the top bar */
 $("#course-pill").onclick = e => { e.stopPropagation(); coursePicker(); };
