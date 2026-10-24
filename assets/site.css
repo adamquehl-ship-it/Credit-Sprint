@@ -111,3 +111,5 @@ a.btn{text-decoration:none}
 .ccard-stats b{color:var(--ink)}
 .ccard-go{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--cc);margin-top:auto}
 @media (max-width:620px){ .ccards{grid-template-columns:minmax(0,1fr)} }
+.legal article h2{font-size:1.25rem}
+.legal article p,.legal article li{max-width:72ch}

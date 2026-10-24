@@ -17,6 +17,6 @@ export async function onRequestDelete({request, env}) {
   const s = await start(request, env, {needBody: false}); if (s.error) return s.error;
   const u = await currentUser(env, request); if (!u) return json({error: "Not signed in."}, 401);
   await env.DB.batch(["sessions", "progress", "league_members", "league_tiers"].map(t => env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(u.id))
-    .concat([env.DB.prepare("DELETE FROM users WHERE id = ?").bind(u.id)]));
+    .concat(u.email ? [env.DB.prepare("DELETE FROM email_codes WHERE email = ?").bind(u.email)] : [], [env.DB.prepare("DELETE FROM users WHERE id = ?").bind(u.id)]));
   return json({ok: true}, 200, {"set-cookie": clearCookie(request)});
 }

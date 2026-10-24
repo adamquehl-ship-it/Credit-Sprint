@@ -77,7 +77,7 @@ CS.openAccount = async () => {
     m.innerHTML = closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>
       <div class="seg" role="tablist" style="max-width:420px">${tabs.map(([k,n]) => `<button role="tab" data-tab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>
       <div class="stack" id="acct-body" style="gap:12px"></div>${err?`<div class="feedback bad">${esc(err)}</div>`:""}
-      <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards.</p>`;
+      <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>`;
     wire(); $$("[data-tab]", m).forEach(b => b.onclick = () => { tab = b.dataset.tab; err = ""; draw(); });
     const body = $("#acct-body", m);
     if (tab === "email" && step === "email") {

@@ -53,7 +53,7 @@ ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
 <div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® Macroeconomics and Microeconomics.</span></div>
 <div><b>Study</b><a href="${up}app.html?course=macro">Macroeconomics app</a><a href="${up}app.html?course=micro">Microeconomics app</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
-<div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a></div>
+<div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a></div>
 </div><p class="disc">${DISC} © ${new Date().getFullYear()} Credit Sprint.</p></div></footer>
 </div></body></html>
 `;
@@ -297,6 +297,61 @@ out("practice/index.html", page({depth:1, canon:"/practice/index.html",
 <h1>Practice problems</h1><p class="muted" style="max-width:60ch">Worked calculation problems for every formula on the AP® and CLEP® macro and micro exams.</p>
 <h2>Microeconomics</h2><div class="linkgrid">${mpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Micro Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
 <h2>Macroeconomics</h2><div class="linkgrid">${pLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div></main>`}));
+
+
+/* ---------- legal pages ---------- */
+const EFFECTIVE = "October 23, 2026", CONTACT = "support@creditsprintprep.com";
+const legal = (file, title, desc, intro, sections) => out(file, page({canon:"/"+file, title:`${title} | Credit Sprint`, desc,
+  body:`<main class="wrap doc legal"><article><p class="crumbs"><a href="index.html">Credit Sprint</a> / ${esc(title)}</p>
+<h1>${esc(title)}</h1><p class="muted">Effective ${EFFECTIVE}</p>${intro}
+${sections.map(([h, html]) => `<h2>${esc(h)}</h2>${html}`).join("\n")}
+<h2>Contact us</h2><p>Questions about this page? Email <a href="mailto:${CONTACT}">${CONTACT}</a>.</p></article>
+<aside><div class="panel flat"><span class="eyebrow">Legal</span><a href="privacy.html" style="${file==="privacy.html"?"font-weight:800;color:var(--ink)":""}">Privacy policy</a><a href="terms.html" style="${file==="terms.html"?"font-weight:800;color:var(--ink)":""}">Terms of service</a></div></aside></main>`}));
+const ul = items => `<ul>${items.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+legal("privacy.html", "Privacy Policy", "How Credit Sprint collects, uses and protects information from students who use the site.",
+  `<p style="font-size:1.05rem">Credit Sprint is a study site for AP® and CLEP® economics. We collect only what we need to run it, we don't sell personal information, and we don't show ads. This policy explains what we collect and what you can do about it.</p>`,
+[
+ ["What we collect", `<p><b>If you don't create an account</b>, your study progress (answers, scores, streaks, pets, settings) is saved only in your own browser. We don't receive it.</p>
+  <p><b>If you create an account</b>, we store:</p>${ul([
+   "How you sign in: your email address (email codes), your Google account's email, account ID and first name (Google sign-in), or your username and a scrambled (hashed) version of your password. We never see or store your Google password, and we can't read your Credit Sprint password.",
+   "The name you choose for leaderboards. We show it as your first name and last initial only.",
+   "Your study progress, so it can sync between your devices, and the XP you earn each week for leagues.",
+   "A sign-in cookie that keeps you signed in for up to 60 days."])}
+  <p><b>When you use AI features</b> (the AI tutor or AI free-response scoring), the question and the text you type are sent to our AI provider to generate a response. Don't include personal information in those messages.</p>
+  <p><b>If you buy a paid plan</b>, payment is handled by our payment processor (Stripe). Stripe shares your purchase details with us (such as your email and the plan you bought), never your full card number.</p>
+  <p><b>Basic technical information</b> such as IP address and browser type is processed by our hosting provider to deliver the site and protect it from abuse.</p>`],
+ ["How we use it", ul(["To run your account, sign you in and sync your progress.","To run weekly leagues and leaderboards.","To send sign-in codes and essential account emails. We don't send marketing emails without your permission.","To keep the site secure, prevent cheating and abuse, and fix problems."])],
+ ["What other students can see", `<p>In weekly leagues, other students in your group see your leaderboard name (first name and last initial) and your XP for the week. They can't see your email, username, scores by unit or any other details.</p>`],
+ ["Who we share it with", `<p>We don't sell or rent personal information. We share it only with service providers that help us run Credit Sprint, under their own privacy and security commitments:</p>${ul([
+   "Cloudflare: website hosting and our database.","Resend: delivering sign-in code emails.","Google: Google sign-in, only if you choose it, and Google Fonts, which loads the site's fonts (Google receives your IP address when fonts load).","Anthropic: the AI tutor and AI scoring, only when you use them.","Stripe: payments, only if you buy a plan."])}
+  <p>We may also share information if the law requires it, or to protect the safety of our users or the public.</p>`],
+ ["Students under 13", `<p>Credit Sprint accounts are for people 13 and older, and you must confirm your age to create one. We don't knowingly collect personal information from children under 13. If you believe a child under 13 has created an account, email us and we'll delete it.</p>`],
+ ["Your choices and rights", ul([
+   "<b>Delete your account</b> any time: open the app, click your name in the sidebar, then Delete my account. This removes your account, saved progress and league history from our servers.",
+   "<b>Change your leaderboard name</b> from the same account window.",
+   "<b>Use the site without an account.</b> Everything except syncing and real leagues works without signing in.",
+   "<b>Clear local progress</b> by using Reset all progress in Settings or clearing your browser data.",
+   "Depending on where you live, you may have the right to access, correct or delete your information. Email us and we'll help."])],
+ ["How long we keep it", `<p>We keep account information while your account exists. When you delete your account, we remove it from our database right away. Sign-in codes expire after 10 minutes, and sign-in sessions after 60 days.</p>`],
+ ["Security", `<p>Connections to the site are encrypted (HTTPS), passwords are stored only as salted hashes, sign-in cookies can't be read by scripts on the page, and email codes expire quickly and allow only a few tries. No system is perfectly secure, so please use a password you don't use anywhere else.</p>`],
+ ["Changes to this policy", `<p>If we make important changes, we'll update the date at the top and post a notice on the site.</p>`]
+]);
+legal("terms.html", "Terms of Service", "The rules for using Credit Sprint, the AP and CLEP economics study site.",
+  `<p style="font-size:1.05rem">These terms are an agreement between you and Credit Sprint. By using the site, you agree to them. If you're under 18, please review them with a parent or guardian.</p>`,
+[
+ ["Who can use Credit Sprint", `<p>Anyone can use the site without an account. To create an account you must be at least 13 years old. If you're under 18, you need permission from a parent or guardian.</p>`],
+ ["Your account", ul(["Keep your sign-in details private. You're responsible for activity on your account.","Give accurate information, and choose a leaderboard name that isn't offensive, misleading or someone else's.","You can delete your account at any time from the account window in the app."])],
+ ["Fair play", `<p>Leagues, leaderboards, season passes and rewards are for fun and motivation. Don't use bots, scripts, shared accounts or tricks to inflate your XP or anyone else's. We may reset progress, remove someone from a league or suspend an account that breaks these rules.</p>`],
+ ["Acceptable use", ul(["Don't try to break, overload or get around the security of the site.","Don't copy, resell or republish our questions, guides or other content.","Don't use the AI tutor to generate anything unrelated to studying, or anything harmful."])],
+ ["Our content", `<p>The questions, explanations, guides, games, pets and designs on Credit Sprint are original and belong to Credit Sprint. You may use them for your own personal studying. AP® and CLEP® are trademarks registered by the College Board, which is not affiliated with, and does not endorse, Credit Sprint.</p>`],
+ ["No score guarantees", `<p>Credit Sprint is a study tool. Score estimates are rough guides, not official scores. We can't promise any particular exam score or that a college will award credit; each college sets its own policy. Check your college's AP® and CLEP® credit rules before you test.</p>`],
+ ["AI features", `<p>The AI tutor and AI scoring can make mistakes. Use them as a second opinion, alongside the built-in explanations and official scoring guidelines.</p>`],
+ ["Paid plans", ul(["Some features may require a paid plan. The price, billing period and any guarantee terms are shown before you pay.","Monthly plans renew until you cancel. One-time passes don't renew.","Payments are processed by Stripe. Refunds and the Pass Guarantee follow the terms shown at checkout.","While Credit Sprint is in early access, paid features may be offered free. We'll tell you before anything you use starts to cost money."])],
+ ["Ending your use", `<p>You can stop using Credit Sprint and delete your account at any time. We may suspend or end accounts that break these terms, and we may change or discontinue features as the site grows.</p>`],
+ ["Disclaimers and limits", `<p>Credit Sprint is provided "as is." To the extent the law allows, we aren't liable for indirect or consequential losses, or for exam results, and our total liability is limited to the amount you paid us in the 12 months before the claim. Some places don't allow these limits, so they may not apply to you.</p>`],
+ ["Governing law", `<p>These terms are governed by the laws of the State of Ohio, United States.</p>`],
+ ["Changes to these terms", `<p>We may update these terms. If we make important changes, we'll update the date at the top and post a notice on the site. Continuing to use the site after that means you accept the new terms.</p>`]
+]);
 
 /* ---------- sitemap + robots ---------- */
 const today = new Date().toISOString().slice(0,10);
