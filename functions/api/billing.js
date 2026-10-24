@@ -9,5 +9,5 @@ export async function onRequestPost({request, env}) {
   const c = await env.DB.prepare("SELECT customer_id FROM customers WHERE user_id = ?").bind(u.id).first();
   if (!c) return json({error: "No purchases on this account yet."}, 404);
   try { const p = await stripe(env, "billing_portal/sessions", {customer: c.customer_id, return_url: new URL(request.url).origin + "/app.html#home"}); return json({url: p.url}); }
-  catch (e) { return json({error: "The billing page couldn't open. Try again in a minute."}, 502); }
+  catch (e) { return json({error: "The billing page couldn't open. Try again in a minute."}, 400); }
 }
