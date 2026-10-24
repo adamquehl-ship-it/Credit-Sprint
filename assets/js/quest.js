@@ -45,9 +45,20 @@ CS.seasonClaimable = () => { const si = CS.seasonInfo(), xp = CS.seasonXP(si), c
   return CS.TIERS.reduce((n, t, i) => n + (xp >= t && !c.free.includes(i) ? 1 : 0) + (xp >= t && CS.passOpen() && !c.pass.includes(i) ? 1 : 0), 0); };
 
 /* ---------- the map ---------- */
-const ROAD = "M300 40 C460 70 470 130 330 165 C170 205 130 255 290 285 C450 315 470 360 300 400";
-const POS = [[50,11],[72,27],[42,42],[29,58],[66,72],[48,88]];
-const CHESTS = [[80,13],[22,30],[78,50],[14,76],[84,88]];
+let ROAD = "M300 40 C460 70 470 130 330 165 C170 205 130 255 290 285 C450 315 470 360 300 400";
+let POS = [[50,11],[72,27],[42,42],[29,58],[66,72],[48,88]];
+let CHESTS = [[80,13],[22,30],[78,50],[14,76],[84,88]];
+/* courses with a different number of units get a zig-zag road generated through evenly spaced stops */
+if (CS.UNITS.length !== 6) {
+  const n = CS.UNITS.length, xs = [50,72,46,28,52,74,50,30,54,72];
+  POS = Array.from({length:n}, (_, i) => [xs[i % xs.length], Math.round(9 + i * (82 / (n - 1)))]);
+  const pts = POS.map(([x, y]) => [x * 6, y * 4.6]);
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(0)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(0)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(0)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(0)} ${p2[0]} ${p2[1]}`; }
+  ROAD = d;
+  CHESTS = POS.slice(0, -1).map(([x, y], i) => { const [x2, y2] = POS[i + 1], mx = (x + x2) / 2; return [mx > 50 ? Math.max(8, mx - 34) : Math.min(90, mx + 34), Math.round((y + y2) / 2)]; });
+}
 const seeded = seed => CS.seeded(seed);
 function decor(theme, num){
   const r = seeded("decor"+num), out = [];

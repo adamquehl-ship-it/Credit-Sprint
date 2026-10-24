@@ -49,6 +49,7 @@ CS.chrome = () => {
   $$(".themeseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === s.theme));
   const dte = daysToExam();
   $("#exam-when").innerHTML = `${dte>=0?`<b>${dte}</b> days to go`:"Exam date passed"} · ${new Date(s.plan.date+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"})}${!s.dateSet?` <span class="tag warn">assumed</span>`:""}`;
+  if (CS.afterChrome) CS.afterChrome();
 };
 document.addEventListener("click", e => {
   const g = e.target.closest("[data-go]");
@@ -61,7 +62,7 @@ function openDrawer(){ $("#side").classList.add("open"); $("#scrim").classList.a
 function closeDrawer(){ $("#side").classList.remove("open"); $("#scrim").classList.remove("open"); }
 $("#menu").onclick = openDrawer; $("#scrim").onclick = closeDrawer;
 $("#settings").onclick = () => settings();
-function markTask(k){ const d = CS.today(); const t = S().tasks[d] || (S().tasks[d] = {}); if (!t[k]) { t[k] = true; CS.save(); } }
+function markTask(k){ const d = CS.today(); const t = S().tasks[d] || (S().tasks[d] = {}); if (!t[k]) { t[k] = true; CS.save(); } if (CS.onTask) CS.onTask(k); }
 CS.markTask = markTask;
 function weakestUnit(){ return CS.UNITS.map(u=>({u, m:CS.mastery(u.id)})).sort((a,b)=>(a.m??-1)-(b.m??-1))[0].u; }
 
@@ -198,7 +199,7 @@ render.home = () => {
     <div class="panel flat" style="flex-direction:row;align-items:center;gap:18px;flex-wrap:wrap">
       <span class="g-ico" style="width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:${cert?"var(--mint-soft)":"var(--surface-2)"};color:${cert?"var(--good)":"var(--faint)"}">${I("cap")}</span>
       <div class="stack" style="gap:2px;flex:1;min-width:200px"><h3>Certificate of exam readiness</h3><span class="muted small">${cert?"Unlocked. Download it, share it, put it on a college application.":"Unlocks when you beat all six unit bosses or reach 70% mastery in every unit."}</span></div>
-      <button class="btn ${cert?"":"ghost"}" id="cert-btn" ${cert?"":"disabled"}>${cert?"Get my certificate":`${Object.keys(s.bosses).length}/6 bosses`}</button></div>
+      <button class="btn ${cert?"":"ghost"}" id="cert-btn" ${cert?"":"disabled"}>${cert?"Get my certificate":`${Object.keys(s.bosses).length}/${CS.UNITS.length} bosses`}</button></div>
     <div class="stack"><div class="spread"><h2>Badges</h2><span class="muted small">${nBadges} of ${CS.BADGES.length} unlocked</span></div>
       <div class="badges">${CS.BADGES.map(b=>`<div class="badge ${s.badges[b.k]?"on":""}"><span class="b-ico">${I(b.ic)}</span><span class="stack" style="gap:0"><b class="small">${esc(b.n)}</b><span class="muted tiny">${esc(b.d)}</span></span></div>`).join("")}</div></div>`;
   const cb = $("#cert-btn"); if (cb && cert) cb.onclick = certificate;
@@ -220,15 +221,16 @@ CS.certificate = certificate;
 /* ---------- learn ---------- */
 let learnUnit = 1, labKey = "adas", labShift = {}, stopEx = null, vidSel = null;
 render.learn = (o) => {
+  if (CS.onLearn) CS.onLearn(o || {});
   if (o.unit) learnUnit = o.unit;
   if (o.lab) { learnUnit = "lab"; labKey = o.lab; labShift = {}; }
   if (o.mode === "vid") { learnUnit = "vid"; vidSel = o.game || null; }
   const items = CS.UNITS.map(u=>`<button aria-current="${u.id===learnUnit}" data-u="${u.id}"><span class="num">${u.id}</span>${esc(u.short)}</button>`).join("")
-    + `<button aria-current="${learnUnit==="vid"}" data-u="vid"><span class="num">${I("spark")}</span>Animated explainers</button><button aria-current="${learnUnit==="lab"}" data-u="lab"><span class="num">${I("chart")}</span>Graph Lab</button><button aria-current="${learnUnit==="clep"}" data-u="clep"><span class="num">${I("cap")}</span>CLEP® hub</button><button aria-current="${learnUnit==="res"}" data-u="res"><span class="num">${I("ext")}</span>Official resources</button>`;
+    + `<button aria-current="${learnUnit==="vid"}" data-u="vid"><span class="num">${I("spark")}</span>Animated explainers</button>${CS.hasGraphs()?`<button aria-current="${learnUnit==="lab"}" data-u="lab"><span class="num">${I("chart")}</span>Graph Lab</button>`:""}<button aria-current="${learnUnit==="clep"}" data-u="clep"><span class="num">${I("cap")}</span>CLEP® hub</button><button aria-current="${learnUnit==="res"}" data-u="res"><span class="num">${I("ext")}</span>Official resources</button>`;
   $("#v-learn").innerHTML = `<div class="split"><nav class="sidelist" aria-label="Units">${items}</nav><article class="panel" id="learn-body"></article></div>`;
   $$("#v-learn .sidelist button").forEach(b => b.onclick = () => { const u = b.dataset.u; learnUnit = isNaN(+u) ? u : +u; render.learn({}); });
   if (stopEx) { stopEx(); stopEx = null; }
-  if (learnUnit === "lab") return renderLab();
+  if (learnUnit === "lab") { if (!CS.hasGraphs()) { learnUnit = 1; return render.learn({}); } return renderLab(); }
   if (learnUnit === "vid") return renderVids();
   if (learnUnit === "clep") return renderClep();
   if (learnUnit === "res") return renderRes();
@@ -243,7 +245,7 @@ render.learn = (o) => {
         <div class="stack" style="gap:8px"><h3>Formulas</h3>${u.formulas.map(f=>`<div class="formula">${esc(f)}</div>`).join("")}</div>
         <div class="stack" style="gap:10px"><h3>Exam traps</h3>${u.traps.map(t=>`<div class="trap"><b>Watch for</b>${esc(t)}</div>`).join("")}</div>
       </div>
-      <div class="stack figure">${CS.figure(u.graph)}<span class="eyebrow">Key graph</span>
+      <div class="stack figure">${CS.figure(u.graph)}<span class="eyebrow">${CS.hasGraphs()?"Key graph":"Key diagram"}</span>
         <div class="stack" style="gap:8px"><button class="btn" data-go="practice" data-mode="unit" data-unit="${u.id}">Quiz this unit</button>
           <button class="btn ghost" id="learn-cards">${I("cards")}Unit ${u.id} flashcards</button>
           <button class="btn ghost" data-go="games" data-game="boss" data-unit="${u.id}">${I("sword")}Fight the Unit ${u.id} boss</button>
@@ -278,7 +280,7 @@ function renderLab(){
 function renderVids(){
   const X = window.CS_EXPLAINERS, sel = X.find(x=>x.id===vidSel) || X[0];
   const seen = S().seenEx || (S().seenEx = {});
-  $("#learn-body").innerHTML = `<div><span class="eyebrow">Animated explainers</span><h2>Watch the graphs move</h2></div>
+  $("#learn-body").innerHTML = `<div><span class="eyebrow">Animated explainers</span><h2>${CS.hasGraphs()?"Watch the graphs move":"Watch the diagrams come to life"}</h2></div>
     <div class="guide"><div id="ex-host"></div>
       <div class="stack" style="gap:6px"><span class="eyebrow">${X.length} explainers</span>${X.map(x=>`<button class="task ${seen[x.id]?"done":""}" data-x="${x.id}" style="${x.id===sel.id?"border-color:var(--accent)":""}"><span class="ck">${seen[x.id]?"✓":""}</span><span class="stack" style="gap:0"><b class="small">${esc(x.title)}</b><span class="muted tiny">Unit ${x.u} · ${x.steps.length} steps</span></span></button>`).join("")}</div></div>`;
   $$("#learn-body [data-x]").forEach(b => b.onclick = () => { vidSel = b.dataset.x; if (stopEx) stopEx(); renderVids(); });
@@ -291,7 +293,7 @@ function renderClep(){
     <div class="guide">
       <div class="stack" style="gap:18px">
         <div class="stack" style="gap:8px"><h3>${esc(g.title)}</h3><p>${esc(g.summary)}</p><ul>${g.points.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-          <div><button class="btn" id="clep-growth">Practice growth questions</button></div></div>
+          <div><button class="btn" id="clep-growth">Practice ${esc(g.title.toLowerCase())} questions</button></div></div>
         <h3>Exam-day guide</h3>
         ${C.guide.map(sec=>`<div class="stack" style="gap:6px"><b>${esc(sec.h)}</b><ul>${sec.p.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
         <p class="faint small">Sources: ${C.sources.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a>`).join(" · ")}. Policies change; check the official CLEP® site before you register.</p>
@@ -328,16 +330,17 @@ function weightedMixed(n){
   }
   return out;
 }
-const EXAMS = { ap:{full:{n:60, min:70, name:"Full AP® Section I"}, mini:{n:20, min:23, name:"Mini exam"}}, clep:{full:{n:80, min:90, name:"Full-length CLEP®"}, mini:{n:20, min:23, name:"Mini exam"}} };
+const EXAMS = CS.C.exams || { ap:{full:{n:60, min:70, name:"Full AP® Section I"}, mini:{n:20, min:23, name:"Mini exam"}}, clep:{full:{n:80, min:90, name:"Full-length CLEP®"}, mini:{n:20, min:23, name:"Mini exam"}} };
 const MODES = [
   {k:"unit", ic:"book", e:"By unit", n:"Unit quiz", d:"10 questions with an explanation for every choice."},
   {k:"mixed", ic:"spark", e:"Adaptive", n:"Smart review", d:"15 questions, weighted toward your weakest units."},
   {k:"mistakes", ic:"target", e:"Notebook", n:"Mistakes", d:"Every miss lands here until you get it right twice.", pro:true},
   {k:"exam", ic:"pen", e:"Timed", n:"Practice exam", d:"Full length, real timing, scored like the exam."},
-  {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:"Multipliers, CPI, money creation: fresh numbers every time.", pro:true},
+  {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:CS.C.drillDesc || (CS.COURSE==="micro" ? "Elasticity, costs, profit, surplus: fresh numbers every time." : "Multipliers, CPI, money creation: fresh numbers every time."), pro:true},
   {k:"graphs", ic:"chart", e:"Visual", n:"Graph questions", d:"Read the scenario, pick the curve that shifts."},
   {k:"draw", ic:"pen", e:"Hands-on", n:"Draw the graph", d:"Drag the curves yourself, like the FRQ section asks you to.", pro:true}
 ];
+if (!CS.hasGraphs()) for (let i = MODES.length - 1; i >= 0; i--) if (["graphs","draw"].includes(MODES[i].k)) MODES.splice(i, 1);
 render.practice = (o) => {
   if (o.mode) { pMode = o.mode; run = null; drill = null; drawRun = null; }
   if (o.keepRun) { /* run prepared by caller */ }
@@ -698,12 +701,12 @@ render.plan = () => {
   const has = order.some(x=>x.m!=null);
   $("#plan-note").innerHTML = `<b>${days} days</b> until your ${esc(examName())} exam on ${fmtDate(s.plan.date)}${!s.dateSet?` <span class="tag warn">assumed date: set yours above</span>`:""}. ${has ? "Units are ordered weakest first, based on your answers so far." : "Take the diagnostic so the plan can put your weakest units first."}`;
   // spread units across weeks; long runways get a second pass and spaced review
-  const slots = weeks>1 ? weeks-1 : 1, items = [];
+  const slots = weeks>1 ? weeks-1 : 1, items = [], NU = CS.UNITS.length;
   if (weeks === 1) items.push({final:true, units:order.map(x=>x.u)});
-  else if (slots >= 6) { for (let i=0;i<slots;i++) items.push(i<6 ? {units:[order[i].u]} : {units:[order[(i-6)%6].u], second:true}); }
-  else { const per = Math.ceil(6/slots); for (let i=0;i<slots;i++){ const g = order.slice(i*per, i*per+per).map(x=>x.u); if (g.length) items.push({units:g}); } }
+  else if (slots >= NU) { for (let i=0;i<slots;i++) items.push(i<NU ? {units:[order[i].u]} : {units:[order[(i-NU)%NU].u], second:true}); }
+  else { const per = Math.ceil(NU/slots); for (let i=0;i<slots;i++){ const g = order.slice(i*per, i*per+per).map(x=>x.u); if (g.length) items.push({units:g}); } }
   if (weeks > 1) items.push({final:true, units:[]});
-  const games = CS.COURSE === "micro" ? ["Shift It","Profit Max","Sprint","Nash Hunt","Match-up","Chain Reaction","Number Crunch"] : ["Shift It","Sprint","Match-up","Fed Chair","Chain Reaction","Number Crunch"];
+  const games = CS.C.planGames || (CS.COURSE === "micro" ? ["Shift It","Profit Max","Sprint","Nash Hunt","Match-up","Chain Reaction","Number Crunch"] : ["Shift It","Sprint","Match-up","Fed Chair","Chain Reaction","Number Crunch"]);
   ul.innerHTML = items.map((it,i)=>{
     const start = new Date(today.getTime()+i*7*CS.DAY), end = new Date(Math.min(examD.getTime(), start.getTime()+6*CS.DAY));
     const when = `Week ${i+1}<br>${start.toLocaleDateString(undefined,{month:"short",day:"numeric"})}–${end.toLocaleDateString(undefined,{month:"short",day:"numeric"})}`;
@@ -713,7 +716,7 @@ render.plan = () => {
     const names = it.units.map(u=>`Unit ${u.id}: ${esc(u.name)}`).join(" + ");
     const frq = CS.FRQS.find(f=>f.units.some(x=>it.units.some(u=>u.id===x)));
     return `<li class="${i===0?"now":""}"><div class="when">${when}${i===0?`<br><span class="tag good">This week</span>`:""}</div><div><h3>${it.second?"Second pass · ":""}${names}</h3><ul>
-      <li>Read the guide and redraw the key graph from memory</li>
+      <li>Read the guide and redraw the key ${CS.hasGraphs()?"graph":"diagram"} from memory</li>
       <li>Unit quiz until you score 8/10 or better (now ${it.units.map(u=>CS.pct(CS.mastery(u.id))).join(", ")})</li>
       <li>Beat the Unit ${it.units.map(u=>u.id).join(" and ")} boss</li>
       <li>Daily: the daily challenge plus 10 minutes of flashcards</li><li>Game of the week: ${games[i%games.length]}</li>
@@ -769,6 +772,14 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-cour
 CS.applyFreezes();
 $("#side-brand").innerHTML = CS.logo("mark") + `<span><b>Credit Sprint</b><small>${esc(CS.C.name)}</small></span>`;
 document.documentElement.setAttribute("data-subject", CS.COURSE);
+/* course tabs: one tap to switch subjects (each keeps its own progress; streak, XP, pets and creds are shared) */
+function renderCourseTabs(){
+  const el = $("#course-tabs"); if (!el) return;
+  el.innerHTML = `<div class="ct-in">${Object.values(window.CS_COURSES).map(c => { const cur = c.k === CS.COURSE, sm = CS.courseSummary(c.k);
+    return `<button class="ct ${cur?"on":""}" data-ctab="${c.k}" aria-current="${cur?"page":"false"}" style="--cc:${c.col}" title="${esc(c.name)}${sm && sm.answered ? ` · ${sm.answered} answered` : ""}">${I(c.icon||"book")}<span>${esc(c.name)}</span></button>`; }).join("")}</div>`;
+  $$("[data-ctab]", el).forEach(b => b.onclick = () => { if (b.dataset.ctab !== CS.COURSE) CS.switchCourse(b.dataset.ctab); });
+}
+renderCourseTabs();
 /* course switcher in the top bar */
 $("#course-pill").onclick = e => { e.stopPropagation(); coursePicker(); };
 $("#mob-brand").innerHTML = CS.logo("mob-brand");

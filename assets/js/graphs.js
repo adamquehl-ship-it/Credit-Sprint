@@ -71,7 +71,9 @@ CS.market = (key, shifts={}, opt={}) => {
 
 /* static figures for the guides */
 const range = (a,b,n) => Array.from({length:n+1},(_,i)=>a+(b-a)*i/n);
-CS.figure = key => {
+CS.figure = (key, v) => {
+  const F = window.CS_FIGS && window.CS_FIGS[key]; if (F) return typeof F === "function" ? F(v || 0) : F;
+  if (!key) return "";
   if (CS.MARKETS[key]) return CS.market(key).svg;
   let s = "", title = "";
   if (key === "ppc") {

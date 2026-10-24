@@ -83,13 +83,14 @@ function renderChip(){
   const a = CS.account, top = $("#top-acct"), bar = $("#guest-bar");
   if (bar) { bar.hidden = !(window.CS_STORE.guest && !a);
     bar.innerHTML = `<span>${I("shield")}<b>Guest mode:</b> your progress is erased when you close this tab, and you can't join leagues.</span><button class="btn sm" data-account="signup">Sign up free to save it</button>`; }
-  if (top) top.innerHTML = a ? `<button class="top-acct on" data-account="open" title="Manage account">${avHTML(a)}<span class="hide-sm">Account</span></button>`
+  if (top) top.innerHTML = a ? `<button class="top-acct on" data-account="open" title="Manage account">${avHTML(a)}${CS.friendReqCount && CS.friendReqCount() ? `<span class="req-dot" title="Friend requests">${CS.friendReqCount()}</span>` : ""}<span class="hide-sm">Account</span></button>`
     : `<button class="btn sm top-acct" data-account="signup">Sign up</button>`;
   const el = $("#side-acct"); if (!el) return;
   el.innerHTML = a ? `<button class="acct-chip on" data-account="open">${avHTML(a)}<span class="stack" style="gap:0;min-width:0"><b class="small">${esc(a.name || "Add your name")}</b><span class="tiny muted">${esc(status || "Signed in")}</span></span></button>`
     : `<button class="acct-chip" data-account="open"><span class="acct-av">${I("shield")}</span><span class="stack" style="gap:0;min-width:0"><b class="small">Sign in</b><span class="tiny muted">Save progress and join leagues</span></span></button>`;
 }
 CS.renderAccountChip = renderChip;
+CS.syncNow = async () => { if (!CS.account) return; clearTimeout(syncT); try { await push(); } catch(e) {} };
 
 /* ---------- sign-in modal ---------- */
 function modal(){ const w = document.createElement("div"); w.className = "modal-wrap"; w.innerHTML = `<div class="modal acct-modal" role="dialog" aria-modal="true" aria-label="Account"></div>`;
@@ -168,6 +169,9 @@ function accountView(focusCode){
         <span class="small muted">Shows next to your name on leaderboards. Keep it school-appropriate: no other people, no personal info. Every picture is checked automatically before it appears, and reported pictures are removed.</span>
         <div class="row-wrap"><label class="btn sm" for="ac-file" style="cursor:pointer">${a.avatar ? "Change picture" : "Upload a picture"}</label><input type="file" id="ac-file" accept="image/jpeg,image/png,image/webp" hidden>
         ${a.avatar ? `<button class="btn ghost sm" id="ac-rmpic">Remove picture</button>` : ""}<span class="small" id="ac-picmsg"></span></div></div>`}
+      <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Friends</span>
+        <span class="small muted">${a.username ? `Your username is <b>@${esc(a.username)}</b>. Friends add you with it.` : "Choose a username so friends can find you."}</span>
+        <div class="row-wrap">${a.username ? `<button class="btn sm" data-friends="friends">${I("heart")}My friends${CS.friends ? ` · ${CS.friendNames().length}` : ""}</button><button class="btn ghost sm" data-friends="requests">Requests${CS.friendReqCount && CS.friendReqCount() ? ` · ${CS.friendReqCount()}` : ""}</button><button class="btn ghost sm" data-friends="find">Find friends</button>` : `<button class="btn sm" id="ac-un">Choose a username</button>`}</div></div>
       <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Your plan</span>
         ${(a.access||[]).length ? (a.access||[]).map(p => `<span class="small"><b>${esc(CS.planName(p))}</b> · ${p.course === "all" ? "every class" : esc((window.CS_COURSES[p.course]||{}).name || p.course)} · ${p.sub ? "renews monthly" : "until " + new Date(p.until).toLocaleDateString()}</span>`).join("") : `<span class="small muted">Free plan. Unlock every feature with an Exam Pass or a monthly plan.</span>`}
         <div class="row-wrap">${a.billing ? `<button class="btn ghost sm" data-billing>Manage billing and subscriptions</button>` : ""}<button class="btn sm" data-up="open">${(a.access||[]).length ? "Add a class" : "See plans"}</button></div>
@@ -177,6 +181,8 @@ function accountView(focusCode){
         <div><button class="btn ghost sm" id="ac-del" style="${confirmDel?"border-color:var(--bad);color:var(--bad)":""}">${confirmDel?"Tap again to delete for good":"Delete my account"}</button></div></div>`;
     $$("[data-x]", m).forEach(b => b.onclick = () => w.remove());
     $("#ac-name", m).onclick = () => { w.remove(); askName(); };
+    const unb = $("#ac-un", m); if (unb) unb.onclick = () => { w.remove(); CS.askUsername(); };
+    $$("[data-friends]", m).forEach(b => b.addEventListener("click", () => w.remove()));
     $("#ac-codeform", m).onsubmit = async e => { e.preventDefault(); const msg = $("#ac-codemsg", m), c = $("#ac-code", m).value.trim(); if (!c) return; msg.textContent = "Checking…";
       try { await CS.redeemCode(c); w.remove(); CS.toast("Code accepted. Pro is unlocked on your account."); } catch(err) { msg.textContent = err.message; } };
     if (focusCode) { const ci = $("#ac-code", m); if (ci) ci.focus(); }

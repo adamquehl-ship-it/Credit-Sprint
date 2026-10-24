@@ -94,10 +94,43 @@ const MICRO = [
  {id:"kitsune", n:"Commons Kitsune", u:6, r:"mythical", p:0.35, c1:"#FFF7ED", c2:"#F472B6", custom:"kitsune", bio:"Guards the shared forest with nine glowing tails. Overgraze it and the lights go out."},
  {id:"seraph", n:"Pareto Seraph", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#F0ABFC", custom:"seraph", bio:"Where it flies, no one can be made better off without making someone worse off. Roughly 1 in 2,000 eggs."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}};
+
+/* ---------- Biology pet set (same odds per rarity) ---------- */
+const BIO = [
+ {id:"hbhamster", n:"Hydrogen Bond Hamster", u:1, r:"common", p:6.5, c1:"#E6A15C", c2:"#FDE8CF", ears:"round", extra:["whiskers"], bio:"Sticks to every other hamster in the burrow. Cohesion, but fluffier."},
+ {id:"polarbear", n:"Polarity Polar Bear", u:1, r:"common", p:6, c1:"#F1F5F9", c2:"#FFFFFF", ears:"round", extra:["fluff","bignose"], bio:"Slightly negative on one end, slightly positive on the other. Dissolves every awkward silence."},
+ {id:"mitomouse", n:"Mitochondria Mouse", u:3, r:"common", p:6.5, c1:"#F97316", c2:"#FFEDD5", ears:"round", extra:["whiskers","sparkle"], bio:"The powerhouse of the burrow. Turns every crumb into ATP."},
+ {id:"osmofrog", n:"Osmosis Frog", u:2, r:"common", p:6, c1:"#22C55E", c2:"#DCFCE7", ears:"none", extra:["bigeyes","wave"], bio:"Puffs up in fresh water and shrivels in salt water. Always heading toward lower water potential."},
+ {id:"riborabbit", n:"Ribosome Rabbit", u:6, r:"common", p:6, c1:"#C4B5FD", c2:"#F5F3FF", ears:"long", extra:["whiskers"], bio:"Reads three letters at a time and hops off with a brand-new protein."},
+ {id:"chlorocham", n:"Chlorophyll Chameleon", u:3, r:"common", p:6, c1:"#16A34A", c2:"#BBF7D0", ears:"none", extra:["curltail","bigeyes"], bio:"Green because it reflects green light. Absorbs red and blue for lunch."},
+ {id:"gametefish", n:"Gamete Goldfish", u:5, r:"common", p:6, c1:"#F59E0B", c2:"#FEF3C7", ears:"none", extra:["fins","bigeyes"], bio:"Carries exactly half the usual chromosomes, and it's very proud of being haploid."},
+ {id:"chainfox", n:"Food Chain Fox", u:8, r:"common", p:6, c1:"#EA580C", c2:"#FFEDD5", ears:"pointy", extra:["foxtail"], bio:"A secondary consumer that keeps only about 10% of the energy it eats. Always hungry."},
+ {id:"enzbeaver", n:"Enzyme Beaver", u:3, r:"uncommon", p:4, c1:"#92400E", c2:"#FDE68A", ears:"small", extra:["teeth"], bio:"Lowers the activation energy of every dam project. Never gets used up."},
+ {id:"membjelly", n:"Membrane Jellyfish", u:2, r:"uncommon", p:4, c1:"#F0ABFC", c2:"#FDF4FF", ears:"none", extra:["tentacles","translucent"], bio:"Selectively permeable: lets oxygen through, keeps ions out unless they knock on a channel."},
+ {id:"checkchip", n:"Checkpoint Chipmunk", u:4, r:"uncommon", p:4, c1:"#B45309", c2:"#FEF3C7", ears:"round", extra:["bushytail","sign"], sign:"G1 ✓", bio:"Guards the G1 checkpoint. No damaged DNA gets past this chipmunk."},
+ {id:"punnettpanda", n:"Punnett Panda", u:5, r:"uncommon", p:4, c1:"#FFFFFF", c2:"#F8FAFC", ears:"black", extra:["patches"], bio:"Black and white, never gray. A walking example of codominance."},
+ {id:"codoncorgi", n:"Codon Corgi", u:6, r:"uncommon", p:3.5, c1:"#F59E0B", c2:"#FFFBEB", ears:"pointy", extra:["tie"], bio:"Fetches one amino acid for every three-letter codon. Stops at UAA, UAG and UGA."},
+ {id:"nichenewt", n:"Niche Newt", u:8, r:"uncommon", p:4, c1:"#F97316", c2:"#FED7AA", ears:"none", extra:["curltail","bigeyes"], bio:"Found its perfect niche under one particular log. Shares it with nobody."},
+ {id:"driftdolphin", n:"Drift Dolphin", u:7, r:"uncommon", p:4, c1:"#60A5FA", c2:"#DBEAFE", ears:"none", extra:["fins","wave"], bio:"Its pod's allele frequencies change by pure chance. Small populations drift the most."},
+ {id:"krebscrab", n:"Krebs Cycle Crab", u:3, r:"rare", p:3, c1:"#DC2626", c2:"#FECACA", ears:"none", extra:["claws","stalkeyes"], bio:"Walks in circles all day, releasing CO₂ and loading NADH."},
+ {id:"helixhorse", n:"Double Helix Seahorse", u:6, r:"rare", p:3, c1:"#8B5CF6", c2:"#EDE9FE", ears:"none", extra:["curltail","fins"], bio:"Its tail twists into a perfect antiparallel helix. A pairs with T, always."},
+ {id:"signalfly", n:"Signal Firefly", u:4, r:"rare", p:3, c1:"#FACC15", c2:"#FEF9C3", ears:"none", extra:["wings","biolum"], bio:"Flashes a signal, and the message is amplified through every firefly in the meadow."},
+ {id:"homeoowl", n:"Homeostasis Owl", u:4, r:"rare", p:2.5, c1:"#78716C", c2:"#F5F5F4", ears:"tufts", extra:["beak","bigeyes"], bio:"Wise enough to keep everything at its set point. Negative feedback is its favorite."},
+ {id:"keywolf", n:"Keystone Wolf", u:8, r:"rare", p:2.5, c1:"#64748B", c2:"#E2E8F0", ears:"pointy", extra:["teeth"], bio:"Few in number, huge in impact. Remove it and the whole valley changes."},
+ {id:"selecttiger", n:"Selection Tiger", u:7, r:"epic", p:2, c1:"#F97316", c2:"#FFF7ED", ears:"round", extra:["whiskers","patches"], bio:"Its stripes were shaped by millions of years of natural selection. Fitness = offspring."},
+ {id:"plasmidpeacock", n:"Recombinant Peacock", u:6, r:"epic", p:2, c1:"#0EA5E9", c2:"#BAE6FD", ears:"crest", extra:["beak","sparkle"], bio:"Picked up a glowing gene from a plasmid. Biotechnology's showiest success."},
+ {id:"photostag", n:"Photosynthesis Stag", u:3, r:"epic", p:2, c1:"#65A30D", c2:"#ECFCCB", ears:"pointy", extra:["antlers","sprout"], bio:"Its antlers sprout leaves that turn sunlight into sugar. Lives on light and CO₂."},
+ {id:"lifephoenix", n:"Phoenix of Life", u:7, r:"legendary", p:1.1, c1:"#EF4444", c2:"#FDE68A", ears:"crest", extra:["beak","wings","flametips","sparkle"], bio:"Rises again after every mass extinction, leading an adaptive radiation."},
+ {id:"fossiltitan", n:"Fossil Record Titan", u:7, r:"legendary", p:0.9, c1:"#A8A29E", c2:"#E7E5E4", ears:"elephant", extra:["trunk","tusks","crown"], bio:"Every layer of rock tells its family history. Living proof of descent with modification."},
+ {id:"biohydra", n:"Regenerating Hydra", u:4, r:"mythical", p:0.6, c1:"#0D9488", c2:"#99F6E4", custom:"hydra", marks:["2n","2n","2n"], bio:"Cut off a head and the stem cells grow two more. Mitosis on overdrive."},
+ {id:"cambrian", n:"Cambrian Leviathan", u:7, r:"mythical", p:0.5, c1:"#7C3AED", c2:"#C4B5FD", custom:"leviathan", mark:"DNA", bio:"Burst out of the Cambrian explosion and never stopped diversifying."},
+ {id:"symbioswan", n:"Symbiosis Swan", u:8, r:"mythical", p:0.35, c1:"#F0FDF4", c2:"#86EFAC", custom:"swan", bio:"Glides in perfect mutualism with everything in the lake. Both sides always win."},
+ {id:"luca", n:"LUCA, the First Ancestor", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#10B981", custom:"celestial", runes:["A","T","G","C","U","∞","Δ","☼"], bio:"The last universal common ancestor of every living thing. Roughly 1 in 2,000 eggs."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -122,18 +155,26 @@ CS.addXP = n => baseAdd(n > 0 ? Math.round(n * (1 + CS.petBoost())) : n);
 
 /* egg + hatch progress on every correct answer */
 const baseRecord = CS.record;
-const EGG_EVERY = 25;
-CS.EGG_EVERY = EGG_EVERY;
+/* eggs come fast at first (every 5 questions) and slow down to every 25 as the collection grows */
+const eggsSoFar = () => { const P = st(); return (P.hatched || 0) + (P.eggs || []).length + ((P.pending || []).length); };
+CS.eggEvery = () => Math.min(25, 5 + 2 * eggsSoFar());
+/* first eggs also hatch faster: 5 correct answers, rising to 15 */
+CS.eggNeed = () => Math.min(EGG_NEED, 5 + 2 * eggsSoFar());
+Object.defineProperty(CS, "EGG_EVERY", {get: () => CS.eggEvery(), configurable: true});
 CS.record = (q, ok, xp=true) => {
   baseRecord(q, ok, xp);
   const P = st();
   /* every answered question (right or wrong) counts toward the next egg */
   P.ans = (P.ans||0) + 1;
+  P.eggAns = (P.eggAns||0) + 1;
   let newEgg = null;
-  if (P.ans % EGG_EVERY === 0) {
-    newEgg = {id:"e"+Date.now()+(uid++), r:"mystery", prog:0, need:EGG_NEED, at:CS.today()};
+  const every = CS.eggEvery();
+  if (P.eggAns >= every) {
+    P.eggAns = 0;
+    const need = CS.eggNeed();
+    newEgg = {id:"e"+Date.now()+(uid++), r:"mystery", prog:0, need, at:CS.today()};
     P.eggs.push(newEgg);
-    CS.toast(`${EGG_EVERY} questions answered: you earned a mystery egg! It hatches after ${EGG_NEED} correct answers.`);
+    CS.toast(`${every} questions answered: you earned a mystery egg! It hatches after ${need} correct answers.`);
   }
   if (!ok) { CS.save(); if (newEgg) CS.petReact("egg", newEgg); else CS.petReact("oops"); return; }
   /* only correct answers grow your pet and hatch eggs */
@@ -142,7 +183,7 @@ CS.record = (q, ok, xp=true) => {
   if (egg && egg !== newEgg) { egg.prog++; if (egg.prog >= egg.need) { P.eggs.shift(); (P.pending = P.pending || []).push(egg); CS.save(); setTimeout(CS.petFlush, 500); return; } }
   CS.save(); if (newEgg) CS.petReact("egg", newEgg); else CS.petReact("yay", egg);
 };
-CS.nextEggIn = () => EGG_EVERY - ((st().ans||0) % EGG_EVERY);
+CS.nextEggIn = () => Math.max(1, CS.eggEvery() - (st().eggAns||0));
 
 
 /* ---------- SVG designs ---------- */
@@ -170,7 +211,7 @@ CS.eggSVG = (r, prog=0, need=1, size=80) => {
 let gid = 0;
 const FX_RAR = {rare:1, epic:2, legendary:3, mythical:4, supreme:5};
 function sparkle(x, y, s, col, dur, delay){ return `<path d="M${x} ${y-s} L${x+s*.3} ${y-s*.3} L${x+s} ${y} L${x+s*.3} ${y+s*.3} L${x} ${y+s} L${x-s*.3} ${y+s*.3} L${x-s} ${y} L${x-s*.3} ${y-s*.3}Z" fill="${col}"><animate attributeName="opacity" values="0;1;0" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/></path>`; }
-function fxLayers(r, id, still){
+function fxLayers(r, id, still, p = {}){
   const lv = FX_RAR[r] || 0; if (!lv) return {defs:"", back:"", front:""};
   const A = (x) => still ? "" : x; let defs = "", back = "", front = "";
   if (r === "rare") {
@@ -193,7 +234,7 @@ function fxLayers(r, id, still){
   if (r === "mythical") {
     defs = `<radialGradient id="${id}g"><stop offset="0" stop-color="#F9A8D4" stop-opacity=".9"/><stop offset=".45" stop-color="#A78BFA" stop-opacity=".45"/><stop offset=".8" stop-color="#22D3EE" stop-opacity=".15"/><stop offset="1" stop-color="#22D3EE" stop-opacity="0"/></radialGradient>
       <linearGradient id="${id}r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F472B6"/><stop offset=".5" stop-color="#A78BFA"/><stop offset="1" stop-color="#22D3EE"/></linearGradient>`;
-    const runes = ["∑","Δ","π","∞","%","$","Δ","∑"].map((t,i)=>{ const a = i*45*Math.PI/180; return `<text x="${(60+52*Math.cos(a)).toFixed(1)}" y="${(70+52*Math.sin(a)).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="#F5D0FE" font-family="Manrope, sans-serif">${t}</text>`; }).join("");
+    const runes = (p.runes||["∑","Δ","π","∞","%","$","Δ","∑"]).map((t,i)=>{ const a = i*45*Math.PI/180; return `<text x="${(60+52*Math.cos(a)).toFixed(1)}" y="${(70+52*Math.sin(a)).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="#F5D0FE" font-family="Manrope, sans-serif">${t}</text>`; }).join("");
     back = `<circle cx="60" cy="66" r="60" fill="url(#${id}g)"/><g>${A(`<animateTransform attributeName="transform" type="rotate" from="0 60 66" to="-360 60 66" dur="30s" repeatCount="indefinite"/>`)}<circle cx="60" cy="66" r="52" fill="none" stroke="url(#${id}r)" stroke-width="2" opacity=".85"/><circle cx="60" cy="66" r="45" fill="none" stroke="url(#${id}r)" stroke-width="1" stroke-dasharray="2 4" opacity=".7"/>${runes}</g>`;
     front = sparkle(14,22,6,"#F472B6",1.6,0) + sparkle(106,20,5,"#22D3EE",2,.4) + sparkle(110,96,6,"#A78BFA",1.8,.9) + sparkle(10,96,5,"#F472B6",2.2,1.3) + sparkle(60,4,4,"#FDF4FF",1.7,.6);
   }
@@ -207,7 +248,7 @@ function fxLayers(r, id, still){
   return {defs, back, front};
 }
 function wrapPet(p, size, inner, sc, still){
-  const id = "pg" + (++gid), fx = fxLayers(p.r, id, still);
+  const id = "pg" + (++gid), fx = fxLayers(p.r, id, still, p);
   const shadow = `<ellipse cx="60" cy="112" rx="30" ry="5" fill="#000" opacity=".1"/>`;
   return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" role="img" aria-label="${esc(p.n)}" style="overflow:visible"><defs>${fx.defs}</defs>${fx.back}${shadow}<g transform="translate(60 110) scale(${sc}) translate(-60 -110)">${inner}</g>${fx.front}</svg>`;
 }
@@ -303,7 +344,7 @@ CS.petSVG = (pid, opt={}) => {
   if (X.has("horn")) front += `<path d="M55 38 L60 6 L65 38Z" fill="#FDE68A" stroke="#F59E0B" stroke-width="1.5"/><path d="M57 30 L63 27 M58 22 L62 20 M59 14 L61 13" stroke="#F59E0B" stroke-width="1.5"/>`;
   if (X.has("smoke")) front += `<circle cx="92" cy="22" r="8" fill="#9CA3AF" opacity=".7"/><circle cx="102" cy="14" r="6" fill="#9CA3AF" opacity=".55"/><circle cx="84" cy="14" r="5" fill="#9CA3AF" opacity=".5"/><circle cx="108" cy="4" r="4" fill="#9CA3AF" opacity=".4"/>`;
   if (X.has("tusks")) front += `<path d="M50 74 C48 90 54 98 60 100 C56 94 54 86 56 76Z M70 74 C72 90 66 98 60 100 C64 94 66 86 64 76Z" fill="#FFFBEB" stroke="#D6D3D1" stroke-width="1.2"/>`;
-  if (X.has("sign")) front += `<path d="M98 112 L98 70" stroke="#92400E" stroke-width="3"/><rect x="82" y="56" width="34" height="18" rx="2" fill="#fff" stroke="#DC2626" stroke-width="2"/><text x="99" y="68" text-anchor="middle" font-size="7.5" font-weight="800" fill="#DC2626" font-family="Manrope, sans-serif">FAIR PAY</text>`;
+  if (X.has("sign")) front += `<path d="M98 112 L98 70" stroke="#92400E" stroke-width="3"/><rect x="82" y="56" width="34" height="18" rx="2" fill="#fff" stroke="#DC2626" stroke-width="2"/><text x="99" y="68" text-anchor="middle" font-size="7.5" font-weight="800" fill="#DC2626" font-family="Manrope, sans-serif">${p.sign||"FAIR PAY"}</text>`;
   if (X.has("crown")) front += CROWN(X.has("mane") ? 28 : 30);
   if (X.has("goldegg")) front += `<ellipse cx="90" cy="96" rx="10" ry="12" fill="#FBBF24" stroke="#B45309" stroke-width="2"/><ellipse cx="86" cy="91" rx="3" ry="5" fill="#FEF3C7" opacity=".8"/><text x="90" y="101" text-anchor="middle" font-size="9" font-weight="800" fill="#92400E" font-family="Manrope, sans-serif">CS</text>`;
   // adult flair
@@ -330,7 +371,7 @@ const CUSTOM = {
       <ellipse cx="${x}" cy="${y}" rx="${r*1.15}" ry="${r}" fill="${p.c1}" stroke="#7F1D1D" stroke-width="1.5"/>
       <ellipse cx="${x+r*.55}" cy="${y+r*.35}" rx="${r*.55}" ry="${r*.4}" fill="#F87171"/><circle cx="${x+r*.75}" cy="${y+r*.3}" r="${r*.09}" fill="#7F1D1D"/>
       ${EYE(x-r*.2, y-r*.25, r*.28, "#FDE047")}<circle cx="${x-r*.2}" cy="${y-r*.25}" r="${r*.12}" fill="#111"/>
-      <text x="${x-r*.25}" y="${y+r*.75}" text-anchor="middle" font-size="${r*.55}" font-weight="800" fill="#FDE68A" font-family="Manrope, sans-serif">${["%","%%","%%%"][i]}</text>`;
+      <text x="${x-r*.25}" y="${y+r*.75}" text-anchor="middle" font-size="${r*.55}" font-weight="800" fill="#FDE68A" font-family="Manrope, sans-serif">${(p.marks||["%","%%","%%%"])[i]}</text>`;
     return `<path d="M44 92 C30 70 22 60 30 46" stroke="${p.c1}" stroke-width="11" fill="none" stroke-linecap="round"/>
       <path d="M60 86 C60 66 56 52 60 34" stroke="${p.c1}" stroke-width="13" fill="none" stroke-linecap="round"/>
       <path d="M76 90 C94 74 98 62 92 44" stroke="${p.c1}" stroke-width="15" fill="none" stroke-linecap="round"/>
@@ -403,7 +444,7 @@ const CUSTOM = {
       <path d="M18 100 C18 76 42 72 46 88 C50 104 74 106 78 86 C82 66 66 56 72 40" stroke="#A5F3FC" stroke-width="3" fill="none" stroke-dasharray="2 7" stroke-linecap="round" opacity=".9"/>
       ${[[32,76],[46,96],[66,100],[80,74]].map(([x,y])=>`<path d="M${x} ${y-8} l5 -9 l4 9z" fill="#F0ABFC"/>`).join("")}
       <path d="M96 92 L112 66 L120 92Z" fill="#F472B6" opacity=".25" stroke="#F472B6" stroke-width="2"><animate attributeName="opacity" values=".15;.45;.15" dur="2.6s" repeatCount="indefinite"/></path>
-      <text x="111" y="88" text-anchor="middle" font-size="7" font-weight="800" fill="#BE185D" font-family="Manrope, sans-serif">DWL</text>
+      <text x="111" y="88" text-anchor="middle" font-size="7" font-weight="800" fill="#BE185D" font-family="Manrope, sans-serif">${p.mark||"DWL"}</text>
       <path d="M58 28 C60 14 84 12 90 26 C94 36 86 46 72 46 C62 46 56 38 58 28Z" fill="${p.c1}" stroke="#164E63" stroke-width="2"/>
       <path d="M62 20 L56 8 L68 16Z M80 16 L88 4 L88 20Z" fill="#F0ABFC" stroke="#A21CAF" stroke-width="1"/>
       <path d="M90 30 C98 30 100 36 94 38" fill="#67E8F9"/>
@@ -494,7 +535,7 @@ CS.render.pets = () => {
   const mood = CS.petMood(), moodTxt = {happy:"is happy you're studying today.", sleepy:"is sleepy. Answer a question to wake it up.", sad:"is worried about your streak!"}[mood];
   const SETP = CS.PET_SETS[petSet].pets;
   const list = SETP.filter(p => petFilter==="all" || p.r===petFilter).sort((a,b)=>ORDER.indexOf(a.r)-ORDER.indexOf(b.r));
-  v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(CS.C.name)} eggs hatch ${esc(CS.C.name)} pets</span><h1>Pets</h1><p class="muted">Earn a mystery egg for every ${EGG_EVERY} questions you answer, then hatch it with ${EGG_NEED} correct answers. Every egg has the same odds of every pet. ${ownedN}/${MACRO.length} discovered.</p></div></div>
+  v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(CS.C.name)} eggs hatch ${esc(CS.C.name)} pets</span><h1>Pets</h1><p class="muted">Earn a mystery egg for every ${CS.eggEvery()} questions you answer, then hatch it with ${CS.eggNeed()} correct answers. Every egg has the same odds of every pet. ${ownedN}/${MACRO.length} discovered.</p></div></div>
     <div class="pet-top">
       <div class="panel pet-active">
         ${A ? `<span class="eyebrow" style="color:${CS.RARITY[A.r].col}">Active pet · ${CS.RARITY[A.r].n}</span>
@@ -510,15 +551,15 @@ CS.render.pets = () => {
           <div class="stack" style="gap:6px;flex:1;min-width:160px"><h3 style="color:${CS.RARITY[egg.r].col}">${egg.minR?CS.RARITY[egg.minR].n+"+ mystery":"Mystery"} egg</h3><span class="muted small">${egg.need-egg.prog} more correct answer${egg.need-egg.prog===1?"":"s"} to hatch</span>
           <div class="meter" style="height:10px"><i style="width:${egg.prog/egg.need*100}%;background:${CS.RARITY[egg.r].col}"></i></div><span class="tiny faint">${egg.prog}/${egg.need}</span></div></div>
           <div class="row-wrap"><button class="btn" data-go="practice" data-mode="mixed">Answer questions</button><button class="btn ghost" data-go="games" data-game="sprint">Sprint to hatch</button></div>`
-        : `<div class="row-wrap" style="gap:18px;align-items:center"><div style="opacity:.4">${CS.eggSVG("mystery",0,1,96)}</div><div class="stack" style="gap:6px;flex:1;min-width:160px"><h3>Next egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</h3><span class="muted small">Every ${EGG_EVERY} questions you answer, right or wrong, earns a mystery egg.</span>
-          <div class="meter" style="height:10px"><i style="width:${(EGG_EVERY-CS.nextEggIn())/EGG_EVERY*100}%"></i></div></div></div>
+        : `<div class="row-wrap" style="gap:18px;align-items:center"><div style="opacity:.4">${CS.eggSVG("mystery",0,1,96)}</div><div class="stack" style="gap:6px;flex:1;min-width:160px"><h3>Next egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</h3><span class="muted small">Every ${CS.eggEvery()} questions you answer, right or wrong, earns a mystery egg.</span>
+          <div class="meter" style="height:10px"><i style="width:${(CS.eggEvery()-CS.nextEggIn())/CS.eggEvery()*100}%"></i></div></div></div>
           <div><button class="btn" data-go="practice" data-mode="mixed">Answer questions</button></div>`}
-        <span class="tiny muted">Next egg: ${EGG_EVERY-CS.nextEggIn()}/${EGG_EVERY} questions answered</span>
+        <span class="tiny muted">Next egg: ${CS.eggEvery()-CS.nextEggIn()}/${CS.eggEvery()} questions answered</span>
         ${P.eggs.length>1?`<span class="eyebrow">Waiting in the nest</span><div class="row-wrap">${P.eggs.slice(1).map(e=>`<span title="${CS.RARITY[e.r].n} egg · ${e.need} answers">${CS.eggSVG(e.r,0,1,40)}</span>`).join("")}</div>`:""}
         <div class="stack" style="gap:6px"><span class="eyebrow">What's inside every egg</span><div class="odds">${ORDER.map(k=>`<div><i style="background:${CS.RARITY[k].col}"></i><b>${CS.RARITY[k].n}</b><span>${CS.RARITY[k].p}% · +${Math.round(CS.RARITY[k].boost*100)}% XP</span></div>`).join("")}</div></div>
       </div>
     </div>
-    <div class="spread"><div class="row-wrap" style="gap:10px"><h2>Collection</h2><div class="seg" role="group" aria-label="Pet set" style="width:auto">${Object.entries(CS.PET_SETS).map(([k,v])=>`<button data-ps="${k}" aria-pressed="${petSet===k}">${esc(v.name.replace("economics",""))} · ${v.pets.filter(p=>P.owned[p.id]).length}/${v.pets.length}</button>`).join("")}</div></div><div class="chips">${["all",...ORDER].map(k=>`<button class="chip" aria-pressed="${petFilter===k}" data-pf="${k}">${k==="all"?"All":CS.RARITY[k].n}</button>`).join("")}</div></div>
+    <div class="spread"><div class="row-wrap" style="gap:10px"><h2>Collection</h2><div class="seg" role="group" aria-label="Pet set" style="width:auto;display:inline-flex">${Object.entries(CS.PET_SETS).map(([k,v])=>`<button data-ps="${k}" aria-pressed="${petSet===k}">${esc(v.name.replace("economics",""))} · ${v.pets.filter(p=>P.owned[p.id]).length}/${v.pets.length}</button>`).join("")}</div></div><div class="chips">${["all",...ORDER].map(k=>`<button class="chip" aria-pressed="${petFilter===k}" data-pf="${k}">${k==="all"?"All":CS.RARITY[k].n}</button>`).join("")}</div></div>
     <div class="pet-grid">${list.map(p=>{ const o = P.owned[p.id], R = CS.RARITY[p.r];
       return `<button class="pet-card ${o?"own":""} ${P.active===p.id?"act":""}" data-pid="${p.id}" style="--col:${R.col};--glow:${R.glow}" ${o?"":"aria-disabled=\"true\""}>
         <span class="rar ${p.r==="supreme"?"sup":""}" style="color:${R.col}">${R.n}</span>${CS.petSVG(p.id, {size:92, locked:!o, stage:o?CS.petStage(p.id):1})}
@@ -546,7 +587,7 @@ CS.petCard = () => {
     <div class="pet-stage-sm ${mood}">${A ? CS.petSVG(A.id, {size:76, mood}) : CS.eggSVG("mystery", egg?egg.prog:0, egg?egg.need:1, 60)}</div>
     <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="eyebrow">${A?esc(A.n):"Your pet"}</span>
       ${egg ? `<b>${egg.minR?CS.RARITY[egg.minR].n+"+ mystery":"Mystery"} egg: ${egg.need-egg.prog} correct answer${egg.need-egg.prog===1?"":"s"} to hatch</b><div class="meter thin"><i style="width:${egg.prog/egg.need*100}%;background:${CS.RARITY[egg.r].col}"></i></div>`
-        : `<b>Next mystery egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</b><div class="meter thin"><i style="width:${(EGG_EVERY-CS.nextEggIn())/EGG_EVERY*100}%"></i></div>`}
+        : `<b>Next mystery egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</b><div class="meter thin"><i style="width:${(CS.eggEvery()-CS.nextEggIn())/CS.eggEvery()*100}%"></i></div>`}
       <span class="muted tiny">${A?`Lv ${CS.petLevel(A.id)} ${STAGE[CS.petStage(A.id)]} · +${Math.round(CS.RARITY[A.r].boost*100)}% XP`:`${SET.filter(p=>P.owned[p.id]).length}/${SET.length} pets discovered`}</span></div></div>`;
 };
 })();

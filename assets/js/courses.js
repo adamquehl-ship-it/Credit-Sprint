@@ -4,15 +4,25 @@
 "use strict";
 const MACRO = ["questions.js","questions2.js","fifth.js","content.js","content2.js","drills.js","content3.js"].map(f => "assets/data/"+f);
 const MICRO = ["questions.js","questions2.js","content.js","content2.js","drills.js"].map(f => "assets/data/micro/"+f);
+const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","content.js","content2.js","drills.js"].map(f => "assets/data/bio/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO},
   micro:{k:"micro", name:"Microeconomics", short:"Micro", ap:"AP® Microeconomics", clep:"CLEP® Principles of Microeconomics", clepShort:"CLEP® Principles of Micro",
-    key:"creditsprint.micro.v1", col:"#059669", soft:"#ECFDF5", blurb:"Supply and demand, costs, perfect competition, monopoly, labor markets, market failure.", icon:"chart", data:MICRO}
+    key:"creditsprint.micro.v1", col:"#059669", soft:"#ECFDF5", blurb:"Supply and demand, costs, perfect competition, monopoly, labor markets, market failure.", icon:"chart", data:MICRO},
+  bio:{k:"bio", name:"Biology", short:"Bio", ap:"AP® Biology", clep:"CLEP® Biology", clepShort:"CLEP® Biology",
+    key:"creditsprint.bio.v1", col:"#0891B2", soft:"#ECFEFF", blurb:"Cells, energy, genetics, gene expression, evolution and ecology.", icon:"dna", data:BIO,
+    graphs:false, unitWord:"Unit",
+    exams:{ap:{full:{n:60, min:90, name:"Full AP® Section I"}, mini:{n:20, min:30, name:"Mini exam"}}, clep:{full:{n:115, min:90, name:"Full-length CLEP®"}, mini:{n:25, min:20, name:"Mini exam"}}},
+    bosses:{1:"The Polar Hydra",2:"The Membrane Mimic",3:"The ATP Thief",4:"The Rogue Cell",5:"The Recessive Wraith",6:"The Frameshift Fiend",7:"The Extinction Engine",8:"The Invasive Swarm"},
+    chainDesc:"Put the biology steps in order: from a hormone signal to a cell's response, from DNA to protein, from a population to a new species.",
+    crunchDesc:"Two minutes of calculations: Hardy–Weinberg, chi-square, water potential, SA:V, energy transfer and population growth. Type the number.",
+    drillDesc:"Hardy–Weinberg, chi-square, water potential, population growth: fresh numbers every time.",
+    planGames:["Cross It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]}
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

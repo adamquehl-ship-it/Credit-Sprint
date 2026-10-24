@@ -61,6 +61,14 @@ Codes are kept only in Cloudflare, never in this repository. Add a **Secret** na
 
 Each entry is `code:course:days`, where course is `all`, `macro` or `micro`, and `0` days means forever. Each account can use a code once. Delete a code from the secret to stop new redemptions. Accounts that already redeemed it keep their access. Guessing is limited to 10 tries per hour.
 
+## Creds, pet merging, the market and friends
+
+- **Creds** (`assets/js/market.js`): students earn them for quizzes (10), lessons (5–8), games (6), the Daily Challenge (15), bosses (30–60), exams (25–60), badges (40), level-ups and streak milestones. The limit is 600 a day, and paid plans earn +10%. Creds are saved with progress and shared across courses.
+- **Merge** (Pets → Merge): 3 copies of the same pet become 1 random pet of the next rarity.
+- **Market** (Pets → Market, accounts only): list pets for 5–50,000 creds (max 10 at once) and buy other students' pets. The market keeps a 10% fee. Students can also send an offer, or a free gift, to one friend. Earned creds are counted from synced progress (max 700 a day on the server). Spending, sales and pet transfers live in a server ledger (`lib/market.js`, `functions/api/market.js`), so a pet can only be sold once and nobody can spend creds they don't have.
+- **Friends** (Account → Friends): every account needs a username. Older accounts without one are asked to choose it the next time they sign in. Students search by username, send and accept requests, and see a weekly friends leaderboard on the dashboard (`lib/friends.js`, `functions/api/friends.js`).
+- All the new database tables are created automatically, so there's nothing to run in the D1 console.
+
 ## Turning on accounts and weekly leagues
 Accounts are optional for students. Without them, progress stays in the browser and the dashboard shows a practice league against computer opponents. With them, students can sign in with an **email code**, **Google** or a **username and password**, their progress syncs across devices, and they compete in real weekly leagues.
 

@@ -7,7 +7,7 @@ export async function onRequestPost({request, env}) {
   const blocked = guard(request, env); if (blocked) return blocked;
   let body; try { body = await request.json(); } catch { return json({error: "Bad JSON."}, 400); }
   const c = body.ctx || {};
-  const subj = body.course === "micro" ? "Microeconomics" : "Macroeconomics";
+  const subj = ({micro:"Microeconomics", bio:"Biology"})[body.course] || "Macroeconomics";
   const exam = body.exam === "clep" ? `CLEP Principles of ${subj}` : `AP ${subj}`;
   const system = `You are Credit Sprint's ${subj.toLowerCase()} tutor for a student preparing for the ${exam} exam.
 The student just answered this practice question:
@@ -22,7 +22,7 @@ Rules:
 - Use a fresh angle: an everyday analogy, a step-by-step chain (A → B → C), or a quick description of the graph shift.
 - If the student was wrong, name the specific misconception behind their choice.
 - End with one short check-for-understanding question when it helps.
-- Stay on economics and studying. Politely decline anything else.
+- Stay on ${subj} and studying. Politely decline anything else.
 - Never claim to be affiliated with the College Board.`;
   const messages = (body.messages || []).slice(-8).map(m => ({role: m.role === "assistant" ? "assistant" : "user", content: clip(m.content, 1500)}));
   if (!messages.length || messages[0].role !== "user") return json({error: "No question."}, 400);

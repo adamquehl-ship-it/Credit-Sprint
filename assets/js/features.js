@@ -48,7 +48,8 @@ CS.explainer = (host, x, onDone) => {
     i = Math.max(0, Math.min(x.steps.length-1, n)); const st = x.steps[i];
     cap.textContent = st.cap; host.querySelector(".ex-count").textContent = `Step ${i+1} of ${x.steps.length}`;
     host.querySelector(".ex-dots").innerHTML = x.steps.map((_,k)=>`<i class="dot ${k===i?"on":""}"></i>`).join("");
-    const from = st.mk === curMk ? {...cur} : {}, to = st.s; curMk = st.mk;
+    if (st.fig) { cancelAnimationFrame(anim); g.innerHTML = `<div class="ex-fig">${CS.figure(st.fig, st.v)}</div>`; curMk = null; schedule(); if (i === x.steps.length-1 && onDone) onDone(); return; }
+    const from = st.mk === curMk ? {...cur} : {}, to = st.s || {}; curMk = st.mk;
     cancelAnimationFrame(anim); const t0 = performance.now(), D = reduce ? 0 : 700;
     const keys = Array.from(new Set(Object.keys(from).concat(Object.keys(to))));
     const frame = now => { const p = D ? Math.min(1,(now-t0)/D) : 1, e = 1-Math.pow(1-p,3); const sh = {};

@@ -100,7 +100,7 @@ a.btn{text-decoration:none}
 }
 
 /* course chooser on the landing page */
-.ccards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ccards{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .ccard{display:flex;flex-direction:column;gap:10px;border:1.5px solid var(--rule);border-radius:18px;padding:16px;background:var(--surface);color:var(--ink);text-decoration:none;box-shadow:var(--shadow);transition:transform .15s,border-color .15s,box-shadow .15s;position:relative;overflow:hidden}
 .ccard::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--cc)}
 .ccard:hover{transform:translateY(-2px);border-color:var(--cc);box-shadow:0 14px 34px color-mix(in srgb,var(--cc) 18%,transparent)}
@@ -121,3 +121,12 @@ a.btn{text-decoration:none}
 .plan li.no{color:var(--muted)} .plan li.no svg{color:var(--muted)}
 @media (max-width:1100px){.price.five{grid-template-columns:repeat(2,minmax(0,1fr))}.price.five .plan.best{grid-column:1/-1}}
 @media (max-width:640px){.price.five{grid-template-columns:minmax(0,1fr)}}
+
+@media (max-width:960px){.ccards{grid-template-columns:minmax(0,1fr)}}
+.doc .figure svg{width:100%;height:auto}
+.ccards .ccard{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:14px;row-gap:4px;padding:14px 16px}
+.ccards .ccard .ccard-top{grid-column:1/3}
+.ccards .ccard>.small{grid-column:1/3;grid-row:2}
+.ccards .ccard .ccard-stats{grid-column:1/3;grid-row:3}
+.ccards .ccard .ccard-go{grid-column:3;grid-row:1/4;align-self:center}
+@media (max-width:620px){.ccards .ccard{grid-template-columns:minmax(0,1fr)}.ccards .ccard .ccard-go{grid-column:1;grid-row:auto}}

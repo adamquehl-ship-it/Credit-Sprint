@@ -27,6 +27,7 @@ CS.QBYID = Object.fromEntries(CS.QS.map(q=>[q.id,q]));
 CS.CARDS = window.CS_CARDS_RAW.map((c,i)=>({id:"c"+i, u:c[0], front:c[1], back:c[2]}));
 CS.FRQS = window.CS_FRQS;
 CS.MARKETS = window.CS_MARKETS;
+CS.hasGraphs = () => CS.C.graphs !== false && Object.keys(CS.MARKETS || {}).length > 0;
 CS.SHIFTS = window.CS_SHIFTS;
 CS.EVENTS = window.CS_EVENTS;
 CS.TF = window.CS_TF;
@@ -62,7 +63,7 @@ CS.defaultDate = exam => {
    badges, plan, appearance) live in a shared record so they follow you between Macro and Micro. */
 const COURSE = window.CS_COURSE; CS.C = COURSE; CS.COURSE = COURSE.k;
 const KEY = COURSE.key, SHARED_KEY = "creditsprint.shared";
-CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered","gems","seasons","league","account"];
+CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered","gems","seasons","league","account","creds"];
 const fresh = () => ({v:3, exam:"ap", onboarded:false, goal:60, theme:"system", dateSet:false,
   accent:"indigo", cram:{}, remind:"19:00", name:"",
   answers:{}, mistakes:{}, diag:null, cards:{}, reviews:0, frq:{}, plan:{date:CS.defaultDate("ap")},
@@ -217,6 +218,7 @@ CS.levelUp = lv => {
 
 /* ---------- icons (24px stroke) ---------- */
 const P = {
+  dna:'<path d="M7 3c0 6 10 6 10 12M17 3c0 6-10 6-10 12M7 21c0-3 3-4.5 5-6M17 21c0-3-3-4.5-5-6"/><path d="M8.5 6h7M8.5 12h7M9 18h6"/>',
   lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   home:'<path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
   book:'<path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h9"/>',

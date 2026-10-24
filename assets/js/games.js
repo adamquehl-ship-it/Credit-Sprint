@@ -11,13 +11,14 @@ let active = null, bossUnit = null;
 
 const GAMES = [
   {k:"daily", n:"Daily Challenge", ic:"star", d:"Five questions, the same for every student today. Keep your daily streak going and compare your result.", best:()=>S().daily[CS.today()]?`Done today: ${S().daily[CS.today()].score}/5`:"Ready to play · +50 XP"},
-  {k:"boss", n:"Boss Battle", ic:"sword", d:"Take on a unit boss. Every correct answer deals damage; three misses and you're out.", best:()=>{ const n = Object.values(S().bosses).filter(Boolean).length; return `${n}/6 bosses beaten`; }},
-  {k:"shift", n:"Shift It", ic:"chart", d:"A headline hits the economy. Shift the right curve the right way before the clock runs out.", best:()=>S().best.shift!=null?`Best: ${S().best.shift}/10`:"Not played yet"},
+  {k:"boss", n:"Boss Battle", ic:"sword", d:"Take on a unit boss. Every correct answer deals damage; three misses and you're out.", best:()=>{ const n = Object.values(S().bosses).filter(Boolean).length; return `${n}/${CS.UNITS.length} bosses beaten`; }},
+  ...(CS.hasGraphs() ? [{k:"shift", n:"Shift It", ic:"chart", d:"A headline hits the economy. Shift the right curve the right way before the clock runs out.", best:()=>S().best.shift!=null?`Best: ${S().best.shift}/10`:"Not played yet"}] : []),
+  ...(CS.COURSE==="bio" ? [{k:"cross", n:"Cross It", ic:"dna", d:"Genetics at speed: Punnett squares, dihybrid ratios, sex-linked traits and blood types. Predict the offspring before time runs out.", best:()=>S().best.cross!=null?`Best: ${S().best.cross}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
-  {k:"chain", n:"Chain Reaction", ic:"link", d:CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP.", best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
+  {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
-  {k:"crunch", n:"Number Crunch", ic:"calc", d:CS.COURSE==="micro"?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number.", best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true},
-  ...(CS.COURSE==="micro" ? [] : [{k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"}]),
+  {k:"crunch", n:"Number Crunch", ic:"calc", d:CS.C.crunchDesc || (CS.COURSE==="micro"?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number."), best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true},
+  ...(CS.COURSE==="macro" ? [{k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"}] : []),
   ...(CS.COURSE==="micro" ? [
     {k:"profit", n:"Profit Max", ic:"calc", d:"You run the firm. Read the cost table, find where MR = MC, and pick the output that maximizes profit (or shut down).", best:()=>S().best.profit!=null?`Best: ${S().best.profit}/6`:"Not played yet"},
     {k:"nash", n:"Nash Hunt", ic:"sword", d:"Payoff matrices, fast. Spot dominant strategies and Nash equilibria before your rival does.", best:()=>S().best.nash!=null?`Best: ${S().best.nash}/8`:"Not played yet"}] : []),
@@ -41,7 +42,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); S().games = (S().games||0)+1; CS.refresh(); }
 document.addEventListener("keydown", e => { const a = $("#g-area"); if (a && a._key && !$("#v-games").hidden && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) a._key(e); });
@@ -81,8 +82,8 @@ function daily(area){
 
 /* ---------- Boss Battle ---------- */
 function boss(area){
-  const BOSSES = CS.COURSE === "micro" ? {1:"The Scarcity Specter",2:"The Elasticity Eel",3:"The Marginal Cost Golem",4:"The Monopoly Overlord",5:"The Wage Warden",6:"The Externality Ooze"}
-    : {1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"};
+  const BOSSES = CS.C.bosses || (CS.COURSE === "micro" ? {1:"The Scarcity Specter",2:"The Elasticity Eel",3:"The Marginal Cost Golem",4:"The Monopoly Overlord",5:"The Wage Warden",6:"The Externality Ooze"}
+    : {1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"});
   if (!bossUnit) return choose();
   fight(bossUnit);
   function choose(){
@@ -487,6 +488,59 @@ function nash(area){
     area.innerHTML = `<span class="eyebrow">Nash Hunt · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=7?"Game theorist status.":"Check one player at a time: cover up the other player's numbers and compare."}</p>
       <div class="row-wrap"><button class="btn" id="nh-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="4">Review Unit 4</button></div>`;
     $("#nh-again").onclick = () => { i = 0; right = 0; streak = 0; pts = 0; round(); };
+  }
+}
+
+/* ---------- Cross It (Biology): genetics predictions ---------- */
+function cross(area){
+  const ROUNDS = 8; let i = 0, right = 0, streak = 0, pts = 0;
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const GENES = [["A","a","purple flowers","white flowers"],["T","t","tall","short"],["B","b","brown fur","white fur"],["R","r","round seeds","wrinkled seeds"],["G","g","green pods","yellow pods"]];
+  const sq = (p1, p2) => { const arr = p => Array.isArray(p) ? p : p.split(""), g1 = arr(p1), g2 = arr(p2);
+    const cell = (x, y) => x.length > 1 || y.length > 1 ? [x, y].sort((m, n) => (m === "Y") - (n === "Y")).join("") : [x, y].sort((m, n) => (m === m.toLowerCase()) - (n === n.toLowerCase())).join("");
+    return `<table class="matrix punnett"><thead><tr><th class="corner"></th>${g2.map(g => `<th>${g}</th>`).join("")}</tr></thead><tbody>${g1.map(a => `<tr><th>${a}</th>${g2.map(b => `<td>${cell(a, b)}</td>`).join("")}</tr>`).join("")}</tbody></table>`; };
+  function make(){
+    const k = pick(["mono","mono","test","dihy","dihytest","xlinked","incomplete","blood","tri"]), G = pick(GENES), [D, r, dp, rp] = G;
+    if (k === "mono") { const p1 = pick([D+r, D+r, D+D]), p2 = pick([D+r, r+r]); const kids = [];
+      p1.split("").forEach(a => p2.split("").forEach(b => kids.push(a === D || b === D ? 1 : 0)));
+      const frac = kids.filter(x => !x).length; const ans = ["0","1/4","1/2","3/4","1"][frac];
+      return {q:`Cross ${p1} × ${p2}. ${D} (${dp}) is dominant to ${r} (${rp}). What fraction of offspring will have ${rp}?`, opts:["0","1/4","1/2","3/4"].concat(ans === "1" ? ["1"] : []), ans, extra:sq(p1, p2), why:`Count the ${r}${r} boxes: ${frac} of 4.`}; }
+    if (k === "test") { const het = Math.random() < .5;
+      return {q:`A ${dp} plant is test-crossed with a ${rp} (${r}${r}) plant. ${het ? "About half" : "All"} of the offspring are ${dp}. What is the ${dp} parent's genotype?`, opts:[D+D, D+r, r+r, "Can't tell"], ans: het ? D+r : D+D, extra:sq(het ? D+r : D+D, r+r), why: het ? `A 1:1 ratio means the parent made ${D} and ${r} gametes.` : `No ${rp} offspring means every gamete carried ${D}.`}; }
+    if (k === "dihy") return {q:`Two plants heterozygous for two independent genes (AaBb × AaBb) are crossed. What phenotype ratio do you expect?`, opts:["9:3:3:1","3:1","1:1:1:1","1:2:1"], ans:"9:3:3:1", why:"Multiply the 3:1 ratios: 9 A_B_ : 3 A_bb : 3 aaB_ : 1 aabb."};
+    if (k === "dihytest") return {q:`A dihybrid (AaBb) is crossed with aabb, and the genes are on different chromosomes. What phenotype ratio do you expect?`, opts:["1:1:1:1","9:3:3:1","3:1","1:2:1"], ans:"1:1:1:1", why:"The dihybrid makes AB, Ab, aB and ab gametes equally; aabb adds only ab."};
+    if (k === "xlinked") { const son = Math.random() < .6;
+      return {q:`Color blindness is X-linked recessive. A carrier mother (XᴮXᵇ) and a father with normal vision (XᴮY) have a ${son ? "son" : "daughter"}. What's the chance the ${son ? "son" : "daughter"} is color-blind?`, opts:["0","1/4","1/2","1"], ans: son ? "1/2" : "0", extra:sq(["Xᴮ","Xᵇ"], ["Xᴮ","Y"]), why: son ? "A son gets his X from Mom: Xᴮ or Xᵇ, 1/2 each." : "A daughter always gets Dad's normal Xᴮ, so she can be a carrier but not color-blind."}; }
+    if (k === "incomplete") return {q:`In snapdragons, red (RR) × white (WW) gives pink (RW). Two pink plants are crossed. What phenotype ratio do you expect?`, opts:["1 red : 2 pink : 1 white","3 red : 1 white","All pink","1 red : 1 white"], ans:"1 red : 2 pink : 1 white", why:"Incomplete dominance: phenotypes match the 1:2:1 genotype ratio."};
+    if (k === "blood") { const kind = pick(["O","AB"]);
+      return {q:`Parents with blood types A (Iᴬi) and B (Iᴮi) have a child. What's the probability the child has type ${kind}?`, opts:["0","1/4","1/2","3/4"], ans:"1/4", why: kind === "O" ? "Both must pass i: 1/2 × 1/2 = 1/4." : "Iᴬ from one parent and Iᴮ from the other: 1/2 × 1/2 = 1/4."}; }
+    return {q:`AaBbCc × AaBbCc (independent genes). What's the probability of an aabbcc offspring?`, opts:["1/64","1/8","1/16","27/64"], ans:"1/64", why:"Each gene: 1/4 for homozygous recessive. 1/4 × 1/4 × 1/4 = 1/64."};
+  }
+  intro();
+  function intro(){
+    area.innerHTML = `<p style="max-width:62ch">Each round is a genetics cross. Predict the offspring. Quick answers and streaks earn bonus points. Sketch a Punnett square if you need to: the answer shows one.</p><div><button class="btn accent" id="cx-go">Start · ${ROUNDS} crosses</button></div>`;
+    $("#cx-go").onclick = round;
+  }
+  function round(){
+    if (i >= ROUNDS) return end();
+    const g = make(), t0 = Date.now(), opts = CS.shuffle(Array.from(new Set(g.opts)));
+    area.innerHTML = `<div class="hud"><span>Cross <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span><span>Streak <b>${streak}</b></span><span>Points <b>${pts}</b></span></div>
+      <p class="qtext">${esc(g.q)}</p><div class="opts">${opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o)}</span></button>`).join("")}</div><div id="cx-fb"></div>`;
+    let done = false;
+    const pickOpt = j => { if (done) return; done = true; const ok = opts[j] === g.ans; CS.record({u:5}, ok, false);
+      if (ok) { right++; streak++; pts += 100 + Math.max(0, 40 - Math.round((Date.now()-t0)/1000)*2) + (streak>=3?25:0); } else streak = 0;
+      $$(".opt", area).forEach((b,k) => { b.disabled = true; if (opts[k] === g.ans) b.classList.add("right"); else if (k === j) b.classList.add("wrong"); });
+      $("#cx-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?(streak>=3?"Streak bonus!":"Correct."):`Answer: ${esc(g.ans)}.`}</b> ${esc(g.why)}</div>${g.extra?`<div class="matrix-wrap" style="max-width:260px">${g.extra}</div>`:""}<div style="margin-top:10px"><button class="btn" id="cx-next">${i+1<ROUNDS?"Next cross":"See results"}</button></div>`;
+      $("#cx-next").onclick = () => { i++; round(); }; $("#cx-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#cx-next").click(); };
+    };
+    $$(".opt", area).forEach(b => b.onclick = () => pickOpt(+b.dataset.j));
+    area._key = e => { if (["1","2","3","4","5"].includes(e.key) && +e.key <= opts.length) pickOpt(+e.key-1); };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("cross", right); finish(pts/10);
+    area.innerHTML = `<span class="eyebrow">Cross It · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=7?"Mendel would be proud.":"Draw the Punnett square every time, and multiply probabilities for independent genes."}</p>
+      <div class="row-wrap"><button class="btn" id="cx-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="5">Review Unit 5</button></div>`;
+    $("#cx-again").onclick = () => { i = 0; right = 0; streak = 0; pts = 0; round(); };
   }
 }
 
