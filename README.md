@@ -14,6 +14,10 @@ Study platform for AP® Macroeconomics and CLEP® Principles of Macroeconomics. 
 | `lib/ai.js` | Shared code for the AI functions |
 | `scripts/build-site.js` | Rebuilds the landing, guide and practice pages from the question data |
 
+## Courses
+The app has two courses, Macroeconomics and Microeconomics. `assets/js/courses.js` lists each course and its data files (Macro in `assets/data/`, Micro in `assets/data/micro/`). Students pick a course on the landing page (`app.html?course=macro` or `?course=micro`) or from the course switcher at the top of the dashboard. Each course saves its own progress; streak, XP, badges, pets and plan are shared.
+To add another course later, add an entry to `courses.js`, create its data folder with the same file format, and add a pet set in `assets/js/pets.js`.
+
 ## Content
 - 269 original multiple-choice questions, 5 choices each, every choice explained (`assets/data/questions.js`, `questions2.js`, `fifth.js`)
 - 15 FRQs with rubrics; 8 include a drag-the-curve graph task (`content.js`, `content2.js`, `content3.js`)

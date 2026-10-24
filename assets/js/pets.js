@@ -1,5 +1,5 @@
 /* Credit Sprint pets: one egg per day (on your first correct answer), eggs hatch as you answer correctly,
-   25 original Macroeconomics pets across 5 rarities, XP boosts, growth stages and reactions.
+   29 original pets per course (Macro and Micro) across 7 rarities, XP boosts, growth stages and reactions.
    Pets are grouped by subject so new subjects can add their own set to CS.PET_SETS. */
 (function(){
 "use strict";
@@ -8,8 +8,8 @@ const S = () => CS.S();
 
 /* ---------- rarities ---------- */
 CS.RARITY = {
-  common:   {n:"Common",    p:50, hatch:10, boost:0.02, col:"#9CA3AF", glow:"#E5E7EB"},
-  uncommon: {n:"Uncommon",  p:28, hatch:15, boost:0.04, col:"#10B981", glow:"#D1FAE5"},
+  common:   {n:"Common",    p:49, hatch:10, boost:0.02, col:"#9CA3AF", glow:"#E5E7EB"},
+  uncommon: {n:"Uncommon",  p:27.5, hatch:15, boost:0.04, col:"#10B981", glow:"#D1FAE5"},
   rare:     {n:"Rare",      p:14, hatch:25, boost:0.07, col:"#3B82F6", glow:"#DBEAFE"},
   epic:     {n:"Epic",      p:6,  hatch:35, boost:0.10, col:"#A855F7", glow:"#F3E8FF"},
   legendary:{n:"Legendary", p:2,  hatch:50, boost:0.15, col:"#F59E0B", glow:"#FEF3C7"},
@@ -61,9 +61,43 @@ const MACRO = [
  {id:"celestial", n:"Celestial Equilibrium", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#7C3AED", custom:"celestial", bio:"The keeper of every market in the universe. Where it looks, supply meets demand. Roughly 1 in 2,000 eggs."},
  {id:"phoenix", n:"Equilibrium Phoenix", u:3, r:"legendary", p:1.2, c1:"#F97316", c2:"#FDE68A", ears:"crest", extra:["beak","wings","xcurves","sparkle","flametips"], bio:"Rises from every recession and lands exactly where supply meets demand."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}};
-CS.PETS = MACRO;
-CS.PET = Object.fromEntries(MACRO.map(p=>[p.id,p]));
+
+/* ---------- Microeconomics pet set (same odds per rarity as Macro) ---------- */
+const MICRO = [
+ {id:"otter", n:"Opportunity Otter", u:1, r:"common", p:6.5, c1:"#8B5E3C", c2:"#E8CFB0", ears:"small", extra:["whiskers","shells"], bio:"Can crack one more clam or take a nap. Never both. Every choice has a cost."},
+ {id:"hedgehog", n:"Marginal Hedgehog", u:1, r:"common", p:6, c1:"#9C7B5B", c2:"#F1E1CC", ears:"small", extra:["spikes"], bio:"Grows one more spine only if it's worth the marginal cost."},
+ {id:"deer", n:"Demand Deer", u:2, r:"common", p:6.5, c1:"#B7834F", c2:"#F3DFC4", ears:"pointy", extra:["antlers","downarrow"], bio:"Wants more acorns when they're cheap. The law of demand, with antlers."},
+ {id:"sheep", n:"Supply Sheep", u:2, r:"common", p:6, c1:"#F5F5F4", c2:"#FFFFFF", ears:"small", extra:["fluff","uparrow"], bio:"Grows more wool whenever the price of wool goes up."},
+ {id:"seal", n:"Surplus Seal", u:2, r:"common", p:6, c1:"#94A3B8", c2:"#E2E8F0", ears:"none", extra:["flippers","whiskers"], bio:"The price floor is too high, so it always has extra fish lying around."},
+ {id:"mole", n:"Marginal Cost Mole", u:3, r:"common", p:6, c1:"#6B5B53", c2:"#D6C7BC", ears:"none", extra:["hardhat","teeth"], bio:"Digs one more tunnel only while price covers the marginal cost."},
+ {id:"pigeon", n:"Price-Taker Pigeon", u:3, r:"common", p:6, c1:"#A1A1AA", c2:"#E4E4E7", ears:"none", extra:["beak","pricetag"], bio:"Takes whatever price the market gives it. Never argues."},
+ {id:"puppy", n:"Paycheck Puppy", u:5, r:"common", p:6, c1:"#D4A373", c2:"#FAEDCD", ears:"round", extra:["coin","tie"], bio:"Works for treats until its MRP equals the price of a treat."},
+ {id:"unicorn", n:"Utility Unicorn", u:1, r:"uncommon", p:4, c1:"#FBCFE8", c2:"#FFFFFF", ears:"pointy", extra:["horn","fluff"], bio:"Each extra rainbow gives a little less joy. Diminishing marginal utility, in sparkly form."},
+ {id:"gecko", n:"Elastic Gecko", u:2, r:"uncommon", p:4, c1:"#84CC16", c2:"#ECFCCB", ears:"none", extra:["curltail","bigeyes"], bio:"Stretches way out when prices change. Its elasticity is always greater than 1."},
+ {id:"toad", n:"Tax Wedge Toad", u:2, r:"uncommon", p:4, c1:"#65A30D", c2:"#D9F99D", ears:"none", extra:["bigeyes","pricetag"], bio:"Croaks a wedge between what buyers pay and what sellers keep."},
+ {id:"dodo", n:"Diminishing Returns Dodo", u:3, r:"uncommon", p:4, c1:"#A8A29E", c2:"#E7E5E4", ears:"none", extra:["beak","sleepy"], bio:"Every extra worker in its nest adds a little less. It's tired of crowding."},
+ {id:"crow", n:"Cartel Crow", u:4, r:"uncommon", p:3.5, c1:"#1F2937", c2:"#6B7280", ears:"none", extra:["beak","tie"], bio:"Promises to cut output with the flock. Secretly cheats every time."},
+ {id:"meerkat", n:"MRP Meerkat", u:5, r:"uncommon", p:4, c1:"#C8A27A", c2:"#F4E4CF", ears:"small", extra:["longneck","chart"], bio:"Stands tall to check one thing: does the next worker add more than they cost?"},
+ {id:"possum", n:"Pollution Possum", u:6, r:"uncommon", p:4, c1:"#9CA3AF", c2:"#F3F4F6", ears:"round", extra:["smoke","bignose"], bio:"Ignores the smog it makes for its neighbors. Needs a Pigouvian tax."},
+ {id:"flamingo", n:"Equilibrium Flamingo", u:2, r:"rare", p:3, c1:"#F472B6", c2:"#FCE7F3", ears:"none", extra:["longneck","beak","xcurves"], bio:"Balances perfectly where supply meets demand. On one leg."},
+ {id:"lynx", n:"Long-Run Lynx", u:3, r:"rare", p:3, c1:"#C08457", c2:"#F5E6D3", ears:"tufts", extra:["whiskers","glasses"], bio:"Patiently waits for entry and exit to push economic profit to zero."},
+ {id:"octopus", n:"Oligopoly Octopus", u:4, r:"rare", p:3, c1:"#A855F7", c2:"#F3E8FF", ears:"none", extra:["tentacles","bigeyes"], bio:"Keeps an eye, and an arm, on every rival's price."},
+ {id:"walrus", n:"Union Walrus", u:5, r:"rare", p:2.5, c1:"#A47551", c2:"#E7CBB0", ears:"none", extra:["tusks","whiskers","sign"], bio:"Bargains for higher wages for the whole colony."},
+ {id:"lemur", n:"Lorenz Lemur", u:6, r:"rare", p:2.5, c1:"#9CA3AF", c2:"#F9FAFB", ears:"round", extra:["ringtail","bigeyes"], bio:"Its tail curves just like a Lorenz curve. The bigger the bow, the more inequality."},
+ {id:"lion", n:"Monopoly Lion", u:4, r:"epic", p:2, c1:"#E0A040", c2:"#FDE8C4", ears:"round", extra:["mane","crown","whiskers"], bio:"King of a market with no rivals. Sets MR = MC, then charges what the jungle will pay."},
+ {id:"mammoth", n:"Monopsony Mammoth", u:5, r:"epic", p:2, c1:"#7C5A3C", c2:"#C4A27E", ears:"elephant", extra:["trunk","tusks","fluff"], bio:"The only employer in the valley. Hires fewer workers and pays them less."},
+ {id:"pegasus", n:"Public Goods Pegasus", u:6, r:"epic", p:2, c1:"#E0F2FE", c2:"#FFFFFF", ears:"pointy", extra:["wings","fluff","sparkle"], bio:"Lights up the whole sky for everyone. Nobody can be excluded, so nobody wants to pay."},
+ {id:"goose", n:"Golden Surplus Goose", u:2, r:"legendary", p:1.1, c1:"#FBBF24", c2:"#FEF3C7", ears:"none", extra:["beak","goldegg","sparkle"], bio:"Lays a golden egg of consumer surplus every time the market clears."},
+ {id:"eagle", n:"Efficiency Eagle", u:3, r:"legendary", p:0.9, c1:"#7C4A1E", c2:"#FFFFFF", ears:"none", extra:["beak","wings","crown","sparkle"], bio:"Soars where P = MC = minimum ATC. Allocatively and productively efficient."},
+ {id:"griffin", n:"Dominant Strategy Griffin", u:4, r:"mythical", p:0.6, c1:"#D4A017", c2:"#FFFFFF", custom:"griffin", bio:"Half lion, half eagle, all strategy. It always knows its best move, no matter what you do."},
+ {id:"leviathan", n:"Deadweight Leviathan", u:2, r:"mythical", p:0.5, c1:"#0E7490", c2:"#67E8F9", custom:"leviathan", bio:"Rises from the triangle of lost surplus whenever a market is pushed away from equilibrium."},
+ {id:"kitsune", n:"Commons Kitsune", u:6, r:"mythical", p:0.35, c1:"#FFF7ED", c2:"#F472B6", custom:"kitsune", bio:"Guards the shared forest with nine glowing tails. Overgraze it and the lights go out."},
+ {id:"seraph", n:"Pareto Seraph", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#F0ABFC", custom:"seraph", bio:"Where it flies, no one can be made better off without making someone worse off. Roughly 1 in 2,000 eggs."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}};
+const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
+CS.PETS = SET;
+CS.PET = Object.fromEntries(MACRO.concat(MICRO).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -71,7 +105,7 @@ function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:n
   return P; }
 let uid = 0;
 function rollRarity(rnd=Math.random){ let r = rnd()*100; for (const k of ORDER) { r -= CS.RARITY[k].p; if (r <= 0) return k; } return "common"; }
-function rollPet(rarity){ const pool = MACRO.filter(p=>p.r===rarity), tot = pool.reduce((a,p)=>a+p.p,0); let r = Math.random()*tot; for (const p of pool) { r -= p.p; if (r <= 0) return p; } return pool[0]; }
+function rollPet(rarity){ const pool = SET.filter(p=>p.r===rarity), tot = pool.reduce((a,p)=>a+p.p,0); let r = Math.random()*tot; for (const p of pool) { r -= p.p; if (r <= 0) return p; } return pool[0]; }
 CS.petBoost = () => { const a = st().active; return a ? CS.RARITY[CS.PET[a].r].boost : 0; };
 CS.petStage = pid => { const o = st().owned[pid]; const g = o ? o.growth : 0; return g >= 100 ? 3 : g >= 30 ? 2 : 1; };
 CS.petLevel = pid => { const o = st().owned[pid]; return o ? Math.min(30, 1 + Math.floor(o.growth/10)) : 0; };
@@ -187,6 +221,10 @@ CS.petSVG = (pid, opt={}) => {
   if (X.has("shell")) back += `<ellipse cx="60" cy="70" rx="40" ry="32" fill="#3E7D3E"/><path d="M30 86 C34 64 50 52 76 50" stroke="#CFE8C4" stroke-width="3.5" fill="none"/><path d="M28 90 L28 52 M28 90 L84 90" stroke="#CFE8C4" stroke-width="2.5" opacity=".7"/>`;
   if (X.has("tentacles")) back += [36,48,60,72,84].map((x,i)=>`<path d="M${x} 92 C${x-6} 104 ${x+6} 108 ${x} 118" stroke="${c1}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>`).join("");
   if (X.has("longneck")) back += `<rect x="48" y="26" width="24" height="44" rx="12" fill="${c1}"/>`;
+  /* micro set: back items */
+  if (X.has("mane")) back += Array.from({length:14},(_,i)=>{ const a = i/14*Math.PI*2, x = 60+Math.cos(a)*36, y = 60+Math.sin(a)*34; return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="13" fill="#B45309"/>`; }).join("") + `<circle cx="60" cy="60" r="38" fill="#C2410C" opacity=".55"/>`;
+  if (X.has("antlers")) back += `<path d="M44 40 L36 18 M38 26 L28 22 M36 18 L32 8 M76 40 L84 18 M82 26 L92 22 M84 18 L88 8" stroke="#7C4A1E" stroke-width="4.5" stroke-linecap="round" fill="none"/>`;
+  if (X.has("ringtail")) back += `<path d="M86 90 C112 88 116 56 100 46 C92 42 86 50 92 56" stroke="${c1}" stroke-width="9" fill="none" stroke-linecap="round"/>` + [[104,84],[110,68],[106,52],[96,46]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.6" fill="#1F2937"/>`).join("");
   // ears
   const E = p.ears;
   if (E === "round") ears = `<circle cx="38" cy="38" r="11" fill="${c1}"/><circle cx="82" cy="38" r="11" fill="${c1}"/><circle cx="38" cy="38" r="5" fill="${c2}"/><circle cx="82" cy="38" r="5" fill="${c2}"/>`;
@@ -253,6 +291,16 @@ CS.petSVG = (pid, opt={}) => {
   if (X.has("fluff")) front += `<circle cx="60" cy="16" r="8" fill="${c2}"/><circle cx="52" cy="18" r="6" fill="${c2}"/><circle cx="68" cy="18" r="6" fill="${c2}"/>`;
   if (X.has("xcurves")) front += `<path d="M44 76 L76 96 M44 96 L76 76" stroke="#7C2D12" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="86" r="3.5" fill="#7C2D12"/>`;
   if (X.has("sparkle")) front += `<path d="M18 20 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z M100 14 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z M104 100 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z" fill="#FBBF24"/>`;
+  /* micro set: front items */
+  if (X.has("shells")) front += `<path d="M22 84 Q30 72 38 84Z" fill="#F9A8D4" stroke="#BE185D" stroke-width="1.2"/><path d="M82 84 Q90 72 98 84Z" fill="#FDE68A" stroke="#B45309" stroke-width="1.2"/><path d="M26 84 L30 76 M30 84 L30 74 M34 84 L30 76 M86 84 L90 76 M90 84 L90 74 M94 84 L90 76" stroke="#fff" stroke-width="1" opacity=".8"/>`;
+  if (X.has("hardhat")) front += `<path d="M34 46 C34 24 86 24 86 46Z" fill="#FACC15" stroke="#CA8A04" stroke-width="1.5"/><rect x="28" y="43" width="64" height="6" rx="3" fill="#EAB308"/><rect x="56" y="26" width="8" height="18" rx="3" fill="#FDE047"/>`;
+  if (X.has("tie")) front += `<path d="M55 86 L65 86 L62 91 L66 106 L60 112 L54 106 L58 91Z" fill="#DC2626" stroke="#7F1D1D" stroke-width="1"/>`;
+  if (X.has("horn")) front += `<path d="M55 38 L60 6 L65 38Z" fill="#FDE68A" stroke="#F59E0B" stroke-width="1.5"/><path d="M57 30 L63 27 M58 22 L62 20 M59 14 L61 13" stroke="#F59E0B" stroke-width="1.5"/>`;
+  if (X.has("smoke")) front += `<circle cx="92" cy="22" r="8" fill="#9CA3AF" opacity=".7"/><circle cx="102" cy="14" r="6" fill="#9CA3AF" opacity=".55"/><circle cx="84" cy="14" r="5" fill="#9CA3AF" opacity=".5"/><circle cx="108" cy="4" r="4" fill="#9CA3AF" opacity=".4"/>`;
+  if (X.has("tusks")) front += `<path d="M50 74 C48 90 54 98 60 100 C56 94 54 86 56 76Z M70 74 C72 90 66 98 60 100 C64 94 66 86 64 76Z" fill="#FFFBEB" stroke="#D6D3D1" stroke-width="1.2"/>`;
+  if (X.has("sign")) front += `<path d="M98 112 L98 70" stroke="#92400E" stroke-width="3"/><rect x="82" y="56" width="34" height="18" rx="2" fill="#fff" stroke="#DC2626" stroke-width="2"/><text x="99" y="68" text-anchor="middle" font-size="7.5" font-weight="800" fill="#DC2626" font-family="Manrope, sans-serif">FAIR PAY</text>`;
+  if (X.has("crown")) front += CROWN(X.has("mane") ? 28 : 30);
+  if (X.has("goldegg")) front += `<ellipse cx="90" cy="96" rx="10" ry="12" fill="#FBBF24" stroke="#B45309" stroke-width="2"/><ellipse cx="86" cy="91" rx="3" ry="5" fill="#FEF3C7" opacity=".8"/><text x="90" y="101" text-anchor="middle" font-size="9" font-weight="800" fill="#92400E" font-family="Manrope, sans-serif">CS</text>`;
   // adult flair
   let flair = "";
   if (stage === 3 && ["rare","epic","legendary"].includes(p.r) && !X.has("hand")) flair = `<path d="M46 ${X.has("longneck")?10:28} L50 ${X.has("longneck")?2:20} L55 ${X.has("longneck")?8:26} L60 ${X.has("longneck")?0:18} L65 ${X.has("longneck")?8:26} L70 ${X.has("longneck")?2:20} L74 ${X.has("longneck")?10:28}Z" fill="#FBBF24" stroke="#B45309" stroke-width="1.5"/>`;
@@ -329,6 +377,64 @@ const CUSTOM = {
       <circle cx="60" cy="40" r="3" fill="#7C3AED"/><circle cx="60" cy="40" r="5.5" fill="#7C3AED" opacity=".3"/>
       ${[0,1,2,3,4].map(i=>{ const a = (-150+i*30)*Math.PI/180, x = 60+32*Math.cos(a), y = 52+32*Math.sin(a); return `<path d="M${x.toFixed(1)} ${(y-5).toFixed(1)} l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5 -3.5 -3.5 -1.5 3.5 -1.5z" fill="#FDE68A"/>`; }).join("")}
       <path d="M50 84 L70 84 M60 80 L60 88 M50 84 L46 92 L54 92Z M70 84 L66 92 L74 92Z" stroke="#FDE68A" stroke-width="1.6" fill="#FDE68A" fill-opacity=".4"/>`
+,
+  griffin: (p, stage, mood) => `
+      <path d="M34 62 C8 46 2 22 12 10 C16 26 26 34 36 38 C30 28 30 18 36 12 C38 26 44 34 50 40Z" fill="#92400E" stroke="#451A03" stroke-width="1.2"/>
+      <path d="M86 62 C112 46 118 22 108 10 C104 26 94 34 84 38 C90 28 90 18 84 12 C82 26 76 34 70 40Z" fill="#92400E" stroke="#451A03" stroke-width="1.2"/>
+      <path d="M14 14 L26 34 M108 14 L94 34 M36 14 L42 34 M84 14 L78 34" stroke="#FCD34D" stroke-width="2" opacity=".8"/>
+      <path d="M86 96 C104 100 112 86 106 74" stroke="${p.c1}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M106 74 C100 66 112 64 110 72Z" fill="#78350F"/>
+      <ellipse cx="60" cy="86" rx="30" ry="20" fill="${p.c1}" stroke="#92400E" stroke-width="2"/>
+      <rect x="38" y="98" width="9" height="12" rx="4" fill="${p.c1}"/><rect x="73" y="98" width="9" height="12" rx="4" fill="${p.c1}"/>
+      <g transform="translate(48 76)"><rect width="24" height="18" rx="2" fill="#fff" stroke="#92400E" stroke-width="1.2"/><path d="M12 0 V18 M0 9 H24" stroke="#92400E" stroke-width="1.2"/><circle cx="6" cy="4.5" r="2.4" fill="#16A34A"/><text x="18" y="15.5" text-anchor="middle" font-size="6" font-weight="800" fill="#92400E" font-family="Manrope, sans-serif">NE</text></g>
+      <path d="M44 62 C40 42 50 30 60 30 C70 30 80 42 76 62 C70 70 50 70 44 62Z" fill="${p.c2}" stroke="#D6D3D1" stroke-width="1.5"/>
+      <path d="M48 36 L44 24 L54 32Z M72 36 L76 24 L66 32Z" fill="#fff" stroke="#D6D3D1"/>
+      <path d="M54 52 L66 52 L60 64Z" fill="#F59E0B" stroke="#B45309" stroke-width="1.2"/>
+      ${mood==="sleepy"?`<path d="M48 44 q4 3 8 0 M64 44 q4 3 8 0" stroke="#1F2430" stroke-width="2.5" fill="none"/>`:`${EYE(52,44,4.2,"#B45309")}${EYE(68,44,4.2,"#B45309")}<path d="M46 38 L56 41 M74 38 L64 41" stroke="#1F2430" stroke-width="2.2" stroke-linecap="round"/>`}
+      ${stage===3?CROWN(26):""}`,
+  leviathan: (p, stage, mood) => `
+      <defs><linearGradient id="levg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#1E3A8A"/></linearGradient></defs>
+      <path d="M2 104 C14 96 26 112 38 104 C50 96 62 112 74 104 C86 96 98 112 118 102 L118 120 L2 120Z" fill="#0EA5E9" opacity=".35"/>
+      <path d="M18 100 C18 76 42 72 46 88 C50 104 74 106 78 86 C82 66 66 56 72 40" stroke="url(#levg)" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <path d="M18 100 C18 76 42 72 46 88 C50 104 74 106 78 86 C82 66 66 56 72 40" stroke="#A5F3FC" stroke-width="3" fill="none" stroke-dasharray="2 7" stroke-linecap="round" opacity=".9"/>
+      ${[[32,76],[46,96],[66,100],[80,74]].map(([x,y])=>`<path d="M${x} ${y-8} l5 -9 l4 9z" fill="#F0ABFC"/>`).join("")}
+      <path d="M96 92 L112 66 L120 92Z" fill="#F472B6" opacity=".25" stroke="#F472B6" stroke-width="2"><animate attributeName="opacity" values=".15;.45;.15" dur="2.6s" repeatCount="indefinite"/></path>
+      <text x="111" y="88" text-anchor="middle" font-size="7" font-weight="800" fill="#BE185D" font-family="Manrope, sans-serif">DWL</text>
+      <path d="M58 28 C60 14 84 12 90 26 C94 36 86 46 72 46 C62 46 56 38 58 28Z" fill="${p.c1}" stroke="#164E63" stroke-width="2"/>
+      <path d="M62 20 L56 8 L68 16Z M80 16 L88 4 L88 20Z" fill="#F0ABFC" stroke="#A21CAF" stroke-width="1"/>
+      <path d="M90 30 C98 30 100 36 94 38" fill="#67E8F9"/>
+      <path d="M74 40 C80 42 86 40 90 36" stroke="#164E63" stroke-width="2" fill="none"/>
+      ${mood==="sleepy"?`<path d="M70 26 q4 3 8 0" stroke="#082F49" stroke-width="2.5" fill="none"/>`:`<ellipse cx="75" cy="27" rx="5" ry="4.5" fill="#FDE047"/><ellipse cx="75" cy="27" rx="1.6" ry="4" fill="#082F49"/><circle cx="75" cy="27" r="8" fill="#FDE047" opacity=".2"/>`}
+      ${stage===3?CROWN(12,"#67E8F9"):""}`,
+  kitsune: (p, stage, mood) => {
+    const tails = Array.from({length:9},(_,i)=>{ const a = (-160 + i*17.5)*Math.PI/180, x = 60+Math.cos(a)*52, y = 84+Math.sin(a)*52;
+      const d = `M60 88 Q${(60+Math.cos(a)*28).toFixed(1)} ${(84+Math.sin(a)*34).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+      return `<path d="${d}" stroke="#F9A8D4" stroke-width="12" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${p.c1}" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.5" fill="${p.c2}"><animate attributeName="r" values="5.5;7.5;5.5" dur="${1.6+i*.15}s" repeatCount="indefinite"/></circle><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="${p.c2}" opacity=".18"/>`; }).join("");
+    return `${tails}
+      <ellipse cx="60" cy="90" rx="22" ry="20" fill="${p.c1}" stroke="#FBCFE8" stroke-width="2"/>
+      <path d="M50 108 L50 96 M70 108 L70 96" stroke="#FBCFE8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M40 56 L38 30 L54 46Z M80 56 L82 30 L66 46Z" fill="${p.c1}" stroke="#FBCFE8" stroke-width="1.5"/><path d="M42 50 L41 36 L50 46Z M78 50 L79 36 L70 46Z" fill="#F9A8D4"/>
+      <path d="M40 60 C40 44 80 44 80 60 C80 72 70 78 60 78 C50 78 40 72 40 60Z" fill="${p.c1}" stroke="#FBCFE8" stroke-width="2"/>
+      <path d="M46 54 L50 50 M74 54 L70 50" stroke="#EC4899" stroke-width="2" stroke-linecap="round"/><path d="M58 44 C60 40 62 40 64 44" stroke="#EC4899" stroke-width="2" fill="none"/>
+      ${mood==="sleepy"?`<path d="M47 60 q4 3 8 0 M65 60 q4 3 8 0" stroke="#1F2430" stroke-width="2.4" fill="none"/>`:`<path d="M46 60 Q51 55 56 60 Q51 63 46 60Z M64 60 Q69 55 74 60 Q69 63 64 60Z" fill="#7C3AED"/><circle cx="52" cy="59.5" r="1.2" fill="#fff"/><circle cx="70" cy="59.5" r="1.2" fill="#fff"/>`}
+      <ellipse cx="60" cy="68" rx="2.6" ry="2" fill="#1F2430"/><path d="M56 72 q4 3 8 0" stroke="#1F2430" stroke-width="1.8" fill="none"/>
+      <circle cx="60" cy="92" r="6" fill="#FDF4FF" stroke="#F472B6" stroke-width="1.5"/><path d="M57 92 L60 88 L63 92 L60 96Z" fill="#F472B6"/>
+      ${stage===3?CROWN(40,"#F9A8D4"):""}`; },
+  seraph: (p, stage, mood) => `
+      <defs><radialGradient id="serc"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FEF3C7"/><stop offset="1" stop-color="#F59E0B"/></radialGradient>
+        <linearGradient id="serw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F0ABFC"/></linearGradient></defs>
+      ${[[-1,0],[1,0]].map(([d])=>`
+        <path d="M${60+d*12} 48 C${60+d*40} 20 ${60+d*58} 18 ${60+d*58} 8 C${60+d*50} 30 ${60+d*36} 40 ${60+d*14} 54Z" fill="url(#serw)" stroke="#E9D5FF" stroke-width="1.2"/>
+        <path d="M${60+d*12} 58 C${60+d*44} 52 ${60+d*58} 62 ${60+d*60} 70 C${60+d*44} 66 ${60+d*30} 66 ${60+d*12} 64Z" fill="url(#serw)" stroke="#E9D5FF" stroke-width="1.2"/>
+        <path d="M${60+d*12} 70 C${60+d*36} 84 ${60+d*44} 100 ${60+d*42} 108 C${60+d*32} 96 ${60+d*24} 86 ${60+d*10} 78Z" fill="url(#serw)" stroke="#E9D5FF" stroke-width="1.2"/>`).join("")}
+      <ellipse cx="60" cy="16" rx="18" ry="4.5" fill="none" stroke="#FDE68A" stroke-width="3"><animate attributeName="stroke-opacity" values=".5;1;.5" dur="2.2s" repeatCount="indefinite"/></ellipse>
+      <circle cx="60" cy="48" r="20" fill="url(#serc)" stroke="#FBBF24" stroke-width="2"/>
+      ${mood==="sleepy"?`<path d="M50 46 q4 3 8 0 M62 46 q4 3 8 0" stroke="#7C2D12" stroke-width="2.4" fill="none"/>`:`<path d="M50 47 q4 -4 8 0 M62 47 q4 -4 8 0" stroke="#7C2D12" stroke-width="2.4" fill="none" stroke-linecap="round"/>`}
+      <path d="M54 56 q6 5 12 0" stroke="#7C2D12" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <circle cx="60" cy="36" r="2.6" fill="#A855F7"/>
+      <path d="M48 76 L72 76 L66 104 L54 104Z" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1.5"/>
+      <path d="M60 78 V100 M44 84 L76 84" stroke="#B45309" stroke-width="2"/><path d="M44 84 L40 94 L48 94Z M76 84 L72 94 L80 94Z" fill="#FBBF24" stroke="#B45309" stroke-width="1"/>
+      <path d="M38 94 Q44 99 50 94 M70 94 Q76 99 82 94" stroke="#B45309" stroke-width="1.5" fill="none"/>
+      ${[0,1,2,3,4,5].map(i=>{ const a = (i*60-90)*Math.PI/180; return `<circle cx="${(60+30*Math.cos(a)).toFixed(1)}" cy="${(48+30*Math.sin(a)).toFixed(1)}" r="1.8" fill="#FDE68A"><animate attributeName="opacity" values=".2;1;.2" dur="${1.4+i*.2}s" repeatCount="indefinite"/></circle>`; }).join("")}`
 };
 
 /* ---------- reactions ---------- */
@@ -377,12 +483,13 @@ CS.petMood = () => { const s = S(), today = s.days[CS.today()]||0, h = new Date(
 
 /* ---------- Pets view ---------- */
 CS.render = CS.render || {};
-let petFilter = "all";
+let petFilter = "all", petSet = CS.COURSE;
 CS.render.pets = () => {
   const P = st(), v = $("#v-pets"), egg = P.eggs[0], A = P.active ? CS.PET[P.active] : null, ownedN = Object.keys(P.owned).length;
   const mood = CS.petMood(), moodTxt = {happy:"is happy you're studying today.", sleepy:"is sleepy. Answer a question to wake it up.", sad:"is worried about your streak!"}[mood];
-  const list = MACRO.filter(p => petFilter==="all" || p.r===petFilter).sort((a,b)=>ORDER.indexOf(a.r)-ORDER.indexOf(b.r));
-  v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Macroeconomics pets</span><h1>Pets</h1><p class="muted">Earn a mystery egg for every ${EGG_EVERY} questions you answer, then hatch it with ${EGG_NEED} correct answers. Every egg has the same odds of every pet. ${ownedN}/${MACRO.length} discovered.</p></div></div>
+  const SETP = CS.PET_SETS[petSet].pets;
+  const list = SETP.filter(p => petFilter==="all" || p.r===petFilter).sort((a,b)=>ORDER.indexOf(a.r)-ORDER.indexOf(b.r));
+  v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(CS.C.name)} eggs hatch ${esc(CS.C.name)} pets</span><h1>Pets</h1><p class="muted">Earn a mystery egg for every ${EGG_EVERY} questions you answer, then hatch it with ${EGG_NEED} correct answers. Every egg has the same odds of every pet. ${ownedN}/${MACRO.length} discovered.</p></div></div>
     <div class="pet-top">
       <div class="panel pet-active">
         ${A ? `<span class="eyebrow" style="color:${CS.RARITY[A.r].col}">Active pet · ${CS.RARITY[A.r].n}</span>
@@ -406,13 +513,14 @@ CS.render.pets = () => {
         <div class="stack" style="gap:6px"><span class="eyebrow">What's inside every egg</span><div class="odds">${ORDER.map(k=>`<div><i style="background:${CS.RARITY[k].col}"></i><b>${CS.RARITY[k].n}</b><span>${CS.RARITY[k].p}% · +${Math.round(CS.RARITY[k].boost*100)}% XP</span></div>`).join("")}</div></div>
       </div>
     </div>
-    <div class="spread"><h2>Collection</h2><div class="chips">${["all",...ORDER].map(k=>`<button class="chip" aria-pressed="${petFilter===k}" data-pf="${k}">${k==="all"?"All":CS.RARITY[k].n}</button>`).join("")}</div></div>
+    <div class="spread"><div class="row-wrap" style="gap:10px"><h2>Collection</h2><div class="seg" role="group" aria-label="Pet set" style="width:auto">${Object.entries(CS.PET_SETS).map(([k,v])=>`<button data-ps="${k}" aria-pressed="${petSet===k}">${esc(v.name.replace("economics",""))} · ${v.pets.filter(p=>P.owned[p.id]).length}/${v.pets.length}</button>`).join("")}</div></div><div class="chips">${["all",...ORDER].map(k=>`<button class="chip" aria-pressed="${petFilter===k}" data-pf="${k}">${k==="all"?"All":CS.RARITY[k].n}</button>`).join("")}</div></div>
     <div class="pet-grid">${list.map(p=>{ const o = P.owned[p.id], R = CS.RARITY[p.r];
       return `<button class="pet-card ${o?"own":""} ${P.active===p.id?"act":""}" data-pid="${p.id}" style="--col:${R.col};--glow:${R.glow}" ${o?"":"aria-disabled=\"true\""}>
         <span class="rar ${p.r==="supreme"?"sup":""}" style="color:${R.col}">${R.n}</span>${CS.petSVG(p.id, {size:92, locked:!o, stage:o?CS.petStage(p.id):1})}
         <b class="small">${o?esc(p.n):"???"}</b><span class="tiny muted">${p.p}% · ${p.u?`Unit ${p.u}`:"Every unit"}${o&&o.copies>1?` · ×${o.copies}`:""}</span>
         ${o?`<span class="tiny">${P.active===p.id?"Active":"Lv "+CS.petLevel(p.id)}</span>`:""}</button>`; }).join("")}</div>`;
   $$("#v-pets [data-pf]").forEach(b => b.onclick = () => { petFilter = b.dataset.pf; CS.render.pets(); });
+  $$("#v-pets [data-ps]").forEach(b => b.onclick = () => { petSet = b.dataset.ps; CS.render.pets({keepScroll:true}); });
   $$("#v-pets [data-pid]").forEach(b => b.onclick = () => { const id = b.dataset.pid; if (!P.owned[id]) return; petDetail(id); });
 };
 function petDetail(id){
@@ -434,7 +542,7 @@ CS.petCard = () => {
     <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="eyebrow">${A?esc(A.n):"Your pet"}</span>
       ${egg ? `<b>${CS.RARITY[egg.r].n} egg: ${egg.need-egg.prog} correct answer${egg.need-egg.prog===1?"":"s"} to hatch</b><div class="meter thin"><i style="width:${egg.prog/egg.need*100}%;background:${CS.RARITY[egg.r].col}"></i></div>`
         : `<b>Next mystery egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</b><div class="meter thin"><i style="width:${(EGG_EVERY-CS.nextEggIn())/EGG_EVERY*100}%"></i></div>`}
-      <span class="muted tiny">${A?`Lv ${CS.petLevel(A.id)} ${STAGE[CS.petStage(A.id)]} · +${Math.round(CS.RARITY[A.r].boost*100)}% XP`:`${Object.keys(P.owned).length}/${MACRO.length} pets discovered`}</span></div></div>`;
+      <span class="muted tiny">${A?`Lv ${CS.petLevel(A.id)} ${STAGE[CS.petStage(A.id)]} · +${Math.round(CS.RARITY[A.r].boost*100)}% XP`:`${SET.filter(p=>P.owned[p.id]).length}/${SET.length} pets discovered`}</span></div></div>`;
 };
 })();
 /* pet badges */
@@ -444,7 +552,7 @@ CS.petCard = () => {
     {k:"pets10", n:"Collector", d:"Discover 10 pets", ic:"paw", t:()=>Object.keys(P().owned).length>=10},
     {k:"petleg", n:"Legend tamer", d:"Hatch a legendary pet", ic:"star", t:()=>Object.keys(P().owned).some(id=>CS.PET[id].r==="legendary")},
     {k:"petmyth", n:"Mythbuster", d:"Hatch a mythical pet", ic:"star", t:()=>Object.keys(P().owned).some(id=>CS.PET[id].r==="mythical")},
-    {k:"petsup", n:"Supreme being", d:"Hatch the Supreme Mythical pet", ic:"medal", t:()=>!!P().owned.celestial},
-    {k:"petall", n:"Gotta study 'em all", d:"Discover every pet", ic:"medal", t:()=>Object.keys(P().owned).length>=CS.PETS.length}
+    {k:"petsup", n:"Supreme being", d:"Hatch the Supreme Mythical pet", ic:"medal", t:()=>!!(P().owned.celestial||P().owned.seraph)},
+    {k:"petall", n:"Gotta study 'em all", d:"Discover every pet", ic:"medal", t:()=>CS.PETS.every(p=>P().owned[p.id])}
   );
 })();

@@ -16,6 +16,7 @@ function axes(xl, yl){
 const path = pts => pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
 /* y as a function of x for each curve kind, shifted right by dx */
 function fy(c, dx){
+  dx += c.off || 0;
   if (c.kind === "down") return x => 100 - (x - dx);
   if (c.kind === "up") return x => (x - dx);
   if (c.kind === "convex") return x => 4 + 1800/((x - dx) + 10) - 12;
@@ -23,8 +24,8 @@ function fy(c, dx){
 }
 function curvePts(c, dx){
   if (c.kind === "vert") { const x = c.at + dx; return [[x,5],[x,95]]; }
-  const f = fy(c, dx), pts = [];
-  for (let x=4; x<=96; x+=1) { const y = f(x); if (y>=4 && y<=96 && (x-dx)>-9) pts.push([x,y]); }
+  const f = fy(c, dx), pts = [], d = dx + (c.off||0);
+  for (let x=4; x<=96; x+=1) { const y = f(x); if (y>=4 && y<=96 && (x-d)>-9) pts.push([x,y]); }
   return pts;
 }
 function intersect(a, da, b, db){
@@ -87,8 +88,42 @@ CS.figure = key => {
     s += `<path d="${path(pts)}" stroke="var(--accent)" stroke-width="2.6" fill="none"/>`;
     s += `<text x="${X(19)}" y="${Y(46)}" text-anchor="middle" font-size="11" fill="var(--ink)" ${MONO}>peak</text><text x="${X(50)}" y="${Y(38)}" text-anchor="middle" font-size="11" fill="var(--ink)" ${MONO}>trough</text>`;
     s += `<text x="${X(34)}" y="${Y(62)}" text-anchor="middle" font-size="10" fill="var(--muted)" ${MONO}>contraction</text><text x="${X(66)}" y="${Y(36)}" text-anchor="middle" font-size="10" fill="var(--muted)" ${MONO}>expansion</text>`;
+  } else if (MICROFIG[key]) {
+    const f = MICROFIG[key](); title = f.title; s = f.s;
   }
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${CS.esc(title)}">${s}</svg>`;
+};
+
+/* ---------- microeconomics figures (firm graphs) ---------- */
+const fn = (f, a=4, b=96) => range(a, b, 92).map(x=>[x, f(x)]).filter(p=>p[1]>=3 && p[1]<=97);
+const crv = (pts, col="--accent", dash) => `<path d="${path(pts)}" fill="none" stroke="var(${col})" stroke-width="2.6" stroke-linecap="round" ${dash?'stroke-dasharray="6 4"':""}/>`;
+const lbl = (x, y, t, col="--accent", anchor="start") => `<text x="${X(x)}" y="${Y(y)}" text-anchor="${anchor}" font-size="11.5" font-weight="700" fill="var(${col})" ${MONO}>${CS.esc(t)}</text>`;
+const dot = (x, y) => `<circle cx="${X(x)}" cy="${Y(y)}" r="4" fill="var(--ink)"/>`;
+const drop = (x, y, ty, tx) => `<path d="M${X(0)} ${Y(y)} L${X(x)} ${Y(y)} L${X(x)} ${Y(0)}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3" fill="none" opacity=".65"/>` + (ty?`<text x="${X(0)-4}" y="${Y(y)+4}" text-anchor="end" font-size="10" fill="var(--muted)" ${MONO}>${ty}</text>`:"") + (tx?`<text x="${X(x)}" y="${Y(0)+13}" text-anchor="middle" font-size="10" fill="var(--muted)" ${MONO}>${tx}</text>`:"");
+const rect = (x0, y0, x1, y1, col="--mint") => `<rect x="${X(x0)}" y="${Y(Math.max(y0,y1))}" width="${X(x1)-X(x0)}" height="${Math.abs(Y(y0)-Y(y1))}" fill="var(${col})" opacity=".22"/>`;
+const poly = (pts, col="--bad") => `<path d="${path(pts)} Z" fill="var(${col})" opacity=".22"/>`;
+const MC = x => 24.7 + 0.0325*(x-30)*(x-30), ATC = x => 45 + 0.013*(x-55)*(x-55), AVC = x => 32 + 0.012*(x-45)*(x-45);
+const MICROFIG = {
+  costs: () => ({title:"Short-run cost curves", s: axes("Quantity","Cost per unit") + crv(fn(MC,6,86)) + crv(fn(ATC,8,94),"--curve2") + crv(fn(AVC,8,94),"--muted",true)
+    + crv(fn(x=>16*20/(x+4)+2,8,94),"--faint",true) + lbl(70,94,"MC") + lbl(94,ATC(94)+4,"ATC","--curve2","end") + lbl(94,AVC(94)-6,"AVC","--muted","end") + lbl(94,10,"AFC","--faint","end") + dot(55,45) + dot(45,32)}),
+  pcfirm: () => { const P = 62, q = 30 + Math.sqrt((P-24.7)/0.0325), c = ATC(q);
+    return {title:"Perfectly competitive firm earning a profit", s: axes("Quantity","Price and cost") + rect(0,c,q,P) + crv(fn(MC,6,86)) + crv(fn(ATC,8,94),"--curve2") + crv(fn(AVC,8,94),"--muted",true)
+      + `<path d="M${X(0)} ${Y(P)} L${X(96)} ${Y(P)}" stroke="var(--ink)" stroke-width="2.2"/>` + lbl(3,P+3,"P = MR = D","--ink","start") + lbl(70,94,"MC") + lbl(94,ATC(94)+4,"ATC","--curve2","end") + lbl(94,AVC(94)-6,"AVC","--muted","end")
+      + drop(q,c,"ATC",null) + drop(q,P,"P","q*") + dot(q,P) + lbl(q/2,(P+c)/2-1.5,"profit","--good","middle")}; },
+  monopoly: () => { const D = x => 90-0.9*x, MR = x => 90-1.8*x, mc = x => 12+0.4*x, q = 78/2.2, p = D(q), c = 40+0.012*(q-45)*(q-45);
+    return {title:"Monopoly", s: axes("Quantity","Price and cost") + rect(0,c,q,p) + poly([[q,p],[q,mc(q)],[60,36]]) + crv(fn(D,4,96)) + crv(fn(MR,4,49)) + crv(fn(mc,4,96),"--curve2") + crv(fn(x=>40+0.012*(x-45)*(x-45),6,94),"--muted",true)
+      + lbl(92,D(92)+4,"D","--accent","end") + lbl(49,MR(49)+5,"MR") + lbl(94,mc(94)+4,"MC","--curve2","end") + lbl(10,40+0.012*35*35+4,"ATC","--muted")
+      + drop(q,p,"Pm","Qm") + drop(60,36,null,"Qe") + dot(q,p) + lbl(q/2,(p+c)/2-1.5,"profit","--good","middle") + lbl(52,48,"DWL","--bad","middle")}; },
+  mcomp: () => { const D = x => 61.6-0.48*x, MR = x => 61.6-0.96*x, mc = x => 26.5+0.015*(x-25)*(x-25), atc = x => 40+0.012*(x-55)*(x-55);
+    return {title:"Monopolistic competition in the long run", s: axes("Quantity","Price and cost") + crv(fn(D,4,96)) + crv(fn(MR,4,62)) + crv(fn(mc,4,90),"--curve2") + crv(fn(atc,6,94),"--muted")
+      + lbl(94,D(94)+4,"D","--accent","end") + lbl(60,MR(60)+5,"MR") + lbl(86,mc(86)+4,"MC","--curve2","end") + lbl(94,atc(94)+4,"ATC","--muted","end")
+      + drop(35,D(35),"P","Q") + dot(35,D(35)) + drop(55,40,null,"min ATC") + lbl(45,14,"excess capacity","--bad","middle")}; },
+  laborfirm: () => { const MRP = x => 92-1.15*x+0.004*x*x, W = 45, q = 44.2;
+    return {title:"Firm in a perfectly competitive labor market", s: axes("Quantity of labor","Wage") + crv(fn(MRP,4,90)) + `<path d="M${X(0)} ${Y(W)} L${X(96)} ${Y(W)}" stroke="var(--curve2)" stroke-width="2.6"/>`
+      + lbl(95,W+3,"W = MRC = S","--curve2","end") + lbl(84,MRP(84)+5,"MRP = D","--accent","end") + drop(q,W,"W","q*") + dot(q,W)}; },
+  extfig: () => { const D = x => 90-0.9*x, S = x => 6+0.9*x, MSC = x => 26+0.9*x, qm = 84/1.8, qs = 64/1.8;
+    return {title:"Negative externality", s: axes("Quantity","Price") + poly([[qs,D(qs)],[qm,MSC(qm)],[qm,D(qm)]]) + crv(fn(D)) + crv(fn(S),"--curve2") + crv(fn(MSC),"--bad",true)
+      + lbl(92,D(92)+4,"D = MSB","--accent","end") + lbl(94,S(94)-6,"S = MPC","--curve2","end") + lbl(76,MSC(76)+4,"MSC","--bad","end") + drop(qm,D(qm),null,"Qm") + drop(qs,D(qs),null,"Qs") + lbl(qm+7,D(qm)+12,"DWL","--bad","middle")}; }
 };
 
 /* small sparkline chart for Fed Chair: series [{vals, col, label}], target lines */

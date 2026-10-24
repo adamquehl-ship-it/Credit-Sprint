@@ -1,4 +1,5 @@
-/* Credit Sprint games: Daily Challenge, Boss Battle, Shift It, Sprint, Fed Chair, Match-up, Chain Reaction, True or False, Number Crunch. */
+/* Credit Sprint games: Daily Challenge, Boss Battle, Shift It, Sprint, Chain Reaction, True or False, Number Crunch, Match-up,
+   plus Fed Chair (Macro) or Profit Max and Nash Hunt (Micro). */
 (function(){
 "use strict";
 const CS = window.CS, $ = CS.$, $$ = CS.$$, esc = CS.esc, I = CS.icon;
@@ -13,10 +14,13 @@ const GAMES = [
   {k:"boss", n:"Boss Battle", ic:"sword", d:"Take on a unit boss. Every correct answer deals damage; three misses and you're out.", best:()=>{ const n = Object.values(S().bosses).filter(Boolean).length; return `${n}/6 bosses beaten`; }},
   {k:"shift", n:"Shift It", ic:"chart", d:"A headline hits the economy. Shift the right curve the right way before the clock runs out.", best:()=>S().best.shift!=null?`Best: ${S().best.shift}/10`:"Not played yet"},
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
-  {k:"chain", n:"Chain Reaction", ic:"link", d:"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP.", best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
+  {k:"chain", n:"Chain Reaction", ic:"link", d:CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP.", best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
-  {k:"crunch", n:"Number Crunch", ic:"calc", d:"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number.", best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true},
-  {k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"},
+  {k:"crunch", n:"Number Crunch", ic:"calc", d:CS.COURSE==="micro"?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number.", best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true},
+  ...(CS.COURSE==="micro" ? [] : [{k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"}]),
+  ...(CS.COURSE==="micro" ? [
+    {k:"profit", n:"Profit Max", ic:"calc", d:"You run the firm. Read the cost table, find where MR = MC, and pick the output that maximizes profit (or shut down).", best:()=>S().best.profit!=null?`Best: ${S().best.profit}/6`:"Not played yet"},
+    {k:"nash", n:"Nash Hunt", ic:"sword", d:"Payoff matrices, fast. Spot dominant strategies and Nash equilibria before your rival does.", best:()=>S().best.nash!=null?`Best: ${S().best.nash}/8`:"Not played yet"}] : []),
   {k:"match", n:"Match-up", ic:"cards", d:"Match six terms to their definitions as fast as you can.", best:()=>S().best.match!=null?`Best: ${S().best.match.toFixed(1)}s`:"Not played yet"}
 ];
 
@@ -33,10 +37,10 @@ CS.render.games = (o) => {
     $$("#v-games [data-g]").forEach(b => b.onclick = () => CS.render.games({game:b.dataset.g}));
     return;
   }
-  const g = GAMES.find(x=>x.k===active);
+  let g = GAMES.find(x=>x.k===active); if (!g) { active = null; return CS.render.games({}); }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); S().games = (S().games||0)+1; CS.refresh(); }
 document.addEventListener("keydown", e => { const a = $("#g-area"); if (a && a._key && !$("#v-games").hidden && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) a._key(e); });
@@ -76,7 +80,8 @@ function daily(area){
 
 /* ---------- Boss Battle ---------- */
 function boss(area){
-  const BOSSES = {1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"};
+  const BOSSES = CS.COURSE === "micro" ? {1:"The Scarcity Specter",2:"The Elasticity Eel",3:"The Marginal Cost Golem",4:"The Monopoly Overlord",5:"The Wage Warden",6:"The Externality Ooze"}
+    : {1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"};
   if (!bossUnit) return choose();
   fight(bossUnit);
   function choose(){
@@ -178,7 +183,7 @@ function tf(area){
 /* ---------- Number Crunch ---------- */
 function crunch(area){
   const SECS = 120;
-  area.innerHTML = `<p style="max-width:62ch">Two minutes of macro math with fresh numbers every time. Type your answer and press Enter. Skipping costs 5 seconds.</p><div><button class="btn lg" id="n-go">Start</button></div>`;
+  area.innerHTML = `<p style="max-width:62ch">Two minutes of ${CS.C.short.toLowerCase()} math with fresh numbers every time. Type your answer and press Enter. Skipping costs 5 seconds.</p><div><button class="btn lg" id="n-go">Start</button></div>`;
   $("#n-go").onclick = go;
   function go(){
     let right = 0, n = 0, end = Date.now()+SECS*1000, over = false, last = "";
@@ -214,7 +219,7 @@ function shift(area){
   intro();
   function intro(){
     area.innerHTML = `<p style="max-width:62ch">Each round shows a news headline and the right graph. Pick the curve that shifts and the direction. You have ${LIMIT} seconds, and faster answers score more.</p>
-      <p class="muted small">Right = increase, left = decrease. In Phillips-curve rounds, right also means up.</p><div><button class="btn accent" id="s-go">Start · ${ROUNDS} rounds</button></div>`;
+      <p class="muted small">Right = increase, left = decrease.${CS.COURSE==="macro"?" In Phillips-curve rounds, right also means up.":" For supply and cost curves, a shift left is the same as a shift up."}</p><div><button class="btn accent" id="s-go">Start · ${ROUNDS} rounds</button></div>`;
     $("#s-go").onclick = round;
   }
   function round(){
@@ -250,7 +255,7 @@ function shift(area){
     const nb = CS.setBest("shift", correct); CS.setBest("shiftPts", pts); finish(pts/10);
     area.innerHTML = `<span class="eyebrow">Shift It · results</span><div class="result-big mono">${correct}/${ROUNDS}</div>
       <p class="muted">${pts} points${nb?" · new personal best":""}. ${correct>=9?"You read graphs like an economist.":correct>=6?"Solid. The misses are worth a second look in Graph Lab.":"Open Graph Lab and practice shifting each curve."}</p>
-      <div class="row-wrap"><button class="btn" id="s-again">Play again</button><button class="btn ghost" data-go="learn" data-lab="adas">Open Graph Lab</button></div>`;
+      <div class="row-wrap"><button class="btn" id="s-again">Play again</button><button class="btn ghost" data-go="learn" data-lab="${CS.COURSE==="micro"?"sd":"adas"}">Open Graph Lab</button></div>`;
     $("#s-again").onclick = () => shift(area);
   }
 }
@@ -362,6 +367,125 @@ function fed(area){
       <div class="stack"><div class="panel" style="padding:14px">${CS.lines([{vals:st.hist.pi,col:"--accent"},{vals:st.hist.u,col:"--curve2"}],{n:QTRS+1,lo:0,hi:10,title:"Your term",targets:[{v:2,col:"--accent"},{v:4.5,col:"--curve2"}]})}</div>
       <div class="log">${st.log.slice().reverse().map(l=>`<div>${l}</div>`).join("")}</div></div></div>`;
     $("#f-again").onclick = () => fed(area);
+  }
+}
+
+/* ---------- Profit Max (Micro) ---------- */
+function profit(area){
+  const ROUNDS = 6; let i = 0, right = 0, pts = 0;
+  const ri = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+  function makeRound(){
+    for (let tries = 0; tries < 200; tries++) {
+      const mono = Math.random() < 0.45, sc = ri(1,2), m = ri(5,14), fc = ri(2,8)*5;
+      const mc = [m+6, m, m+3, m+8, m+15, m+24].map(x=>x*sc);
+      const tc = [fc]; mc.forEach((x,k)=>tc.push(tc[k]+x));
+      let price = null, prices = null;
+      if (mono) { const a = ri(14,30)*sc*2, b = ri(2,5)*sc; prices = [0,1,2,3,4,5,6].map(q=>a-b*q); if (prices[6] <= 0) continue; }
+      else { price = ri(m-2, m+26)*sc; if (mc.includes(price)) continue; }
+      const P = q => mono ? prices[q] : price, prof = [0,1,2,3,4,5,6].map(q => q === 0 ? -fc : P(q)*q - tc[q]);
+      const best = Math.max(...prof); if (prof.filter(x=>x===best).length > 1) continue;
+      return {mono, fc, mc, tc, price, prices, prof, ans:prof.indexOf(best)};
+    }
+  }
+  intro();
+  function intro(){
+    area.innerHTML = `<p style="max-width:62ch">You're the manager. Each round gives you a cost table. Some rounds you're a price taker in perfect competition; some rounds you're a monopoly with a demand schedule. Choose the output that maximizes profit. Choose 0 to shut down.</p>
+      <p class="muted small">Tip: find marginal cost (the change in TC), compare it with marginal revenue, and produce every unit where MR ≥ MC. Shut down if price can't cover average variable cost.</p><div><button class="btn accent" id="pm-go">Start · ${ROUNDS} rounds</button></div>`;
+    $("#pm-go").onclick = round;
+  }
+  function round(){
+    if (i >= ROUNDS) return end();
+    const r = makeRound(), t0 = Date.now();
+    const table = (reveal) => `<div class="ptable-wrap"><table class="ptable"><thead><tr><th>Q</th>${r.mono?"<th>Price</th>":""}<th>Total cost</th>${reveal?`<th>MC</th><th>MR</th><th>Profit</th>`:""}</tr></thead><tbody>
+      ${[0,1,2,3,4,5,6].map(q=>{ const tr = (r.mono?r.prices[q]:r.price)*q, ptr = q?(r.mono?r.prices[q-1]:r.price)*(q-1):0;
+        return `<tr class="${reveal&&q===r.ans?"best":""}"><td><b>${q}</b></td>${r.mono?`<td>${q?"$"+r.prices[q]:"—"}</td>`:""}<td>$${r.tc[q]}</td>${reveal?`<td>${q?"$"+r.mc[q-1]:"—"}</td><td>${q?"$"+(tr-ptr):"—"}</td><td class="${r.prof[q]<0?"neg":""}">${r.prof[q]<0?"−$"+(-r.prof[q]):"$"+r.prof[q]}</td>`:""}</tr>`; }).join("")}</tbody></table></div>`;
+    area.innerHTML = `<div class="hud"><span>Round <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span><span>Points <b>${pts}</b></span></div>
+      <div class="guide" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start">
+        <div class="stack"><span class="eyebrow">${r.mono?"Monopoly · you set the price on demand":"Perfect competition · price taker"}</span>
+          <p class="event">${r.mono?"Your firm is the only seller. The table shows the price you can charge at each output.":`The market price is <b>$${r.price}</b>. You can sell as many units as you want at that price.`}</p>
+          <p class="muted small">Fixed cost is $${r.fc} (the total cost at Q = 0).</p>
+          <span class="eyebrow">How many units should you produce?</span>
+          <div class="qpick">${[0,1,2,3,4,5,6].map(q=>`<button data-q="${q}">${q}</button>`).join("")}</div><div id="pm-fb"></div></div>
+        <div id="pm-table">${table(false)}</div></div>`;
+    let done = false;
+    const pick = q => { if (done) return; done = true; const ok = q === r.ans; CS.record({u:r.mono?4:3}, ok, false);
+      if (ok) { right++; pts += 100 + Math.max(0, 50 - Math.round((Date.now()-t0)/1000)*2); }
+      $$("[data-q]", area).forEach(b => { b.disabled = true; if (+b.dataset.q === r.ans) b.classList.add("right"); else if (+b.dataset.q === q) b.classList.add("wrong"); });
+      $("#pm-table").innerHTML = table(true);
+      const why = r.ans === 0 ? `Shut down: at every output the loss is bigger than the fixed cost of $${r.fc}, because price never covers average variable cost.`
+        : `Produce ${r.ans}: profit is highest there (see the table).${r.ans<6?` Unit ${r.ans+1} would add more to cost (MC $${r.mc[r.ans]}) than to revenue.`:""} ${r.prof[r.ans]>=0?`Profit: $${r.prof[r.ans]}.`:`That's a loss of $${-r.prof[r.ans]}, but smaller than shutting down (−$${r.fc}).`}${r.mono?` Charge $${r.prices[r.ans]}, the price on demand.`:""}`;
+      $("#pm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Profit maximized.":"Not quite."}</b> ${esc(why)}</div><div style="margin-top:10px"><button class="btn" id="pm-next">${i+1<ROUNDS?"Next firm":"See results"}</button></div>`;
+      $("#pm-next").onclick = () => { i++; round(); }; $("#pm-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#pm-next").click(); };
+    };
+    $$("[data-q]", area).forEach(b => b.onclick = () => pick(+b.dataset.q));
+    area._key = e => { if (/^[0-6]$/.test(e.key)) pick(+e.key); };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("profit", right); finish(pts/10);
+    area.innerHTML = `<span class="eyebrow">Profit Max · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=5?"You think like an economist: every unit where MR ≥ MC.":"Remember: compare MR with MC one unit at a time, and shut down only if price is below AVC."}</p>
+      <div class="row-wrap"><button class="btn" id="pm-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="3">Review Unit 3</button></div>`;
+    $("#pm-again").onclick = () => { i = 0; right = 0; pts = 0; round(); };
+  }
+}
+
+/* ---------- Nash Hunt (Micro) ---------- */
+function nash(area){
+  const ROUNDS = 8; let i = 0, right = 0, streak = 0, pts = 0;
+  const NAMES = [["Alpha","Beta"],["Nova","Orbit"],["Brewhaus","Daily Grind"],["Lin","Sam"],["Red Co","Blue Co"],["Kite","Comet"]];
+  const STRATS = [["High price","Low price"],["Advertise","Don't"],["Expand","Wait"],["Enter","Stay out"],["Cooperate","Cheat"]];
+  const ri = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+  function analyze(M){ // M[r][c] = [rowPay, colPay]
+    const rowDom = [0,1].find(a => [0,1].every(c => M[a][c][0] > M[1-a][c][0]));
+    const colDom = [0,1].find(b => [0,1].every(r => M[r][b][1] > M[r][1-b][1]));
+    const ne = []; [0,1].forEach(r => [0,1].forEach(c => { if (M[r][c][0] >= M[1-r][c][0] && M[r][c][1] >= M[r][1-c][1]) ne.push(r*2+c); }));
+    return {rowDom, colDom, ne};
+  }
+  function makeGame(){
+    const ev = window.CS_EVENTS && Math.random() < .4 ? window.CS_EVENTS[ri(0, window.CS_EVENTS.length-1)] : null;
+    if (ev) return {names:[ev[0],ev[1]], rs:[ev[2],ev[3]], cs:[ev[4],ev[5]], M:[[ev[6][0],ev[6][1]],[ev[6][2],ev[6][3]]]};
+    for (;;) { const M = [[[ri(1,9),ri(1,9)],[ri(1,9),ri(1,9)]],[[ri(1,9),ri(1,9)],[ri(1,9),ri(1,9)]]];
+      if ([0,1].some(c => M[0][c][0] === M[1][c][0]) || [0,1].some(r => M[r][0][1] === M[r][1][1])) continue;
+      const nm = NAMES[ri(0,NAMES.length-1)], st = STRATS[ri(0,STRATS.length-1)];
+      return {names:nm, rs:st, cs:st, M:M.map(row=>row.map(c=>c.map(x=>x*10)))}; }
+  }
+  intro();
+  function intro(){
+    area.innerHTML = `<p style="max-width:62ch">Each round shows a payoff matrix: the first number in each cell goes to the row player, the second to the column player. Answer fast: streaks earn bonus points.</p>
+      <p class="muted small">Dominant strategy: best no matter what the other player does. Nash equilibrium: no one wants to switch alone.</p><div><button class="btn accent" id="nh-go">Start · ${ROUNDS} rounds</button></div>`;
+    $("#nh-go").onclick = round;
+  }
+  function round(){
+    if (i >= ROUNDS) return end();
+    const g = makeGame(), A = analyze(g.M), t0 = Date.now(), kind = ["row","col","ne"][ri(0,2)], [rn, cn] = g.names;
+    const cellTxt = k => { const r = k>>1, c = k&1; return `${g.rs[r]} / ${g.cs[c]}`; };
+    let q, opts, isRight;
+    if (kind === "row") { q = `Does ${rn} have a dominant strategy?`; opts = [`Yes: ${g.rs[0]}`, `Yes: ${g.rs[1]}`, "No dominant strategy"]; const a = A.rowDom==null?2:A.rowDom; isRight = j => j === a; }
+    else if (kind === "col") { q = `Does ${cn} have a dominant strategy?`; opts = [`Yes: ${g.cs[0]}`, `Yes: ${g.cs[1]}`, "No dominant strategy"]; const a = A.colDom==null?2:A.colDom; isRight = j => j === a; }
+    else { q = `Pick a Nash equilibrium (${rn} / ${cn}).`; opts = [0,1,2,3].map(cellTxt).concat(["No pure-strategy equilibrium"]); isRight = j => j === 4 ? !A.ne.length : A.ne.includes(j); }
+    area.innerHTML = `<div class="hud"><span>Round <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span><span>Streak <b>${streak}</b></span><span>Points <b>${pts}</b></span></div>
+      <div class="guide" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start">
+        <div class="matrix-wrap"><table class="matrix"><thead><tr><th class="corner"><span>${esc(rn)} ↓</span><span>${esc(cn)} →</span></th><th>${esc(g.cs[0])}</th><th>${esc(g.cs[1])}</th></tr></thead><tbody>
+          ${[0,1].map(r=>`<tr><th>${esc(g.rs[r])}</th>${[0,1].map(c=>`<td data-cell="${r*2+c}"><span class="rp">${g.M[r][c][0]}</span>, <span class="cp">${g.M[r][c][1]}</span></td>`).join("")}</tr>`).join("")}</tbody></table>
+          <p class="tiny muted"><span class="rp">${esc(rn)}</span>'s payoff first, <span class="cp">${esc(cn)}</span>'s second.</p></div>
+        <div class="stack"><p class="qtext">${esc(q)}</p><div class="opts">${opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o)}</span></button>`).join("")}</div><div id="nh-fb"></div></div></div>`;
+    let done = false;
+    const pick = j => { if (done) return; done = true; const ok = isRight(j); CS.record({u:4}, ok, false);
+      if (ok) { right++; streak++; pts += 100 + Math.max(0, 40 - Math.round((Date.now()-t0)/1000)*2) + (streak>=3?25:0); } else streak = 0;
+      $$(".opt", area).forEach((b,k) => { b.disabled = true; if (isRight(k)) b.classList.add("right"); else if (k === j) b.classList.add("wrong"); });
+      A.ne.forEach(k => { const td = $(`[data-cell="${k}"]`, area); if (td) td.classList.add("ne"); });
+      const domTxt = (who, d, names) => d==null ? `${who} has no dominant strategy` : `${who}'s dominant strategy is ${names[d]}`;
+      const why = `${domTxt(rn, A.rowDom, g.rs)}; ${domTxt(cn, A.colDom, g.cs)}. ${A.ne.length?`Nash equilibri${A.ne.length>1?"a":"um"}: ${A.ne.map(cellTxt).join(" and ")} (highlighted).`:"There's no pure-strategy Nash equilibrium."}`;
+      $("#nh-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?(streak>=3?"Streak bonus!":"Correct."):"Not quite."}</b> ${esc(why)}</div><div style="margin-top:10px"><button class="btn" id="nh-next">${i+1<ROUNDS?"Next matrix":"See results"}</button></div>`;
+      $("#nh-next").onclick = () => { i++; round(); }; $("#nh-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#nh-next").click(); };
+    };
+    $$(".opt", area).forEach(b => b.onclick = () => pick(+b.dataset.j));
+    area._key = e => { if (["1","2","3","4","5"].includes(e.key) && +e.key <= opts.length) pick(+e.key-1); };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("nash", right); finish(pts/10);
+    area.innerHTML = `<span class="eyebrow">Nash Hunt · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=7?"Game theorist status.":"Check one player at a time: cover up the other player's numbers and compare."}</p>
+      <div class="row-wrap"><button class="btn" id="nh-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="4">Review Unit 4</button></div>`;
+    $("#nh-again").onclick = () => { i = 0; right = 0; streak = 0; pts = 0; round(); };
   }
 }
 

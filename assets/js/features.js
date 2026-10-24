@@ -81,7 +81,7 @@ CS.drawCertificate = (canvas, name) => {
   c.fillStyle = "#111827"; c.font = "800 92px Manrope, Arial, sans-serif"; c.fillText(name || "Student Name", W/2, 500);
   c.fillStyle = "#4F46E5"; c.fillRect(W/2-260, 530, 520, 5);
   c.fillStyle = "#111827"; c.font = "600 38px Manrope, Arial, sans-serif";
-  c.fillText(`completed Credit Sprint ${S().exam==="ap"?"AP®":"CLEP®"} Macroeconomics preparation`, W/2, 620);
+  c.fillText(`completed Credit Sprint ${S().exam==="ap"?"AP®":"CLEP®"} ${CS.C.name} preparation`, W/2, 620);
   const s = S(); const lv = CS.level().lv;
   c.fillStyle = "#5B6170"; c.font = "500 32px Manrope, Arial, sans-serif";
   c.fillText(`Level ${lv} · ${s.xp.toLocaleString()} XP · ${CS.answeredCount()} recent answers · ${Object.keys(s.bosses).length}/6 unit bosses beaten`, W/2, 690);

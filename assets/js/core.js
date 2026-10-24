@@ -34,13 +34,15 @@ CS.CHAINS = window.CS_CHAINS;
 CS.DRILLS = window.CS_DRILLS;
 CS.RESOURCES = window.CS_RESOURCES;
 CS.prepQ = q => ({...q, opts: CS.shuffle(q.opts)});
+/* which unit a graph belongs to */
+CS.mkUnit = mk => (CS.MARKETS[mk] && CS.MARKETS[mk].u) || {sd:1,adas:3,money:4,lf:4,phillips:5,fx:6}[mk] || 1;
 /* graph questions built from Shift It scenarios */
 CS.graphQ = (sc) => {
   const [mk, text, ok, why] = sc, m = CS.MARKETS[mk];
   const all = []; m.curves.forEach(c => { all.push([c.k,1]); all.push([c.k,-1]); });
   const right = ok[0], label = ([k,d]) => `${(m.curves.find(c=>c.k===k).label||k)} shifts ${d>0?"right":"left"}`;
   const wrong = CS.shuffle(all.filter(a => !ok.some(o=>o[0]===a[0]&&o[1]===a[1]))).slice(0,3);
-  return {id:"g"+CS.SHIFTS.indexOf(sc), u:{sd:1,adas:3,money:4,lf:4,phillips:5,fx:6}[mk], q:`${text} In the ${m.name.toLowerCase()} graph, what happens?`, mk,
+  return {id:"g"+CS.SHIFTS.indexOf(sc), u:CS.mkUnit(mk), q:`${text} In the ${m.name.toLowerCase()} graph, what happens?`, mk,
     opts: CS.shuffle([{t:label(right), w:why, ok:true}].concat(wrong.map(a=>({t:label(a), w:`Not this one. ${why}`, ok:false})))).concat([{t:"Neither curve shifts", w:`Something does shift. ${why}`, ok:false}])};
 };
 /* number answers: accept within 1% (or 0.06) */
@@ -55,24 +57,49 @@ CS.defaultDate = exam => {
   return CS.addDays(CS.today(), 60);
 };
 
-/* ---------- state ---------- */
-const KEY = "creditsprint.v3";
+/* ---------- state ----------
+   Each course saves its own progress under its own key. Things that belong to the student (streak, XP, pets,
+   badges, plan, appearance) live in a shared record so they follow you between Macro and Micro. */
+const COURSE = window.CS_COURSE; CS.C = COURSE; CS.COURSE = COURSE.k;
+const KEY = COURSE.key, SHARED_KEY = "creditsprint.shared";
+CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered"];
 const fresh = () => ({v:3, exam:"ap", onboarded:false, goal:60, theme:"system", dateSet:false,
   accent:"indigo", cram:{}, remind:"19:00", name:"",
   answers:{}, mistakes:{}, diag:null, cards:{}, reviews:0, frq:{}, plan:{date:CS.defaultDate("ap")},
   xp:0, days:{}, frozen:{}, freezes:0, freezeAwarded:{}, best:{}, badges:{}, exams:[], tasks:{}, daily:{}, bosses:{}, games:0});
 let S = fresh();
+const readJSON = k => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch(e) { return null; } };
 try {
-  const raw = localStorage.getItem(KEY);
-  if (raw) S = Object.assign(fresh(), JSON.parse(raw));
-  else { const old = localStorage.getItem("creditsprint.v2"); if (old) { const o = JSON.parse(old); S = Object.assign(fresh(), o, {v:3, onboarded:true, plan:{date:(o.plan&&o.plan.date)||CS.defaultDate(o.exam||"ap")}}); } }
+  const raw = readJSON(KEY);
+  if (raw) S = Object.assign(fresh(), raw);
+  else if (COURSE.k === "macro") { const o = readJSON("creditsprint.v2"); if (o) S = Object.assign(fresh(), o, {v:3, onboarded:true, plan:{date:(o.plan&&o.plan.date)||CS.defaultDate(o.exam||"ap")}}); }
+  /* shared fields: from the shared record, or (first run after the update) from the Macro save */
+  let shared = readJSON(SHARED_KEY);
+  if (!shared && COURSE.k !== "macro") shared = readJSON(window.CS_COURSES.macro.key);
+  if (shared) CS.SHARED.forEach(f => { if (shared[f] !== undefined) S[f] = shared[f]; });
+  /* a new course inherits the exam choice from the other course until the student changes it */
+  if (!raw && shared && shared.exam && !S.onboarded) S.exam = shared.exam;
 } catch(e) {}
 /* migrate old mistakes format (number) to spaced-review records */
 Object.keys(S.mistakes||{}).forEach(k => { if (typeof S.mistakes[k] === "number") S.mistakes[k] = {n:S.mistakes[k], due:0}; });
 CS.S = () => S;
 CS.mistakesDue = () => Object.entries(S.mistakes).filter(([k,m]) => (m.due||0) <= Date.now()).map(([k])=>k);
-CS.save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} };
-CS.resetAll = () => { S = fresh(); CS.save(); };
+CS.save = () => { try {
+  localStorage.setItem(KEY, JSON.stringify(S));
+  const sh = {exam:S.exam}; CS.SHARED.forEach(f => { if (S[f] !== undefined) sh[f] = S[f]; });
+  localStorage.setItem(SHARED_KEY, JSON.stringify(sh));
+} catch(e) {} };
+CS.resetAll = () => { try { Object.values(window.CS_COURSES).forEach(c => localStorage.removeItem(c.key)); localStorage.removeItem(SHARED_KEY); localStorage.removeItem("creditsprint.v2"); } catch(e) {} S = fresh(); CS.save(); };
+/* summary of any course's saved progress, for the course switcher */
+CS.courseSummary = k => {
+  const c = window.CS_COURSES[k], raw = k === COURSE.k ? S : readJSON(c.key);
+  if (!raw) return {k, started:false, answered:0, units:0, exam:S.exam, days:null, diag:false};
+  const ans = raw.answers || {}, answered = Object.values(ans).reduce((s,a)=>s+a.length,0);
+  const m = Object.values(ans).filter(a=>a.length).map(a=>a.reduce((x,y)=>x+y,0)/a.length);
+  const date = raw.plan && raw.plan.date, days = date ? Math.round((new Date(date+"T12:00:00") - new Date())/CS.DAY) : null;
+  return {k, started:!!raw.onboarded || answered>0, answered, units:m.length, avg:m.length?m.reduce((a,b)=>a+b,0)/m.length:null, exam:raw.exam||"ap", days, diag:!!raw.diag, bosses:Object.keys(raw.bosses||{}).length};
+};
+CS.switchCourse = k => { if (!window.CS_COURSES[k]) return; CS.save(); try { localStorage.setItem("creditsprint.course", k); } catch(e) {} location.href = location.pathname + "?course=" + k + "#home"; };
 
 /* ---------- theme ---------- */
 CS.ACCENTS = [
