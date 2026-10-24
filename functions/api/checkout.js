@@ -26,5 +26,5 @@ export async function onRequestPost({request, env}) {
   if (P.mode === "subscription") body.subscription_data = {metadata: meta};
   else { body.payment_intent_data = {metadata: meta}; if (!cust) body.customer_creation = "always"; }
   try { const ses = await stripe(env, "checkout/sessions", body); return json({url: ses.url}); }
-  catch (e) { return json({error: "Checkout couldn't start. Try again in a minute."}, 502); }
+  catch (e) { console.error("Stripe checkout failed:", e && e.message); return json({error: "Checkout couldn't start. Try again in a minute."}, 502); }
 }

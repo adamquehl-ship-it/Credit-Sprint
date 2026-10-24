@@ -42,7 +42,7 @@ Plans: **Free**, **Exam Pass** ($29 one time, or the $19 early-bird price July�
 
 Access is stored per class in the D1 database by the Stripe webhook. The browser never decides whether someone paid. Students need a free account to buy.
 
-1. Stripe → Product catalog: create the five prices (Exam Pass $29, Exam Pass early bird $19, Final Sprint $15 one time; $7.99 and $14.99 monthly recurring). Copy each Price ID (`price_…`).
+1. Stripe → Product catalog: create the five prices (Exam Pass $29.99, Exam Pass early bird $19.99, Final Sprint $15 one time; $7.99 and $14.99 monthly recurring). Copy each Price ID (`price_…`).
 2. Stripe → Developers → Webhooks → Add endpoint `https://creditsprintprep.com/api/stripe-webhook` with the events `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` and `charge.refunded`. Copy the signing secret.
 3. Stripe → Settings → Billing → Customer portal: turn it on (allow canceling and updating payment methods).
 4. Cloudflare Pages → Settings → Variables and secrets (Production), then redeploy:

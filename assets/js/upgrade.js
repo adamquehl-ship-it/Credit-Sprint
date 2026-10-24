@@ -14,7 +14,7 @@ CS.FREE_GAMES = ["daily", "tf", "match"];  // games open on Free
 
 const EARLY = new Date().getUTCMonth() >= 6;   // early-bird Exam Pass price July–December (matches the server)
 CS.PLANS = [
-  {k:"exam", n:"Exam Pass", price: EARLY ? "$19" : "$29", was: EARLY ? "$29" : "", per:"one time", tag:"Most popular", course:true,
+  {k:"exam", n:"Exam Pass", price: EARLY ? "$19.99" : "$29.99", was: EARLY ? "$29.99" : "", per:"one time", tag:"Most popular", course:true,
     line:"One class, every feature, all the way to exam day.",
     d:"Pay once and unlock everything for one class until your exam: unlimited quizzes, full timed practice exams, every game and boss battle, the mistakes notebook, every FRQ and the 30-day cram plan. No subscription, nothing to cancel. Lasts through your AP® exam, and at least 6 months for CLEP®."},
   {k:"sprint", n:"Final Sprint", price:"$15", per:"one time", course:true,
