@@ -48,7 +48,14 @@ CS.planFor = (k = CS.C.k) => { const acc = (CS.account && CS.account.access) || 
   return acc.find(a => active(a) && a.course === "all") || acc.find(a => active(a) && a.course === k) || null; };
 CS.hasAccess = (k = CS.C.k) => !CS.PAYWALL || !!CS.planFor(k);
 CS.isPro = () => CS.hasAccess();
-CS.planName = p => p ? ((CS.PLANS.find(x => x.k === p.plan) || {}).n || "Paid plan") : "Free";
+CS.planName = p => p ? (p.plan === "code" ? "Pro (access code)" : (CS.PLANS.find(x => x.k === p.plan) || {}).n || "Paid plan") : "Free";
+/* redeem an access code (codes are set in Cloudflare as ACCESS_CODES; see functions/api/redeem.js) */
+CS.redeemCode = async code => {
+  const r = await api("redeem", {code});
+  const me = await fetch("/api/me", {credentials:"same-origin"}); if (me.ok) CS.account = (await me.json()).user;
+  if (CS.renderAccountChip) CS.renderAccountChip(); if (CS.go && CS.view) CS.go(CS.view(), {keepScroll:true});
+  return r;
+};
 const fmt = t => new Date(t).toLocaleDateString(undefined, {month:"short", day:"numeric", year:"numeric"});
 
 /* free quiz rounds */
@@ -108,12 +115,13 @@ CS.openUpgrade = (pick) => {
           ${have ? `<div class="feedback good">You already have ${esc(CS.planName(have))}${have.sub ? "" : " until " + fmt(have.until)}${P.course ? " for this class" : ""}.</div>` : ""}
           <button class="btn lg" id="up-go" ${busy||have?"disabled":""}>${busy ? "Opening secure checkout…" : CS.account ? `Continue to checkout · ${P.price}${P.k.startsWith("sub")?" / month":""}` : "Create a free account to continue"}</button>
           <p class="tiny muted">${msg || "Secure checkout by Stripe. Apple Pay, Google Pay and cards accepted. 7-day refund if you're not happy."}</p>
-          ${CS.account && CS.account.billing ? `<button class="linklike" id="up-bill">Manage billing and subscriptions</button>` : ""}
+          <div class="row-wrap" style="gap:12px">${CS.account && CS.account.billing ? `<button class="linklike" id="up-bill">Manage billing and subscriptions</button>` : ""}<button class="linklike" id="up-code">Have an access code?</button></div>
         </div></div>`;
     $$("[data-pl]", m).forEach(b => b.onclick = () => { sel = b.dataset.pl; msg = ""; draw(); });
     $$("[data-crs2]", m).forEach(b => b.onclick = () => { course = b.dataset.crs2; msg = ""; draw(); });
     $("#up-x", m).onclick = () => w.remove();
     const bill = $("#up-bill", m); if (bill) bill.onclick = CS.openBilling;
+    $("#up-code", m).onclick = () => { w.remove(); if (!CS.account) { CS.toast("Sign in first, then enter your code."); if (CS.openAccount) CS.openAccount(); return; } if (CS.openAccount) CS.openAccount({code:true}); };
     $("#up-go", m).onclick = async () => {
       if (!CS.account) { w.remove(); CS.toast("Make a free account first. Your purchase is saved to it."); if (CS.openAccount) CS.openAccount({signup:true}); return; }
       busy = true; msg = ""; draw();

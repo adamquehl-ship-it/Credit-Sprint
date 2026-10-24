@@ -52,6 +52,15 @@ Access is stored per class in the D1 database by the Stripe webhook. The browser
 
 Until all of these are set, the checkout button says checkout opens soon. To refund someone, refund the payment in Stripe; the webhook removes their access automatically. Set `CS.PAYWALL = false` in `upgrade.js` to unlock everything for everyone.
 
+## Access codes (free Pro for you, testers or teachers)
+
+Signed-in students can enter a code in the account window (click your name, then Your plan, then Redeem). There's also a "Have an access code?" link in the plans window.
+Codes are kept only in Cloudflare, never in this repository. Add a **Secret** named `ACCESS_CODES` in Pages → Settings → Variables and secrets:
+
+    CS-PRO-XXXX-XXXX-XXXX:all:0, TEACHER-FALL:all:30, MACRO-DEMO:macro:7
+
+Each entry is `code:course:days`, where course is `all`, `macro` or `micro`, and `0` days means forever. Each account can use a code once. Delete a code from the secret to stop new redemptions. Accounts that already redeemed it keep their access. Guessing is limited to 10 tries per hour.
+
 ## Turning on accounts and weekly leagues
 Accounts are optional for students. Without them, progress stays in the browser and the dashboard shows a practice league against computer opponents. With them, students can sign in with an **email code**, **Google** or a **username and password**, their progress syncs across devices, and they compete in real weekly leagues.
 

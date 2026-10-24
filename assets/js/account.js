@@ -101,7 +101,7 @@ CS.openAccount = async (opts = {}) => {
   if (!online()) { m.innerHTML = closeRow("Accounts") + `<p class="muted">Accounts work on creditsprintprep.com once the database is set up. Your progress is safe in this browser in the meantime.</p>`; wire(); return; }
   if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } }
   if (!cfg.accounts) { m.innerHTML = closeRow("Accounts") + `<p class="muted">Accounts are coming soon. Your progress is saved in this browser, and the practice league works without signing in.</p>`; wire(); return; }
-  if (CS.account) return accountView();
+  if (CS.account) { w.remove(); return accountView(!!opts.code); }
   let tab = cfg.google ? "google" : cfg.email ? "email" : "password", step = "email", email = "", mode = signup ? "new" : "login", err = "";
   draw();
   function closeRow(t){ return `<div class="spread"><h2>${esc(t)}</h2><button class="btn ghost sm" data-x>Close</button></div>`; }
@@ -157,7 +157,7 @@ function askName(){
     <input id="ac-nm" class="acct-in" placeholder="e.g. Maya K." maxlength="30"><div class="row-wrap"><button class="btn" id="ac-save">Save</button></div><p class="small" id="ac-msg"></p>`;
   $("#ac-save", m).onclick = async () => { try { const r = await api("me", {method:"POST", body:{name:$("#ac-nm", m).value}}); CS.account = r.user; renderChip(); w.remove(); CS.toast(`You're all set, ${r.user.name}.`); loadLeague(); } catch(e) { $("#ac-msg", m).textContent = e.message; } };
 }
-function accountView(){
+function accountView(focusCode){
   const w = modal(), m = $(".modal", w), a = CS.account; let confirmDel = false;
   draw();
   function draw(){
@@ -170,12 +170,16 @@ function accountView(){
         ${a.avatar ? `<button class="btn ghost sm" id="ac-rmpic">Remove picture</button>` : ""}<span class="small" id="ac-picmsg"></span></div></div>`}
       <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Your plan</span>
         ${(a.access||[]).length ? (a.access||[]).map(p => `<span class="small"><b>${esc(CS.planName(p))}</b> · ${p.course === "all" ? "every class" : esc((window.CS_COURSES[p.course]||{}).name || p.course)} · ${p.sub ? "renews monthly" : "until " + new Date(p.until).toLocaleDateString()}</span>`).join("") : `<span class="small muted">Free plan. Unlock every feature with an Exam Pass or a monthly plan.</span>`}
-        <div class="row-wrap">${a.billing ? `<button class="btn ghost sm" data-billing>Manage billing and subscriptions</button>` : ""}<button class="btn sm" data-up="open">${(a.access||[]).length ? "Add a class" : "See plans"}</button></div></div>
+        <div class="row-wrap">${a.billing ? `<button class="btn ghost sm" data-billing>Manage billing and subscriptions</button>` : ""}<button class="btn sm" data-up="open">${(a.access||[]).length ? "Add a class" : "See plans"}</button></div>
+        <form class="row-wrap" id="ac-codeform" style="gap:8px" autocomplete="off"><input id="ac-code" class="acct-in" placeholder="Access code" aria-label="Access code" style="max-width:280px;flex:1;min-width:200px;text-transform:uppercase"><button class="btn ghost sm" type="submit">Redeem</button><span class="small" id="ac-codemsg"></span></form></div>
       <div class="row-wrap"><button class="btn ghost sm" id="ac-name">Change leaderboard name</button><button class="btn ghost sm" id="ac-sync">Sync now</button><button class="btn ghost sm" id="ac-out">Sign out</button></div>
       <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Delete account</span><span class="small muted">Deletes your account, saved progress, profile picture and league history.</span>
         <div><button class="btn ghost sm" id="ac-del" style="${confirmDel?"border-color:var(--bad);color:var(--bad)":""}">${confirmDel?"Tap again to delete for good":"Delete my account"}</button></div></div>`;
     $$("[data-x]", m).forEach(b => b.onclick = () => w.remove());
     $("#ac-name", m).onclick = () => { w.remove(); askName(); };
+    $("#ac-codeform", m).onsubmit = async e => { e.preventDefault(); const msg = $("#ac-codemsg", m), c = $("#ac-code", m).value.trim(); if (!c) return; msg.textContent = "Checking…";
+      try { await CS.redeemCode(c); w.remove(); CS.toast("Code accepted. Pro is unlocked on your account."); } catch(err) { msg.textContent = err.message; } };
+    if (focusCode) { const ci = $("#ac-code", m); if (ci) ci.focus(); }
     if ($("#ac-file", m)) $("#ac-file", m).onchange = async e => { const f = e.target.files[0]; if (!f) return; const msg = $("#ac-picmsg", m); msg.textContent = "Uploading…";
       try { const r = await api("avatar", {method:"PUT", body:{image: await shrink(f)}}); a.avatar = r.avatar; CS.account = a; renderChip(); draw(); CS.toast("Profile picture updated."); if (live) loadLeague(); }
       catch(err) { msg.textContent = err.message; } };
