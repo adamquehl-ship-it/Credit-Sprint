@@ -33,11 +33,12 @@ CS.render.games = (o) => {
   if (!active) {
     const dc = S().daily[CS.today()];
     v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Learn it by playing it</span><h1>Games</h1><p class="muted">Every game earns XP, feeds your mastery scores and counts toward today's quests.</p></div></div>
-      <div class="gamegrid">${GAMES.map((g,i)=>`<button class="gamecard ${i===0?"feature":""}" data-g="${g.k}"><span class="g-ico">${I(g.ic)}</span><span class="stack" style="gap:6px"><h3>${g.n}</h3><span class="muted small">${g.d}</span><span class="eyebrow" style="color:var(--accent)">${esc(g.best())}</span></span>${g.isNew?`<span class="tag acc new">New</span>`:""}${i===0&&!dc?`<span class="tag good new">Today</span>`:""}</button>`).join("")}</div>`;
+      <div class="gamegrid">${GAMES.map((g,i)=>`<button class="gamecard ${i===0?"feature":""}" data-g="${g.k}"><span class="g-ico">${I(g.ic)}</span>${CS.FREE_GAMES.includes(g.k)?"":CS.proTag()}<span class="stack" style="gap:6px"><h3>${g.n}</h3><span class="muted small">${g.d}</span><span class="eyebrow" style="color:var(--accent)">${esc(g.best())}</span></span>${g.isNew?`<span class="tag acc new">New</span>`:""}${i===0&&!dc?`<span class="tag good new">Today</span>`:""}</button>`).join("")}</div>`;
     $$("#v-games [data-g]").forEach(b => b.onclick = () => CS.render.games({game:b.dataset.g}));
     return;
   }
   let g = GAMES.find(x=>x.k===active); if (!g) { active = null; return CS.render.games({}); }
+  if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
   ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash})[active]($("#g-area"));

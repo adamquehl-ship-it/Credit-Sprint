@@ -146,7 +146,7 @@ CS.openAccount = async (opts = {}) => {
   async function done(p){
     try { const r = await p; window.CS_STORE.join(); CS.account = r.user; renderChip(); w.remove();
       if (!r.user.name) askName(); else CS.toast(r.created ? "Account created. Your progress is now saved." : `Welcome back, ${r.user.name}.`);
-      api("me").then(x => { CS.account = x.user; renderChip(); }).catch(() => {});
+      api("me").then(x => { CS.account = x.user; renderChip(); if (CS.afterAccount) CS.afterAccount(); }).catch(() => {});
       setStatus("Syncing…"); await pull(false); }
     catch(e) { err = e.data && e.data.needAge ? "Check the box to confirm you're 13 or older." : e.message; draw(); }
   }
@@ -168,6 +168,9 @@ function accountView(){
         <span class="small muted">Shows next to your name on leaderboards. Keep it school-appropriate: no other people, no personal info. Every picture is checked automatically before it appears, and reported pictures are removed.</span>
         <div class="row-wrap"><label class="btn sm" for="ac-file" style="cursor:pointer">${a.avatar ? "Change picture" : "Upload a picture"}</label><input type="file" id="ac-file" accept="image/jpeg,image/png,image/webp" hidden>
         ${a.avatar ? `<button class="btn ghost sm" id="ac-rmpic">Remove picture</button>` : ""}<span class="small" id="ac-picmsg"></span></div></div>`}
+      <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Your plan</span>
+        ${(a.access||[]).length ? (a.access||[]).map(p => `<span class="small"><b>${esc(CS.planName(p))}</b> · ${p.course === "all" ? "every class" : esc((window.CS_COURSES[p.course]||{}).name || p.course)} · ${p.sub ? "renews monthly" : "until " + new Date(p.until).toLocaleDateString()}</span>`).join("") : `<span class="small muted">Free plan. Unlock every feature with an Exam Pass or a monthly plan.</span>`}
+        <div class="row-wrap">${a.billing ? `<button class="btn ghost sm" data-billing>Manage billing and subscriptions</button>` : ""}<button class="btn sm" data-up="open">${(a.access||[]).length ? "Add a class" : "See plans"}</button></div></div>
       <div class="row-wrap"><button class="btn ghost sm" id="ac-name">Change leaderboard name</button><button class="btn ghost sm" id="ac-sync">Sync now</button><button class="btn ghost sm" id="ac-out">Sign out</button></div>
       <div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px"><span class="eyebrow">Delete account</span><span class="small muted">Deletes your account, saved progress, profile picture and league history.</span>
         <div><button class="btn ghost sm" id="ac-del" style="${confirmDel?"border-color:var(--bad);color:var(--bad)":""}">${confirmDel?"Tap again to delete for good":"Delete my account"}</button></div></div>`;
@@ -186,11 +189,11 @@ let gLoad = null;
 function loadGoogle(){ if (window.google && window.google.accounts) return Promise.resolve();
   return gLoad || (gLoad = new Promise((ok, no) => { const s = document.createElement("script"); s.src = "https://accounts.google.com/gsi/client"; s.async = true; s.onload = ok; s.onerror = no; document.head.appendChild(s); })); }
 
-document.addEventListener("click", e => { const b = e.target.closest("[data-account]"); if (b) { e.preventDefault(); CS.openAccount({signup: b.dataset.account === "signup"}); } });
+document.addEventListener("click", e => { if (e.target.closest("[data-billing]")) { e.preventDefault(); if (CS.openBilling) CS.openBilling(); return; } const b = e.target.closest("[data-account]"); if (b) { e.preventDefault(); CS.openAccount({signup: b.dataset.account === "signup"}); } });
 
 /* ---------- boot: who's signed in? ---------- */
 renderChip();
-if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); })
+if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); })
   .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401) promptSignup(/[?&]signup\b/.test(location.search)); });
 
 /* ask signed-out students to make an account once per visit, after onboarding closes */

@@ -623,3 +623,26 @@ select,input[type=date]{font:inherit;color:var(--ink);background:var(--surface);
 .lg .av.img{padding:0;overflow:hidden;background:var(--rule);border:0;cursor:pointer;font:inherit}
 .lg li.me .av.img{cursor:default}
 button.av.img:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* plans + paywall */
+.pro-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;align-self:flex-start;width:max-content}
+.pro-tag .ico{width:11px;height:11px}
+.gamecard .pro-tag,.mode .pro-tag{position:absolute;top:10px;right:10px}
+.gamecard,.mode{position:relative}
+.lock-panel{display:flex;flex-direction:column;gap:14px;align-items:flex-start;border:1.5px dashed color-mix(in srgb,var(--accent) 50%,var(--rule));background:linear-gradient(180deg,var(--accent-soft),var(--surface))}
+.lock-panel .lock-ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--surface);color:var(--accent);border:1px solid var(--rule)}
+.lock-panel .lock-ico .ico{width:22px;height:22px}
+.lock-panel p{max-width:60ch;margin:0}
+.up-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:16px;margin-top:6px}
+.up-free{border:1px solid var(--rule);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.up-free ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:.84rem}
+.up-free li{display:flex;gap:6px;align-items:flex-start}
+.up-free li .ico{width:15px;height:15px;flex:none;margin-top:2px;color:var(--mint)}
+.up-free ul.miss li{color:var(--muted)}
+.up-free ul.miss li .ico{color:var(--muted)}
+.up-plans4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.up-plan{position:relative;cursor:pointer;color:var(--ink);font:inherit}
+.up-plan .tag{align-self:flex-start}
+.up-amt s,.up-price s{color:var(--muted);font-weight:600;font-size:.8em;margin-right:2px}
+.up-desc{margin:0;line-height:1.5}
+@media (max-width:700px){.up-grid,.up-plans4{grid-template-columns:minmax(0,1fr)}.up-free{order:2}}

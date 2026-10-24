@@ -16,6 +16,7 @@ const NAV = [
 const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets", frq:"Free response", plan:"Study plan"};
 const VIEWS = NAV.map(n=>n.k);
 let current = "home";
+CS.view = () => current;
 const render = CS.render = CS.render || {};
 CS.go = (v, opts={}) => {
   if (!VIEWS.includes(v)) v = "home";
@@ -103,7 +104,7 @@ function settings(){
       <div class="stack"><label class="eyebrow" for="st-date">Exam date</label><input type="date" id="st-date" value="${esc(s.plan.date)}" style="max-width:220px"></div>
       <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n])=>`<button data-goal="${v}" aria-pressed="${s.goal===v}"><b>${n} · ${v} XP</b></button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Appearance</span><div class="seg three" style="max-width:320px">${[["light","sun","Light"],["dark","moon","Dark"],["system","auto","System"]].map(([k,ic,n])=>`<button data-th="${k}" aria-pressed="${s.theme===k}">${I(ic)}${n}</button>`).join("")}</div></div>
-      <div class="stack"><span class="eyebrow">Plan</span><div class="row-wrap">${CS.isPro&&CS.isPro()?`<span class="tag good">Pass Plan</span><span class="muted small">Every Pro feature unlocked.</span>`:`<span class="tag">Free</span><button class="btn sm" data-up="open">Upgrade to Pass Plan</button>`}</div></div>
+      <div class="stack"><span class="eyebrow">Plan</span><div class="row-wrap">${CS.hasAccess()&&CS.planFor()?`<span class="tag good">${esc(CS.planName(CS.planFor()))}</span><span class="muted small">Every feature unlocked for ${esc(CS.C.name)}.</span>${CS.account&&CS.account.billing?`<button class="btn ghost sm" data-billing>Manage billing</button>`:""}`:`<span class="tag">Free</span><button class="btn sm" data-up="open">See plans</button>`}</div></div>
       <div class="stack"><span class="eyebrow">Account</span><div class="row-wrap">${CS.account?`<span class="tag good">Signed in</span><span class="small">${esc(CS.account.name||"")}</span>`:`<span class="muted small">Sign in to save progress across devices and join weekly leagues.</span>`}<button class="btn ghost sm" data-account="open">${CS.account?"Manage account":"Sign in"}</button></div></div>
       <div class="stack"><span class="eyebrow">Color theme</span><div class="row-wrap">${CS.ACCENTS.map(a=>{ const ok = CS.level().lv >= a.lv; return `<button class="chip" data-ac="${a.k}" aria-pressed="${s.accent===a.k}" ${ok?"":"disabled"} title="${ok?a.n:`Unlocks at level ${a.lv}`}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a.c};vertical-align:-1px;margin-right:6px"></span>${a.n}${ok?"":` · Lv ${a.lv}`}</button>`; }).join("")}</div><span class="muted small">Level up to unlock more colors. You're level ${CS.level().lv}.</span></div>
       <div class="stack"><span class="eyebrow">Daily reminder</span><div class="row-wrap"><input type="time" id="st-time" value="${esc(s.remind)}" style="font:inherit;padding:7px 10px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink)">
@@ -331,11 +332,11 @@ const EXAMS = { ap:{full:{n:60, min:70, name:"Full AP® Section I"}, mini:{n:20,
 const MODES = [
   {k:"unit", ic:"book", e:"By unit", n:"Unit quiz", d:"10 questions with an explanation for every choice."},
   {k:"mixed", ic:"spark", e:"Adaptive", n:"Smart review", d:"15 questions, weighted toward your weakest units."},
-  {k:"mistakes", ic:"target", e:"Notebook", n:"Mistakes", d:"Every miss lands here until you get it right twice."},
+  {k:"mistakes", ic:"target", e:"Notebook", n:"Mistakes", d:"Every miss lands here until you get it right twice.", pro:true},
   {k:"exam", ic:"pen", e:"Timed", n:"Practice exam", d:"Full length, real timing, scored like the exam."},
-  {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:"Multipliers, CPI, money creation: fresh numbers every time."},
+  {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:"Multipliers, CPI, money creation: fresh numbers every time.", pro:true},
   {k:"graphs", ic:"chart", e:"Visual", n:"Graph questions", d:"Read the scenario, pick the curve that shifts."},
-  {k:"draw", ic:"pen", e:"Hands-on", n:"Draw the graph", d:"Drag the curves yourself, like the FRQ section asks you to."}
+  {k:"draw", ic:"pen", e:"Hands-on", n:"Draw the graph", d:"Drag the curves yourself, like the FRQ section asks you to.", pro:true}
 ];
 render.practice = (o) => {
   if (o.mode) { pMode = o.mode; run = null; drill = null; drawRun = null; }
@@ -344,23 +345,26 @@ render.practice = (o) => {
   if (exam && !exam.done) return renderExam();
   const v = $("#v-practice"), nm = Object.keys(S().mistakes).length, ex = EXAMS[S().exam];
   v.innerHTML = `
-    <div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(examName())}</span><h1>Practice</h1><p class="muted">${CS.QS.length} original multiple-choice questions, ${CS.SHIFTS.length} graph scenarios and unlimited calculation drills.</p></div>
+    <div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(examName())}</span><h1>Practice</h1><p class="muted">${CS.QS.length} original multiple-choice questions, ${CS.SHIFTS.length} graph scenarios and unlimited calculation drills.</p>${CS.hasAccess()?"":`<span class="tag" style="align-self:flex-start">${CS.roundsLeft()} of ${CS.FREE_ROUNDS} free quizzes left today · <button class="linklike" data-up="open">unlimited with a plan</button></span>`}</div>
       <button class="btn ghost" data-go="practice" data-mode="diagnostic">${I("target")}${S().diag?"Retake diagnostic":"Take the diagnostic"}</button></div>
-    <div class="modes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${MODES.map(m=>`<button class="mode" aria-pressed="${pMode===m.k}" data-m="${m.k}"><span class="m-ico">${I(m.ic)}</span><span class="eyebrow">${m.k==="mistakes"?`${CS.mistakesDue().length} due · ${nm} saved`:m.e}</span><h3>${m.n}</h3><span class="muted small">${m.k==="exam"?`${ex.full.n} questions in ${ex.full.min} minutes, like the real ${examShort()} exam.`:m.d}</span></button>`).join("")}</div>
+    <div class="modes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${MODES.map(m=>`<button class="mode" aria-pressed="${pMode===m.k}" data-m="${m.k}"><span class="m-ico">${I(m.ic)}</span>${m.pro?CS.proTag():""}<span class="eyebrow">${m.k==="mistakes"?`${CS.mistakesDue().length} due · ${nm} saved`:m.e}</span><h3>${m.n}</h3><span class="muted small">${m.k==="exam"?`${ex.full.n} questions in ${ex.full.min} minutes, like the real ${examShort()} exam.`:m.d}</span></button>`).join("")}</div>
     <div id="p-body" class="stack" style="gap:16px"></div>`;
   $$("#v-practice .mode").forEach(b => b.onclick = () => { pMode = b.dataset.m; run = null; drill = null; drawRun = null; render.practice({keepScroll:true}); $("#p-body").scrollIntoView({behavior:"smooth", block:"start"}); });
   const body = $("#p-body");
   if (pMode === "diagnostic") return diagnostic(body);
+  const mode = MODES.find(x => x.k === pMode);
+  if (mode && mode.pro && !CS.hasAccess()) { body.innerHTML = CS.lockPanel(`${mode.n} is a paid feature`, {mistakes:"Every question you miss comes back after 1, 3 and 7 days until it sticks. It's the fastest way to fix weak spots before the exam.", drills:"Fresh numbers every time for every formula on the exam, with step-by-step solutions.", draw:"Drag the curves yourself and get instant feedback, just like the graphing questions on the FRQ section."}[mode.k] || ""); return; }
+  const limit = el => { el.innerHTML = CS.lockPanel("You've used today's free quizzes", `Free includes ${CS.FREE_ROUNDS} quizzes a day. Unlock unlimited quizzes, full practice exams and every game.`); };
   if (pMode === "unit") {
     body.innerHTML = `<div class="chips">${CS.UNITS.map(u=>`<button class="chip" aria-pressed="${u.id===pUnit}" data-u="${u.id}">Unit ${u.id} · ${esc(u.short)} · ${CS.pct(CS.mastery(u.id))}</button>`).join("")}</div><div class="panel" id="p-run"></div>`;
     $$("#p-body [data-u]").forEach(b => b.onclick = () => { pUnit = +b.dataset.u; run = null; render.practice({keepScroll:true}); });
-    if (!run) run = {qs: CS.shuffle(CS.QS.filter(q=>q.u===pUnit)).slice(0,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"unit", unit:pUnit};
+    if (!run) { if (!CS.takeRound()) return limit($("#p-run")); run = {qs: CS.shuffle(CS.QS.filter(q=>q.u===pUnit)).slice(0,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"unit", unit:pUnit}; }
     return quiz($("#p-run"));
   }
-  if (pMode === "mixed") { body.innerHTML = `<div class="panel" id="p-run"></div>`; if (!run) run = {qs: weightedMixed(15), i:0, score:0, picked:null, kind:"mixed"}; return quiz($("#p-run")); }
+  if (pMode === "mixed") { body.innerHTML = `<div class="panel" id="p-run"></div>`; if (!run) { if (!CS.takeRound()) return limit($("#p-run")); run = {qs: weightedMixed(15), i:0, score:0, picked:null, kind:"mixed"}; } return quiz($("#p-run")); }
   if (pMode === "graphs") {
     body.innerHTML = `<div class="panel" id="p-run"></div>`;
-    if (!run) run = {qs: CS.shuffle(CS.SHIFTS).slice(0,10).map(CS.graphQ), i:0, score:0, picked:null, kind:"graphs"};
+    if (!run) { if (!CS.takeRound()) return limit($("#p-run")); run = {qs: CS.shuffle(CS.SHIFTS).slice(0,10).map(CS.graphQ), i:0, score:0, picked:null, kind:"graphs"}; }
     return quiz($("#p-run"));
   }
   if (pMode === "mistakes") {
@@ -382,10 +386,10 @@ render.practice = (o) => {
     body.innerHTML = `<div class="panel">
       <h3>${esc(examName())} practice exam</h3>
       <p class="muted" style="max-width:70ch">${S().exam==="ap" ? "The real exam has 60 multiple-choice questions in 70 minutes (about two-thirds of your score), then 3 free-response questions in 60 minutes. Practice FRQs in the Free response tab." : "The real exam has about 80 multiple-choice questions in 90 minutes. Many colleges award credit for a score of 50. There's no free-response section."} Questions are drawn in proportion to the official unit weights. No feedback until you submit.</p>
-      <div class="row-wrap"><button class="btn" id="ex-full">Start full exam · ${ex.full.n} Q · ${ex.full.min} min</button><button class="btn ghost" id="ex-mini">Mini exam · ${ex.mini.n} Q · ${ex.mini.min} min</button></div>
+      <div class="row-wrap"><button class="btn" id="ex-full">${CS.hasAccess()?"":I("lock")}Start full exam · ${ex.full.n} Q · ${ex.full.min} min</button><button class="btn ghost" id="ex-mini">Mini exam · ${ex.mini.n} Q · ${ex.mini.min} min</button></div>
       ${past.length?`<div class="stack" style="gap:6px"><span class="eyebrow">Recent attempts</span>${past.map(e=>`<div class="spread small"><span>${new Date(e.at).toLocaleDateString()} · ${e.n} questions</span><span><b>${e.score}/${e.n}</b> · ${Math.round(e.score/e.n*100)}%</span></div>`).join("")}</div>`:""}
     </div>`;
-    $("#ex-full").onclick = () => startExam(ex.full); $("#ex-mini").onclick = () => startExam(ex.mini);
+    $("#ex-full").onclick = () => CS.hasAccess() ? startExam(ex.full) : CS.openUpgrade("exam"); $("#ex-mini").onclick = () => startExam(ex.mini);
   }
 };
 
@@ -626,10 +630,11 @@ render.frq = () => {
   const st = S().frq[f.id] || (S().frq[f.id] = {draft:"", show:false, checks:f.rubric.map(()=>false)});
   if (st.checks.length !== f.rubric.length) st.checks = f.rubric.map(()=>false);
   const got = st.checks.filter(Boolean).length, G = (window.CS_FRQ_GRAPHS||{})[f.id];
+  const frqLocked = x => !CS.hasAccess() && CS.FRQS.indexOf(x) >= CS.FREE_FRQS;
   v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${S().exam==="ap"?"AP® Section II · 1 long + 2 short · 60 minutes":"Builds deep understanding"}</span><h1>Free response</h1>
       <p class="muted">${CS.FRQS.length} original prompts with point-by-point rubrics. ${S().exam==="clep"?"The CLEP® exam has no free-response section, but writing explanations is the fastest way to find gaps.":"For real past exam questions, see Learn → Official resources."}</p></div></div>
     <div class="split"><nav class="sidelist">${CS.FRQS.map((x,i)=>{ const s2 = S().frq[x.id]; const n = s2&&s2.scored?s2.checks.filter(Boolean).length:null;
-        return `<button aria-current="${x.id===frqId}" data-f="${x.id}"><span class="num">${i+1}</span><span>${esc(x.title)}<br><span class="faint tiny">${x.kind}${n!=null?` · ${n}/${x.rubric.length}`:""}</span></span></button>`; }).join("")}</nav>
+        return `<button aria-current="${x.id===frqId}" data-f="${x.id}"><span class="num">${frqLocked(x)?I("lock"):i+1}</span><span>${esc(x.title)}<br><span class="faint tiny">${x.kind}${n!=null?` · ${n}/${x.rubric.length}`:""}</span></span></button>`; }).join("")}</nav>
       <article class="panel">
         <div class="row-wrap">${f.units.map(u=>`<span class="tag">Unit ${u}</span>`).join("")}<span class="tag acc">${f.kind} · ${f.rubric.length} points · ~${f.minutes} min</span></div>
         <h2>${esc(f.title)}</h2><p>${esc(f.prompt)}</p>
@@ -646,6 +651,7 @@ render.frq = () => {
         </div>
       </article></div>`;
   $$("#v-frq [data-f]").forEach(b => b.onclick = () => { frqId = b.dataset.f; render.frq(); });
+  if (frqLocked(f)) { $("#v-frq article.panel").outerHTML = CS.lockPanel(`"${f.title}" is a paid FRQ`, `Free includes the first ${CS.FREE_FRQS} free-response questions. Unlock all ${CS.FRQS.length}, each with a point-by-point rubric and a sample full-credit answer.`); return; }
   $("#frq-draft").oninput = e => { st.draft = e.target.value; CS.save(); };
   $("#frq-toggle").onclick = () => { st.show = !st.show; if (st.show && !st.scored) { st.scored = true; CS.addXP(30); } CS.refresh(); render.frq(); };
   if (G) CS.drawGraph($("#frq-graph"), G.mk, {expect:G.expect, why:G.why, x:G.x, y:G.y, labels:G.labels, onDone:(ok)=>{ CS.addXP(ok?15:5); CS.refresh(); }});
@@ -674,9 +680,10 @@ render.plan = () => {
       <div class="field"><label for="plan-goal">Daily goal</label><select id="plan-goal">${GOALS.map(([g,n])=>`<option value="${g}">${n} · ${g} XP</option>`).join("")}</select></div>
       <button class="btn ghost sm" data-go="practice" data-mode="diagnostic">${s.diag?"Retake diagnostic":"Take the diagnostic"}</button></div>
       <p class="muted" id="plan-note"></p>
-      <div class="seg" style="max-width:360px" role="group" aria-label="Plan type"><button data-pv="weeks" aria-pressed="${!s.cramOn}">Weekly plan</button><button data-pv="cram" aria-pressed="${!!s.cramOn}">30-day cram plan</button></div></div>
+      <div class="seg" style="max-width:360px" role="group" aria-label="Plan type"><button data-pv="weeks" aria-pressed="${!s.cramOn}">Weekly plan</button><button data-pv="cram" aria-pressed="${!!s.cramOn}">${CS.hasAccess()?"":I("lock")}30-day cram plan</button></div></div>
     <ol class="weeks" id="plan-weeks"></ol>`;
-  $$("[data-pv]", v).forEach(b => b.onclick = () => { s.cramOn = b.dataset.pv === "cram"; CS.save(); render.plan(); });
+  $$("[data-pv]", v).forEach(b => b.onclick = () => { if (b.dataset.pv === "cram" && !CS.hasAccess()) return CS.openUpgrade("sprint"); s.cramOn = b.dataset.pv === "cram"; CS.save(); render.plan(); });
+  if (s.cramOn && !CS.hasAccess()) s.cramOn = false;
   $("#plan-exam").value = s.exam; $("#plan-goal").value = s.goal;
   $("#plan-exam").onchange = e => setExam(e.target.value);
   $("#plan-goal").onchange = e => { s.goal = +e.target.value; CS.save(); CS.chrome(); };

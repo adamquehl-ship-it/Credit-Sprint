@@ -39,7 +39,7 @@ function grant(r){
   CS.save();
 }
 /* Pass lane: open for Pro, and for everyone while checkout isn't set up yet (beta) */
-CS.passOpen = () => (CS.isPro && CS.isPro()) || !(CS.CHECKOUT && Object.values(CS.CHECKOUT).some(Boolean));
+CS.passOpen = () => CS.hasAccess ? CS.hasAccess() : true;
 function claims(si){ const s = S(); s.seasons = s.seasons || {}; return s.seasons[si.id] || (s.seasons[si.id] = {free:[], pass:[]}); }
 CS.seasonClaimable = () => { const si = CS.seasonInfo(), xp = CS.seasonXP(si), c = claims(si);
   return CS.TIERS.reduce((n, t, i) => n + (xp >= t && !c.free.includes(i) ? 1 : 0) + (xp >= t && CS.passOpen() && !c.pass.includes(i) ? 1 : 0), 0); };
@@ -194,7 +194,7 @@ document.addEventListener("click", e => {
     s.chests[i] = CS.today(); s.gems = (s.gems || 0) + 40; CS.save(); CS.toast(`Chest opened: +40 gems!`); rerender(); return; }
   const cl = e.target.closest("[data-claim]");
   if (cl) { const [lane, i] = cl.dataset.claim.split(":"), si = CS.seasonInfo(), c = claims(si), xp = CS.seasonXP(si);
-    if (lane === "pass" && !CS.passOpen()) { if (CS.openUpgrade) CS.openUpgrade("season"); return; }
+    if (lane === "pass" && !CS.passOpen()) { if (CS.openUpgrade) CS.openUpgrade("exam"); return; }
     if (cl.disabled || xp < CS.TIERS[+i] || c[lane].includes(+i)) return;
     const r = (lane === "free" ? FREE : PASS)[+i]; c[lane].push(+i); grant(r); CS.toast(`Season reward: ${label(r)}!`); rerender(); return; }
   const sh = e.target.closest("[data-shop]");

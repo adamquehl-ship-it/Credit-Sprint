@@ -36,13 +36,21 @@ The app works without this; the AI buttons show a friendly message until it's se
 
 Rough cost: a tutor reply on Haiku is a fraction of a cent; an FRQ score on Sonnet is about 1–2 cents. Set a spend limit in the Claude Console.
 
-## Turning on paid checkout (Pass Plan)
-Free users see an upgrade card on the dashboard, a "Free plan" button in the sidebar, and a Plan row in Settings. All three open the plans modal.
-1. In Stripe, create three Payment Links: Pass Plan $9/month (recurring), Pass Plan Season $39 (one time), Pass Guarantee $59 (one time).
-2. On each link, set "After payment" to redirect to `https://creditsprintprep.com/app.html#pro-welcome`.
-3. Paste the three URLs into `CS.CHECKOUT` at the top of `assets/js/upgrade.js`, then commit and push.
-Until the links are filled in, the Upgrade button tells students every Pro feature is free during early access.
-Note: the `#pro-welcome` unlock is saved in the browser only. Before charging at scale, add accounts and a Stripe webhook so Pro status is verified on the server.
+## Plans and payments (Stripe)
+
+Plans: **Free**, **Exam Pass** ($29 one time, or the $19 early-bird price July–December, for one class through exam day), **Final Sprint** ($15 one time, one class for 30 days), **Monthly · 1 subject** ($7.99/mo) and **Monthly · All subjects** ($14.99/mo). Plan names, prices, descriptions and Free limits live in `assets/js/upgrade.js`. Server logic lives in `lib/billing.js`.
+
+Access is stored per class in the D1 database by the Stripe webhook. The browser never decides whether someone paid. Students need a free account to buy.
+
+1. Stripe → Product catalog: create the five prices (Exam Pass $29, Exam Pass early bird $19, Final Sprint $15 one time; $7.99 and $14.99 monthly recurring). Copy each Price ID (`price_…`).
+2. Stripe → Developers → Webhooks → Add endpoint `https://creditsprintprep.com/api/stripe-webhook` with the events `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` and `charge.refunded`. Copy the signing secret.
+3. Stripe → Settings → Billing → Customer portal: turn it on (allow canceling and updating payment methods).
+4. Cloudflare Pages → Settings → Variables and secrets (Production), then redeploy:
+   - Secrets: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+   - Variables: `PRICE_EXAM`, `PRICE_EXAM_EARLY`, `PRICE_SPRINT`, `PRICE_SUB_ONE`, `PRICE_SUB_ALL`
+5. Test with card 4242 4242 4242 4242 in Stripe test mode, then repeat steps 1–4 with live-mode keys and prices.
+
+Until all of these are set, the checkout button says checkout opens soon. To refund someone, refund the payment in Stripe; the webhook removes their access automatically. Set `CS.PAYWALL = false` in `upgrade.js` to unlock everything for everyone.
 
 ## Turning on accounts and weekly leagues
 Accounts are optional for students. Without them, progress stays in the browser and the dashboard shows a practice league against computer opponents. With them, students can sign in with an **email code**, **Google** or a **username and password**, their progress syncs across devices, and they compete in real weekly leagues.
