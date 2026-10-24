@@ -177,10 +177,12 @@ function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:n
 let uid = 0;
 /* roll with a minimum rarity (season-pass eggs): odds are re-scaled over the allowed rarities */
 function rollRarityMin(min){ const i0 = Math.max(0, ORDER.indexOf(min)), ks = ORDER.slice(i0), tot = ks.reduce((a,k)=>a+CS.RARITY[k].p,0); let r = Math.random()*tot; for (const k of ks) { r -= CS.RARITY[k].p; if (r <= 0) return k; } return ks[0]; }
-/* add an egg to the nest (season rewards, gem shop) */
-CS.giveEgg = (minR) => { const P = st(); const e = {id:"e"+Date.now()+(uid++), r:"mystery", prog:0, need:EGG_NEED, at:CS.today()}; if (minR && minR !== "common") e.minR = minR; P.eggs.push(e); CS.save(); return e; };
+/* add an egg to the nest (season pass and daily quest rewards). Only these eggs can be sold; eggs earned by answering questions cannot. */
+CS.giveEgg = (minR) => { const P = st(); const e = {id:"e"+Date.now()+(uid++), r:"mystery", prog:0, need:EGG_NEED, at:CS.today(), sellable:true}; if (minR && minR !== "common") e.minR = minR; P.eggs.push(e); CS.save(); return e; };
 /* instant-hatch egg: goes straight to the hatch queue and opens right away (pass lane, chests) */
 CS.giveInstantEgg = (minR) => { const P = st(); const e = {id:"e"+Date.now()+(uid++), r:"mystery", prog:EGG_NEED, need:EGG_NEED, at:CS.today(), instant:true}; if (minR && minR !== "common") e.minR = minR; (P.pending = P.pending || []).push(e); CS.save(); setTimeout(() => CS.petFlush(true), 250); return e; };
+/* sellable: given by quests or the season pass. Older eggs with no flag count only if they came with a rarity floor (pass rewards). */
+CS.eggSellable = e => e.sellable === true || (e.sellable === undefined && !!e.minR);
 CS.RARITY_NAME = k => CS.RARITY[k] ? CS.RARITY[k].n : k;
 function rollRarity(rnd=Math.random){ let r = rnd()*100; for (const k of ORDER) { r -= CS.RARITY[k].p; if (r <= 0) return k; } return "common"; }
 function rollPet(rarity){ const pool = SET.filter(p=>p.r===rarity), tot = pool.reduce((a,p)=>a+p.p,0); let r = Math.random()*tot; for (const p of pool) { r -= p.p; if (r <= 0) return p; } return pool[0]; }

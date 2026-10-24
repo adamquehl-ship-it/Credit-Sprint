@@ -51,8 +51,8 @@ CS.render.store = () => {
       <button class="btn ${g >= e.buy ? "" : "ghost"}" data-buyegg="${e.k}" ${g >= e.buy ? "" : "disabled"}>💎 ${e.buy.toLocaleString()}</button></div>`).join("");
   const nest = eggs.length ? eggs.map((e, i) => `<div class="st-row"><span class="st-mini">${CS.eggSVG("mystery", e.prog, e.need, 38)}</span>
       <div class="stack" style="gap:0;flex:1;min-width:0"><b class="small">${nameOf(e)}</b><span class="tiny muted">${e.prog}/${e.need} correct answers${i === 0 ? " · hatching now" : ""}</span></div>
-      <button class="btn ghost sm" data-sellegg="${esc(e.id)}">Sell · 💎 ${sellOf(e)}</button></div>`).join("")
-    : `<p class="small muted" style="margin:0">Your nest is empty. Eggs you earn from questions or the season pass show up here, and you can sell the spares.</p>`;
+      ${CS.eggSellable(e) ? `<button class="btn ghost sm" data-sellegg="${esc(e.id)}">Sell · 💎 ${sellOf(e)}</button>` : `<span class="tiny muted" style="text-align:right;max-width:9.5rem">Earned by answering. Can't be sold.</span>`}</div>`).join("")
+    : `<p class="small muted" style="margin:0">Your nest is empty. Eggs from questions, daily quests and the season pass show up here. Only quest and season pass eggs can be sold.</p>`;
   const themeCards = CS.GEM_THEMES.map(t => { const has = owned(t.k), on = s.accent === t.k && has;
     return `<div class="panel st-theme ${on ? "on" : ""}">
       <div class="st-sw" style="background:linear-gradient(135deg,${t.h1},${t.h2})"><span style="background:${t.c}"></span><span style="background:${t.c2}"></span><span style="background:${t.soft}"></span></div>
@@ -66,7 +66,7 @@ CS.render.store = () => {
     <section class="stack" style="gap:10px"><h3 class="st-h">Eggs</h3><div class="st-grid">${eggCards}</div>
       <span class="tiny muted">Store eggs hatch the moment you buy them.</span></section>
     <section class="stack" style="gap:10px"><h3 class="st-h">Sell eggs</h3><div class="panel stack" style="gap:8px">${nest}</div>
-      <span class="tiny muted">Sell-back is 40% of the buy price: Mystery 80, Uncommon+ 160, Rare+ 320 gems.</span></section>
+      <span class="tiny muted">Only eggs from daily quests and the season pass can be sold. Sell-back is 40% of the buy price: Mystery 80, Uncommon+ 160, Rare+ 320 gems.</span></section>
     <section class="stack" style="gap:10px"><h3 class="st-h">Boosts</h3><div class="panel st-row"><span class="st-mini" style="font-size:1.6rem">❄️</span>
       <div class="stack" style="gap:0;flex:1"><b>Streak freeze</b><span class="small muted">Protects your streak for a missed day. You have ${s.freezes || 0} of 3.</span></div>
       <button class="btn ${g >= FREEZE && (s.freezes || 0) < 3 ? "" : "ghost"}" data-buyfreeze ${g >= FREEZE && (s.freezes || 0) < 3 ? "" : "disabled"}>💎 ${FREEZE}</button></div></section>
@@ -80,7 +80,7 @@ document.addEventListener("click", e => {
   let b = e.target.closest("[data-buyegg]");
   if (b && !b.disabled) { const x = CS.STORE_EGGS.find(z => z.k === b.dataset.buyegg); if (x && gems() >= x.buy) { s.gems -= x.buy; CS.giveInstantEgg(x.minR || undefined); CS.toast(`Bought a ${x.n}. Hatching now!`); again(); } return; }
   b = e.target.closest("[data-sellegg]");
-  if (b) { const P = s.pets, i = P.eggs.findIndex(z => z.id === b.dataset.sellegg); if (i < 0) return;
+  if (b) { const P = s.pets, i = P.eggs.findIndex(z => z.id === b.dataset.sellegg); if (i < 0 || !CS.eggSellable(P.eggs[i])) return;
     if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Tap again to sell"; setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = `Sell · 💎 ${sellOf(P.eggs[i] || {})}`; } }, 2500); return; }
     const egg = P.eggs.splice(i, 1)[0], v2 = sellOf(egg); s.gems = gems() + v2; CS.toast(`Sold for ${v2} gems.`); again(); return; }
   b = e.target.closest("[data-buyfreeze]");

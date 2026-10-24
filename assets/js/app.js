@@ -185,6 +185,7 @@ render.home = () => {
     </div>
     ${CS.upgradeCard ? CS.upgradeCard() : ""}
     ${CS.petCard ? CS.petCard() : ""}
+    ${CS.dqCard ? CS.dqCard() : ""}
     <div class="stack">
       <div class="spread"><h2>Today's quests</h2><span class="muted small">${doneN}/3 done${doneN===3?" · nice work":""}</span></div>
       <div class="quest">${tasks.map(x=>`<button class="task ${x.done?"done":""}" data-go="${x.go}" ${x.mode?`data-mode="${x.mode}"`:""} ${x.unit?`data-unit="${x.unit}"`:""} ${x.game?`data-game="${x.game}"`:""}>

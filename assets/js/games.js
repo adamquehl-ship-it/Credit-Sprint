@@ -14,6 +14,10 @@ const GAMES = [
   {k:"boss", n:"Boss Battle", ic:"sword", d:"Take on a unit boss. Every correct answer deals damage; three misses and you're out.", best:()=>{ const n = Object.values(S().bosses).filter(Boolean).length; return `${n}/${CS.UNITS.length} bosses beaten`; }},
   ...(CS.hasGraphs() ? [{k:"shift", n:"Shift It", ic:"chart", d:"A headline hits the economy. Shift the right curve the right way before the clock runs out.", best:()=>S().best.shift!=null?`Best: ${S().best.shift}/10`:"Not played yet"}] : []),
   ...(CS.COURSE==="bio" ? [{k:"cross", n:"Cross It", ic:"dna", d:"Genetics at speed: Punnett squares, dihybrid ratios, sex-linked traits and blood types. Predict the offspring before time runs out.", best:()=>S().best.cross!=null?`Best: ${S().best.cross}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="macro" ? [{k:"crisis", n:"Crisis Desk", ic:"bank", d:"A headline breaks. Call what happens to real GDP, the price level and unemployment in the short run.", best:()=>S().best.crisis!=null?`Best: ${S().best.crisis}/24`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="micro" ? [{k:"elastic", n:"Elasticity Sprint", ic:"chart", d:"Read the price and quantity data, then call the elasticity and what happens to total revenue.", best:()=>S().best.elastic!=null?`Best: ${S().best.elastic}/10`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="bio" ? [{k:"sorter", n:"Cell Sorter", ic:"cards", d:"60 seconds. Sort each fact into the right bucket: prokaryote or eukaryote, mitosis or meiosis, DNA or RNA and more.", best:()=>S().best.sorter!=null?`Best: ${S().best.sorter} sorted`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="chem" ? [{k:"periodic", n:"Periodic Hunt", ic:"flask", d:"Clues lead you to an element. Tap it on the periodic table: groups, valence electrons, trends and atomic numbers.", best:()=>S().best.periodic!=null?`Best: ${S().best.periodic}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
@@ -43,9 +47,9 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic})[active]($("#g-area"));
 };
-function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); S().games = (S().games||0)+1; CS.refresh(); }
+function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active); S().games = (S().games||0)+1; CS.refresh(); }
 document.addEventListener("keydown", e => { const a = $("#g-area"); if (a && a._key && !$("#v-games").hidden && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) a._key(e); });
 
 /* ---------- Daily Challenge ---------- */
@@ -636,6 +640,170 @@ function balance(area){
     area.innerHTML = `<span class="eyebrow">Balance It · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=7?"Lavoisier would approve.":"Balance the elements that appear in the fewest places first, and save lone elements like O and H for last."}</p>
       <div class="row-wrap"><button class="btn" id="bl-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="4">Review Unit 4</button></div>`;
     $("#bl-again").onclick = () => { i = 0; right = 0; streak = 0; pts = 0; order.splice(0, order.length, ...CS.shuffle(EQS.slice()).slice(0, ROUNDS)); round(); };
+  }
+}
+
+/* ---------- Crisis Desk (Macro): predict the short-run effect of a shock on GDP, prices and unemployment ---------- */
+const CRISES = [
+  ["Consumer confidence collapses and households cut spending.",-1,-1,1,"Aggregate demand shifts left."],
+  ["Congress cuts income taxes during a recession.",1,1,-1,"Disposable income rises, so AD shifts right."],
+  ["A world oil shock raises production costs across the economy.",-1,1,1,"Short-run aggregate supply shifts left: stagflation."],
+  ["The Fed buys bonds on the open market.",1,1,-1,"Reserves rise, interest rates fall, and AD shifts right."],
+  ["The Fed raises the reserve requirement.",-1,-1,1,"Banks lend less, the money supply falls, and AD shifts left."],
+  ["A wave of productivity gains lowers costs for firms.",1,-1,-1,"Short-run aggregate supply shifts right."],
+  ["Booming foreign economies buy more U.S. exports.",1,1,-1,"Net exports rise, so AD shifts right."],
+  ["The government sharply cuts spending.",-1,-1,1,"Government purchases fall, so AD shifts left."],
+  ["The dollar appreciates against other currencies.",-1,-1,1,"Exports fall and imports rise, so net exports fall and AD shifts left."],
+  ["Nominal wages fall throughout the economy.",1,-1,-1,"Input costs fall, so SRAS shifts right."],
+  ["Business optimism jumps and firms build new factories.",1,1,-1,"Investment rises, so AD shifts right."],
+  ["The Fed raises the federal funds rate target.",-1,-1,1,"Higher rates reduce investment and consumption, so AD shifts left."],
+  ["Congress raises taxes on households.",-1,-1,1,"Disposable income falls, so AD shifts left."],
+  ["A drought wrecks harvests and raises food costs nationwide.",-1,1,1,"SRAS shifts left, raising prices while output falls."]
+];
+function crisis(area){
+  const ROUNDS = 8; let i = 0, pts = 0; const order = CS.shuffle(CRISES.slice()).slice(0, ROUNDS);
+  const NAMES = ["Real GDP", "Price level", "Unemployment"], SYM = {"1":"Up","-1":"Down"};
+  area.innerHTML = `<p style="max-width:62ch">Each round is a headline. For each of the three indicators, choose whether it rises or falls in the short run. Each correct call scores a point, 24 in all.</p><div><button class="btn accent" id="cr-go">Start · ${ROUNDS} headlines</button></div>`;
+  $("#cr-go").onclick = round;
+  function round(){
+    if (i >= ROUNDS) return end();
+    const c = order[i], pick = [0, 0, 0];
+    area.innerHTML = `<div class="hud"><span>Headline <b>${i+1}</b>/${ROUNDS}</span><span>Points <b>${pts}</b>/${i*3}</span></div>
+      <p class="qtext">${esc(c[0])}</p>
+      <div class="stack" style="gap:10px">${NAMES.map((n, k) => `<div class="spread cr-row"><b>${n}</b><div class="row-wrap" style="gap:8px"><button class="btn ghost sm cr-b" data-k="${k}" data-v="1">▲ Rises</button><button class="btn ghost sm cr-b" data-k="${k}" data-v="-1">▼ Falls</button></div></div>`).join("")}</div>
+      <div id="cr-fb"></div><div style="margin-top:10px"><button class="btn accent" id="cr-ok" disabled>Lock in</button></div>`;
+    $$(".cr-b", area).forEach(b => b.onclick = () => { pick[+b.dataset.k] = +b.dataset.v; $$(".cr-b", area).filter(x => x.dataset.k === b.dataset.k).forEach(x => x.classList.toggle("accent", x === b)); $("#cr-ok").disabled = pick.includes(0); });
+    $("#cr-ok").onclick = () => {
+      const good = pick.map((v, k) => v === c[k+1]); const n = good.filter(Boolean).length; pts += n; CS.record({u:3}, n === 3, false);
+      $$(".cr-b", area).forEach(b => { b.disabled = true; const k = +b.dataset.k, v = +b.dataset.v; if (v === c[k+1]) b.classList.add("accent"); else if (v === pick[k]) b.classList.add("wrong"); });
+      $("#cr-ok").remove();
+      $("#cr-fb").innerHTML = `<div class="feedback ${n===3?"good":"bad"}"><b>${n}/3 correct.</b> ${esc(c[4])} Real GDP ${c[1]>0?"rises":"falls"}, the price level ${c[2]>0?"rises":"falls"} and unemployment ${c[3]>0?"rises":"falls"}.</div><div style="margin-top:10px"><button class="btn" id="cr-next">${i+1<ROUNDS?"Next headline":"See results"}</button></div>`;
+      $("#cr-next").onclick = () => { i++; round(); }; $("#cr-next").focus({preventScroll:true});
+    };
+  }
+  function end(){
+    const nb = CS.setBest("crisis", pts); finish(pts*3);
+    area.innerHTML = `<span class="eyebrow">Crisis Desk · results</span><div class="result-big">${pts}/${ROUNDS*3}</div><p class="muted">${nb?"New personal best. ":""}${pts>=20?"The Fed would hire you.":"Ask first: did aggregate demand or short-run aggregate supply move, and in which direction?"}</p>
+      <div class="row-wrap"><button class="btn" id="cr-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="3">Review Unit 3</button></div>`;
+    $("#cr-again").onclick = () => { i = 0; pts = 0; order.splice(0, order.length, ...CS.shuffle(CRISES.slice()).slice(0, ROUNDS)); round(); };
+  }
+}
+
+/* ---------- Elasticity Sprint (Micro): midpoint elasticity and the total revenue test ---------- */
+function elastic(area){
+  const ROUNDS = 10; let i = 0, right = 0, streak = 0, pts = 0;
+  const pick = a => a[Math.floor(Math.random()*a.length)], ri = (a, b) => a + Math.floor(Math.random()*(b-a+1));
+  function make(){
+    const P1 = pick([2,4,5,8,10,12,20,25,40]), Q1 = pick([100,200,300,400,500,800]);
+    for (let t = 0; t < 50; t++) {
+      const up = Math.random() < .5, dP = pick([.1,.2,.25,.3,.5]) * P1, P2 = Math.max(1, Math.round(up ? P1 + dP : P1 - dP));
+      const e = pick([.3,.5,.8,1,1.4,2,3]), pctP = Math.abs(P2-P1)/((P1+P2)/2), Q2 = Math.max(1, Math.round(Q1 * (up ? 1 - e*pctP : 1 + e*pctP)));
+      if (P2 === P1 || Q2 === Q1) continue;
+      const E = (Math.abs(Q2-Q1)/((Q1+Q2)/2)) / pctP, kind = E > 1.05 ? "Elastic" : E < .95 ? "Inelastic" : "Unit elastic";
+      const tr1 = P1*Q1, tr2 = P2*Q2, trw = tr2 > tr1 ? "rises" : tr2 < tr1 ? "falls" : "stays the same";
+      if (Math.random() < .5) return {q:`When the price changes from $${P1} to $${P2}, quantity demanded changes from ${Q1} to ${Q2}. Using the midpoint method, demand over this range is:`, opts:["Elastic","Inelastic","Unit elastic"], ans:kind, why:`%ΔQ ÷ %ΔP = ${(Math.abs(Q2-Q1)/((Q1+Q2)/2)*100).toFixed(1)}% ÷ ${(pctP*100).toFixed(1)}% = ${E.toFixed(2)}, which is ${kind.toLowerCase()}.`};
+      return {q:`The price moves from $${P1} to $${P2} and quantity demanded moves from ${Q1} to ${Q2}. What happens to total revenue?`, opts:["Rises","Falls","Stays the same"], ans:trw.replace("stays the same","Stays the same").replace(/^./, c => c.toUpperCase()), why:`Total revenue goes from $${tr1.toLocaleString()} to $${tr2.toLocaleString()}. Demand is ${kind.toLowerCase()} (E ≈ ${E.toFixed(2)}).`};
+    }
+    return {q:"If price rises and total revenue falls, demand is:", opts:["Elastic","Inelastic","Unit elastic"], ans:"Elastic", why:"Quantity falls by a larger percentage than price rises."};
+  }
+  area.innerHTML = `<p style="max-width:62ch">Each round gives price and quantity data. Use the midpoint method, or the total revenue test, and pick the answer. Speed and streaks earn bonus points.</p><div><button class="btn accent" id="el-go">Start · ${ROUNDS} rounds</button></div>`;
+  $("#el-go").onclick = round;
+  function round(){
+    if (i >= ROUNDS) return end();
+    const g = make(), t0 = Date.now(), opts = g.opts;
+    area.innerHTML = `<div class="hud"><span>Round <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span><span>Streak <b>${streak}</b></span><span>Points <b>${pts}</b></span></div>
+      <p class="qtext">${esc(g.q)}</p><div class="opts">${opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o)}</span></button>`).join("")}</div><div id="el-fb"></div>`;
+    let done = false;
+    const pickOpt = j => { if (done) return; done = true; const ok = opts[j] === g.ans; CS.record({u:2}, ok, false);
+      if (ok) { right++; streak++; pts += 100 + Math.max(0, 40 - Math.round((Date.now()-t0)/1000)*2) + (streak>=3?25:0); } else streak = 0;
+      $$(".opt", area).forEach((b,k) => { b.disabled = true; if (opts[k] === g.ans) b.classList.add("right"); else if (k === j) b.classList.add("wrong"); });
+      $("#el-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?(streak>=3?"Streak bonus!":"Correct."):`Answer: ${esc(g.ans)}.`}</b> ${esc(g.why)}</div><div style="margin-top:10px"><button class="btn" id="el-next">${i+1<ROUNDS?"Next round":"See results"}</button></div>`;
+      $("#el-next").onclick = () => { i++; round(); }; $("#el-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#el-next").click(); };
+    };
+    $$(".opt", area).forEach(b => b.onclick = () => pickOpt(+b.dataset.j));
+    area._key = e => { if (["1","2","3"].includes(e.key)) pickOpt(+e.key-1); };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("elastic", right); finish(pts/10);
+    area.innerHTML = `<span class="eyebrow">Elasticity Sprint · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=8?"You think like a pricing analyst.":"Remember: elastic means quantity moves by a bigger percentage than price, so total revenue moves opposite to price."}</p>
+      <div class="row-wrap"><button class="btn" id="el-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="2">Review Unit 2</button></div>`;
+    $("#el-again").onclick = () => { i = 0; right = 0; streak = 0; pts = 0; round(); };
+  }
+}
+
+/* ---------- Cell Sorter (Bio): 60-second two-bucket sorting ---------- */
+const SORTS = [
+  [["Prokaryote","Eukaryote"],[["No nucleus",0],["Membrane-bound organelles",1],["Circular chromosome",0],["Linear chromosomes",1],["Mitochondria",1],["Nucleoid region",0],["Golgi apparatus",1],["Plasmids",0],["Divides by binary fission",0],["Histone proteins",1],["70S ribosomes",0],["Endoplasmic reticulum",1]],1],
+  [["Mitosis","Meiosis"],[["Makes two identical cells",0],["Makes four haploid cells",1],["Crossing over",1],["Growth and repair",0],["One round of division",0],["Two rounds of division",1],["Independent assortment",1],["Daughter cells are diploid",0],["Makes gametes",1],["Sister chromatids separate in anaphase only once",0]],5],
+  [["Photosynthesis","Cellular respiration"],[["Occurs in chloroplasts",0],["Occurs in mitochondria",1],["Makes glucose",0],["Breaks down glucose",1],["Releases O₂",0],["Consumes O₂",1],["Calvin cycle",0],["Krebs cycle",1],["Uses light energy",0],["Makes most ATP by oxidative phosphorylation",1]],3],
+  [["DNA","RNA"],[["Contains thymine",0],["Contains uracil",1],["Usually double-stranded",0],["Usually single-stranded",1],["Deoxyribose sugar",0],["Ribose sugar",1],["mRNA, tRNA and rRNA are types",1],["Stores the genetic code long term",0],["Carries codons to the ribosome",1],["Replication copies it",0]],6],
+  [["Passive transport","Active transport"],[["Needs no ATP",0],["Uses ATP",1],["Down the concentration gradient",0],["Against the concentration gradient",1],["Osmosis",0],["Sodium-potassium pump",1],["Facilitated diffusion",0],["Moves ions uphill",1],["Simple diffusion of O₂",0],["Endocytosis",1]],2]
+];
+function sorter(area){
+  let time = 60, score = 0, miss = 0, timer = null, items = [], set = null;
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. Each fact belongs in one of two buckets. Tap a bucket, or press ← and →. A mistake costs 3 seconds.</p><div><button class="btn accent" id="so-go">Start</button></div>`;
+  $("#so-go").onclick = start;
+  function nextSet(){ set = CS.shuffle(SORTS)[0]; items = CS.shuffle(set[1].slice()); }
+  function start(){ nextSet(); show(); timer = setInterval(() => { time--; const t = $("#so-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) nextSet();
+    const it = items[0];
+    area.innerHTML = `<div class="hud"><span>Time <b id="so-t">${Math.max(0,time)}</b></span><span>Sorted <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div>
+      <div class="so-btns"><button class="btn big" data-b="0">← ${esc(set[0][0])}</button><button class="btn big" data-b="1">${esc(set[0][1])} →</button></div><div id="so-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { const ok = b === it[1]; CS.record({u:set[2]}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#so-fb"); if (f) f.textContent = `Not quite: "${it[0]}" is ${set[0][it[1]]}.`; } };
+    $$(".so-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (e.key === "ArrowLeft") choose(0); else if (e.key === "ArrowRight") choose(1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("sorter", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Cell Sorter · results</span><div class="result-big">${score}</div><p class="muted">facts sorted, ${miss} missed${nb?" · new personal best":""}. ${score>=25?"Your cell membrane is very selective.":"Think about the key difference between the two buckets first, then sort."}</p>
+      <div class="row-wrap"><button class="btn" id="so-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="2">Review Unit 2</button></div>`;
+    $("#so-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+
+/* ---------- Periodic Hunt (Chem): find the element on the periodic table ---------- */
+const SYMS = "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr".split(" ");
+const ENAME = "Hydrogen,Helium,Lithium,Beryllium,Boron,Carbon,Nitrogen,Oxygen,Fluorine,Neon,Sodium,Magnesium,Aluminum,Silicon,Phosphorus,Sulfur,Chlorine,Argon,Potassium,Calcium,Scandium,Titanium,Vanadium,Chromium,Manganese,Iron,Cobalt,Nickel,Copper,Zinc,Gallium,Germanium,Arsenic,Selenium,Bromine,Krypton".split(",");
+const ELS = SYMS.map((s, i) => { const z = i + 1; let per = z <= 2 ? 1 : z <= 10 ? 2 : z <= 18 ? 3 : 4, off = z <= 2 ? 0 : z <= 10 ? 2 : z <= 18 ? 10 : 18, g;
+  if (per === 1) g = z === 1 ? 1 : 18; else if (per === 4) g = z - 18; else { const k = z - (per === 2 ? 2 : 10); g = k <= 2 ? k : k + 10; }
+  return {z, s, n:ENAME[i], per, g}; });
+const EN = {H:2.20,Li:.98,Be:1.57,B:2.04,C:2.55,N:3.04,O:3.44,F:3.98,Na:.93,Mg:1.31,Al:1.61,Si:1.90,P:2.19,S:2.58,Cl:3.16,K:.82,Ca:1.00,Ga:1.81,Ge:2.01,As:2.18,Se:2.55,Br:2.96};
+const FAM = {1:"alkali metal",2:"alkaline earth metal",17:"halogen",18:"noble gas"};
+function periodic(area){
+  const ROUNDS = 8; let i = 0, right = 0;
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const by = (per, g) => ELS.find(e => e.per === per && e.g === g);
+  function make(){
+    const t = pick(["fam","fam","val","val","z","en","trans","ie"]);
+    if (t === "fam") { const g = pick([1,2,17,18]), per = g === 1 ? pick([2,3,4]) : pick([2,3,4]), e = by(per, g); return {q:`Find the ${FAM[g]} in period ${per}.`, ans:e, why:`Group ${g} is the ${FAM[g]}s. In period ${per} that is ${e.n}.`}; }
+    if (t === "val") { const per = pick([2,3]), g = pick([1,2,13,14,15,16,17]), e = by(per, g), v = g < 13 ? g : g - 10; return {q:`Find the element in period ${per} whose atoms have ${v} valence electron${v>1?"s":""}.`, ans:e, why:`${e.n} (group ${g}) has ${v} valence electron${v>1?"s":""}.`}; }
+    if (t === "z") { const e = pick(ELS.filter(x => x.z <= 36)); return {q:`Find the element with atomic number ${e.z}.`, ans:e, why:`Atomic number ${e.z} is ${e.n} (${e.s}).`}; }
+    if (t === "en") { const per = pick([2,3,4]), ps = ELS.filter(e => e.per === per && EN[e.s]), best = ps.sort((a,b) => EN[b.s]-EN[a.s])[0]; return {q:`Find the most electronegative element in period ${per}.`, ans:best, why:`Electronegativity rises across a period, so it is the halogen: ${best.n} (${EN[best.s]}).`}; }
+    if (t === "trans") { const g = pick([3,4,5,6,7,8,9,10,11,12]), e = by(4, g); return {q:`Find the period 4 transition metal in group ${g}.`, ans:e, why:`${e.n} (${e.s}) sits in group ${g} of period 4.`}; }
+    const per = pick([2,3]), e = by(per, 18); return {q:`Find the element in period ${per} with the highest first ionization energy.`, ans:e, why:`Ionization energy rises across a period, so the noble gas ${e.n} is highest.`};
+  }
+  const grid = () => { let h = ""; for (let p = 1; p <= 4; p++) for (let g = 1; g <= 18; g++) { const e = by(p, g); h += e ? `<button class="pt-c" data-z="${e.z}" aria-label="${e.n}"><small>${e.z}</small>${e.s}</button>` : `<span class="pt-e"></span>`; } return `<div class="pt-grid">${h}</div>`; };
+  area.innerHTML = `<p style="max-width:62ch">Each round gives a clue. Tap the matching element on the periodic table (elements 1 to 36).</p><div><button class="btn accent" id="pt-go">Start · ${ROUNDS} clues</button></div>`;
+  $("#pt-go").onclick = round;
+  function round(){
+    if (i >= ROUNDS) return end();
+    const g = make();
+    area.innerHTML = `<div class="hud"><span>Clue <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><p class="qtext">${esc(g.q)}</p>${grid()}<div id="pt-fb"></div>`;
+    let done = false;
+    $$(".pt-c", area).forEach(b => b.onclick = () => { if (done) return; done = true; const ok = +b.dataset.z === g.ans.z; CS.record({u:1}, ok, false); if (ok) right++;
+      $$(".pt-c", area).forEach(x => { x.disabled = true; if (+x.dataset.z === g.ans.z) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#pt-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":`Answer: ${g.ans.n}.`}</b> ${esc(g.why)}</div><div style="margin-top:10px"><button class="btn" id="pt-next">${i+1<ROUNDS?"Next clue":"See results"}</button></div>`;
+      $("#pt-next").onclick = () => { i++; round(); }; $("#pt-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#pt-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("periodic", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Periodic Hunt · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"Mendeleev would be proud.":"Rows are periods (shells) and columns are groups (valence electrons). Use both to locate any element."}</p>
+      <div class="row-wrap"><button class="btn" id="pt-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="1">Review Unit 1</button></div>`;
+    $("#pt-again").onclick = () => { i = 0; right = 0; round(); };
   }
 }
 })();

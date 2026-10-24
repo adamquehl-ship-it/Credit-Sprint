@@ -793,3 +793,21 @@ button.av.img:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bl-in:focus{outline:none;border-color:var(--subject,var(--accent))}
 .bl-in:disabled{opacity:.9}
 .bl-f{font-weight:700;white-space:nowrap}.bl-op,.bl-arrow{color:var(--muted);font-weight:700;padding:0 2px}
+
+/* daily quests */
+.dq-list{display:grid;gap:10px}
+.dq{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.dq .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem;font-weight:800;flex:none}
+.dq.done{opacity:.75}.dq.done .ck{background:var(--good,#16A34A);border-color:var(--good,#16A34A);color:#fff}
+.dq-bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}.dq-bar i{display:block;height:100%;background:var(--subject,var(--accent));border-radius:99px;transition:width .3s}
+.dq-rw{font-weight:800;font-size:.85rem;white-space:nowrap;padding:5px 10px;border-radius:99px;background:var(--accent-soft,#EEF2FF);display:inline-flex;align-items:center;gap:4px}
+
+/* Cell Sorter + Periodic Hunt + Crisis Desk */
+.so-card{margin:18px 0;padding:28px 18px;border:2px solid var(--line);border-radius:16px;background:var(--card);text-align:center;font-size:1.3rem;font-weight:800}
+.so-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.so-btns .btn.big{padding:16px 10px;font-size:1rem}
+.pt-grid{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:3px;margin:12px 0;max-width:760px}
+.pt-c{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:inherit;font-weight:800;font-size:clamp(.55rem,1.8vw,.95rem);padding:0;cursor:pointer;line-height:1}
+.pt-c small{font-size:.55em;font-weight:600;color:var(--muted)}.pt-c:hover:not(:disabled){border-color:var(--subject,var(--accent))}.pt-c.right{background:#16A34A;color:#fff;border-color:#16A34A}.pt-c.wrong{background:#DC2626;color:#fff;border-color:#DC2626}.pt-c:disabled{cursor:default}
+.pt-e{aspect-ratio:1}
+.cr-row{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.cr-b.accent{background:var(--accent);color:#fff}.cr-b.wrong{background:#DC2626;color:#fff;border-color:#DC2626}
