@@ -14,6 +14,7 @@ const GAMES = [
   {k:"boss", n:"Boss Battle", ic:"sword", d:"Take on a unit boss. Every correct answer deals damage; three misses and you're out.", best:()=>{ const n = Object.values(S().bosses).filter(Boolean).length; return `${n}/${CS.UNITS.length} bosses beaten`; }},
   ...(CS.hasGraphs() ? [{k:"shift", n:"Shift It", ic:"chart", d:"A headline hits the economy. Shift the right curve the right way before the clock runs out.", best:()=>S().best.shift!=null?`Best: ${S().best.shift}/10`:"Not played yet"}] : []),
   ...(CS.COURSE==="bio" ? [{k:"cross", n:"Cross It", ic:"dna", d:"Genetics at speed: Punnett squares, dihybrid ratios, sex-linked traits and blood types. Predict the offspring before time runs out.", best:()=>S().best.cross!=null?`Best: ${S().best.cross}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
@@ -42,7 +43,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); S().games = (S().games||0)+1; CS.refresh(); }
 document.addEventListener("keydown", e => { const a = $("#g-area"); if (a && a._key && !$("#v-games").hidden && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) a._key(e); });
@@ -579,6 +580,62 @@ function match(area){
         <div class="row-wrap"><button class="btn" id="m-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
       $("#m-again").onclick = () => match(area);
     }
+  }
+}
+
+/* Balance It (Chemistry): set the coefficients so every atom is conserved, in lowest whole numbers */
+const EQS = [
+  [["H2","O2"],["H2O"],[2,1,2]],[["N2","H2"],["NH3"],[1,3,2]],[["CH4","O2"],["CO2","H2O"],[1,2,1,2]],[["Na","H2O"],["NaOH","H2"],[2,2,2,1]],
+  [["Mg","HCl"],["MgCl2","H2"],[1,2,1,1]],[["KClO3"],["KCl","O2"],[2,2,3]],[["Fe","O2"],["Fe2O3"],[4,3,2]],[["Al","O2"],["Al2O3"],[4,3,2]],
+  [["C2H6","O2"],["CO2","H2O"],[2,7,4,6]],[["C3H8","O2"],["CO2","H2O"],[1,5,3,4]],[["Al","HCl"],["AlCl3","H2"],[2,6,2,3]],[["NH3","O2"],["NO","H2O"],[4,5,4,6]],
+  [["Fe2O3","CO"],["Fe","CO2"],[1,3,2,3]],[["C6H12O6","O2"],["CO2","H2O"],[1,6,6,6]],[["Pb(NO3)2","KI"],["PbI2","KNO3"],[1,2,1,2]],[["C4H10","O2"],["CO2","H2O"],[2,13,8,10]],
+  [["Ca(OH)2","H3PO4"],["Ca3(PO4)2","H2O"],[3,2,1,6]],[["Al(OH)3","H2SO4"],["Al2(SO4)3","H2O"],[2,3,1,6]]
+];
+CS.EQUATIONS = EQS;
+CS.atomCount = (formula) => { const st = [{}]; const re = /([A-Z][a-z]?|\(|\))(\d*)/g; let m;
+  while ((m = re.exec(formula))) { const [, t, d] = m, n = d ? +d : 1;
+    if (t === "(") st.push({}); else if (t === ")") { const top = st.pop(); for (const e in top) st[st.length-1][e] = (st[st.length-1][e]||0) + top[e]*n; } else st[st.length-1][t] = (st[st.length-1][t]||0) + n; }
+  return st[0]; };
+CS.sideCount = (list, coef) => { const out = {}; list.forEach((f, i) => { const c = CS.atomCount(f); for (const e in c) out[e] = (out[e]||0) + c[e]*coef[i]; }); return out; };
+CS.isBalanced = (eq, coef) => { const nr = eq[0].length, L = CS.sideCount(eq[0], coef.slice(0, nr)), R = CS.sideCount(eq[1], coef.slice(nr)); const ks = new Set([...Object.keys(L), ...Object.keys(R)]); return [...ks].every(k => (L[k]||0) === (R[k]||0)); };
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+function balance(area){
+  const ROUNDS = 8; let i = 0, right = 0, streak = 0, pts = 0; const order = CS.shuffle(EQS.slice()).slice(0, ROUNDS);
+  const fm = f => esc(f).replace(/(\d+)/g, "<sub>$1</sub>");
+  intro();
+  function intro(){
+    area.innerHTML = `<p style="max-width:62ch">Each round shows an unbalanced equation. Set a coefficient for every substance so that each element has the same number of atoms on both sides. Use the smallest whole numbers.</p><div><button class="btn accent" id="bl-go">Start · ${ROUNDS} equations</button></div>`;
+    $("#bl-go").onclick = round;
+  }
+  function round(){
+    if (i >= ROUNDS) return end();
+    const eq = order[i], nr = eq[0].length, all = eq[0].concat(eq[1]), t0 = Date.now();
+    const cell = (f, j) => `<span class="bl-sp"><input class="bl-in" type="number" inputmode="numeric" min="1" max="20" value="1" data-j="${j}" aria-label="Coefficient for ${esc(f)}"><span class="bl-f">${fm(f)}</span></span>`;
+    area.innerHTML = `<div class="hud"><span>Equation <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span><span>Streak <b>${streak}</b></span><span>Points <b>${pts}</b></span></div>
+      <div class="bl-eq">${eq[0].map((f, j) => cell(f, j)).join('<span class="bl-op">+</span>')}<span class="bl-arrow">→</span>${eq[1].map((f, j) => cell(f, nr + j)).join('<span class="bl-op">+</span>')}</div>
+      <div id="bl-fb"></div><div style="margin-top:10px"><button class="btn accent" id="bl-check">Check</button></div>`;
+    $("#bl-check").onclick = check; $(".bl-in", area).focus({preventScroll:true});
+    area._key = e => { if (e.key === "Enter") { const b = $("#bl-check") || $("#bl-next"); b && b.click(); } };
+    function check(){
+      const coef = $$(".bl-in", area).map(x => Math.max(1, Math.round(+x.value || 1)));
+      const bal = CS.isBalanced(eq, coef), g = coef.reduce(gcd);
+      if (bal && g > 1) { $("#bl-fb").innerHTML = `<div class="feedback bad"><b>Balanced, but not in lowest terms.</b> Divide every coefficient by ${g}.</div>`; return; }
+      const ok = bal; CS.record({u:4}, ok, false);
+      if (ok) { right++; streak++; pts += 100 + Math.max(0, 40 - Math.round((Date.now()-t0)/1000)) + (streak>=3?25:0); } else streak = 0;
+      const L = CS.sideCount(eq[0], coef.slice(0, nr)), R = CS.sideCount(eq[1], coef.slice(nr)), ks = [...new Set([...Object.keys(L), ...Object.keys(R)])];
+      $$(".bl-in", area).forEach((x, j) => { x.disabled = true; if (!ok) x.value = eq[2][j]; });
+      $("#bl-check").remove();
+      $("#bl-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?(streak>=3?"Streak bonus!":"Balanced."):"Not balanced. The answer is shown above."}</b> ${ok ? "Every element has the same count on both sides." : ks.filter(k => (L[k]||0) !== (R[k]||0)).map(k => `${k}: ${L[k]||0} on the left, ${R[k]||0} on the right`).join("; ") + "."}</div>
+        <div class="matrix-wrap" style="max-width:300px"><table class="matrix"><thead><tr><th>Element</th><th>Left</th><th>Right</th></tr></thead><tbody>${ks.map(k => `<tr><th>${esc(k)}</th><td>${L[k]||0}</td><td>${R[k]||0}</td></tr>`).join("")}</tbody></table></div>
+        <div style="margin-top:10px"><button class="btn" id="bl-next">${i+1<ROUNDS?"Next equation":"See results"}</button></div>`;
+      $("#bl-next").onclick = () => { i++; round(); }; $("#bl-next").focus({preventScroll:true});
+    }
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("balance", right); finish(pts/10);
+    area.innerHTML = `<span class="eyebrow">Balance It · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${pts} points${nb?" · new personal best":""}. ${right>=7?"Lavoisier would approve.":"Balance the elements that appear in the fewest places first, and save lone elements like O and H for last."}</p>
+      <div class="row-wrap"><button class="btn" id="bl-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="4">Review Unit 4</button></div>`;
+    $("#bl-again").onclick = () => { i = 0; right = 0; streak = 0; pts = 0; order.splice(0, order.length, ...CS.shuffle(EQS.slice()).slice(0, ROUNDS)); round(); };
   }
 }
 })();

@@ -129,14 +129,46 @@ const BIO = [
  {id:"b_vent", body:"tubeworm", n:"Abyss Tubeworm", u:3, r:"mythical", p:0.35, c1:"#DC2626", c2:"#F8FAFC", custom:"bio", bio:"No mouth and no gut. Bacteria inside it run chemosynthesis on volcanic vent chemicals, with no sunlight at all."},
  {id:"luca", body:"luca", n:"LUCA, the First Ancestor", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#10B981", custom:"bio", bio:"The last universal common ancestor of every living thing. Roughly 1 in 2,000 eggs."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}};
+const CHEM = [
+ {id:"c_atom", body:"atom", n:"Annie the Atom", u:1, r:"common", p:6.5, c1:"#FB923C", c2:"#38BDF8", custom:"chem", bio:"Adds an electron shell every time she grows. The nucleus is tiny, and the rest is mostly empty space with a lot of personality."},
+ {id:"c_beaker", body:"beaker", n:"Beaker Buddy", u:4, r:"common", p:6.5, c1:"#34D399", c2:"#E0F2FE", custom:"chem", bio:"Fills to the line, fizzes on cue and never spills. Mass is conserved in every reaction it hosts."},
+ {id:"c_flask", body:"flask", n:"Erlen the Flask", u:8, r:"common", p:6, c1:"#60A5FA", c2:"#E0F2FE", custom:"chem", bio:"Waits for one last drop of base. When the indicator flips pink, it has hit the endpoint."},
+ {id:"c_balloon", body:"balloon", n:"Boyle the Balloon", u:3, r:"common", p:6, c1:"#F87171", c2:"#FEE2E2", custom:"chem", bio:"Squeeze the volume and the pressure goes up. PV stays constant, and so does the drama."},
+ {id:"c_ice", body:"ice", n:"Phase the Ice Cube", u:3, r:"common", p:6, c1:"#BAE6FD", c2:"#F0F9FF", custom:"chem", bio:"Solid, liquid and gas are all one warm day apart. Melting costs heat, and the temperature stays put while it happens."},
+ {id:"c_candle", body:"candle", n:"Combustion Candle", u:4, r:"common", p:6, c1:"#FDE68A", c2:"#FEF3C7", custom:"chem", bio:"Burns hydrocarbons into CO₂ and water, giving off light and plenty of heat. An exothermic classic."},
+ {id:"c_salt", body:"nacl", n:"Salty the Crystal", u:2, r:"common", p:6, c1:"#F1F5F9", c2:"#E2E8F0", custom:"chem", bio:"A neat lattice of sodium and chloride ions, held together by strong electrostatic attraction. Brittle, with a very high melting point."},
+ {id:"c_tablet", body:"tablet", n:"Fizz the Antacid", u:8, r:"common", p:6, c1:"#F8FAFC", c2:"#BAE6FD", custom:"chem", bio:"A base in disguise. It neutralizes stomach acid and releases CO₂ bubbles as it goes."},
+ {id:"c_prism", body:"prism", n:"Spectra the Prism", u:1, r:"uncommon", p:4, c1:"#C4B5FD", c2:"#EDE9FE", custom:"chem", bio:"Splits light into colors, just as atoms emit only certain wavelengths. Every element has its own fingerprint."},
+ {id:"c_litmus", body:"litmus", n:"Litmus the Strip", u:8, r:"uncommon", p:4, c1:"#F87171", c2:"#F5F5F4", custom:"chem", bio:"Turns red in acid and blue in base. It wears the whole pH scale and never lies about it."},
+ {id:"c_hill", body:"hill", n:"Cata the Energy Hill", u:5, r:"uncommon", p:4, c1:"#FDBA74", c2:"#C2410C", custom:"chem", bio:"A big activation energy barrier. When a catalyst arrives, it tunnels a lower path without changing the products."},
+ {id:"c_thermo", body:"thermo", n:"Thermo the Thermometer", u:6, r:"uncommon", p:4, c1:"#EF4444", c2:"#FEE2E2", custom:"chem", bio:"Measures temperature, the average kinetic energy of particles. Heat is something else entirely, and it is the first to say so."},
+ {id:"c_water", body:"h2o", n:"Wally the Water Molecule", u:2, r:"uncommon", p:4, c1:"#F87171", c2:"#F8FAFC", custom:"chem", bio:"Bent at about 104.5° with two lone pairs. Polar, so it hydrogen-bonds to every friend it meets."},
+ {id:"c_battery", body:"battery", n:"Volta the Battery", u:9, r:"uncommon", p:4, c1:"#A3E635", c2:"#F1F5F9", custom:"chem", bio:"Runs on a spontaneous redox reaction. Electrons flow from the anode to the cathode, and your phone does the rest."},
+ {id:"c_sodium", body:"sodium", n:"Splash the Sodium", u:4, r:"uncommon", p:3.5, c1:"#E2E8F0", c2:"#FDBA74", custom:"chem", bio:"Soft enough to cut with a knife, and it fizzes wildly in water, giving hydrogen gas and a basic solution."},
+ {id:"c_piston", body:"piston", n:"Piston Pete", u:3, r:"uncommon", p:4, c1:"#818CF8", c2:"#E0E7FF", custom:"chem", bio:"Pushes gas into a smaller space. Particles hit the walls more often, so pressure climbs at constant temperature."},
+ {id:"c_benzene", body:"benzene", n:"Benny the Benzene", u:2, r:"rare", p:3, c1:"#C4B5FD", c2:"#7C3AED", custom:"chem", bio:"Six carbons in a ring with electrons shared all the way round. Resonance makes him unusually stable."},
+ {id:"c_seesaw", body:"seesaw", n:"Le Chat the Seesaw", u:7, r:"rare", p:3, c1:"#6EE7B7", c2:"#FDE68A", custom:"chem", bio:"Push on a system at equilibrium and it shifts to push back. Le Châtelier's principle, with a plank."},
+ {id:"c_buret", body:"buret", n:"Titra the Buret", u:8, r:"rare", p:3, c1:"#38BDF8", c2:"#E0F2FE", custom:"chem", bio:"Delivers base one careful drop at a time. At the half-equivalence point of a weak acid, pH equals pKa."},
+ {id:"c_orbital", body:"orbital", n:"Olivia the Orbital", u:1, r:"rare", p:2.5, c1:"#F0ABFC", c2:"#818CF8", custom:"chem", bio:"A region where an electron is likely to be found. One s orbital, three p orbitals, and a firm belief in probability."},
+ {id:"c_galv", body:"galv", n:"Galvani the Cell", u:9, r:"rare", p:2.5, c1:"#93C5FD", c2:"#FDBA74", custom:"chem", bio:"Two half-cells and a salt bridge that keeps everyone neutral. Zinc oxidizes, copper reduces, and the bulb lights up."},
+ {id:"c_diamond", body:"diamond", n:"Dani the Diamond", u:3, r:"epic", p:2, c1:"#67E8F9", c2:"#ECFEFF", custom:"chem", bio:"Every carbon is bonded to four others in a giant network. Hard, with a very high melting point, and no free electrons."},
+ {id:"c_neon", body:"neon", n:"Neon the Noble", u:1, r:"epic", p:2, c1:"#FB7185", c2:"#FFE4E6", custom:"chem", bio:"A full valence shell, so it never reacts. Run a current through it and it glows its own red-orange."},
+ {id:"c_entropy", body:"entropy", n:"Entropy the Scatterer", u:9, r:"epic", p:2, c1:"#FCA5A5", c2:"#A5B4FC", custom:"chem", bio:"Tidy at first, then more spread out with every turn. The universe likes more microstates, and so does he."},
+ {id:"c_gold", body:"gold", n:"Aurum the Gold", u:1, r:"legendary", p:1.1, c1:"#FBBF24", c2:"#FEF3C7", custom:"chem", bio:"Atomic number 79. Unreactive and gleaming, it is one of the few metals found as a pure element."},
+ {id:"c_elixir", body:"elixir", n:"Elixir the Grand Flask", u:4, r:"legendary", p:0.9, c1:"#A78BFA", c2:"#DDD6FE", custom:"chem", bio:"A flask that balances every equation on its own. Atoms in equal numbers on both sides, always."},
+ {id:"c_mercury", body:"mercury", n:"Quicksilver", u:3, r:"mythical", p:0.6, c1:"#CBD5E1", c2:"#94A3B8", custom:"chem", bio:"A metal that is liquid at room temperature. Strong metallic bonds, high surface tension, and it beads up into mirrors."},
+ {id:"c_star", body:"star", n:"Stellar the Fusion Sun", u:1, r:"mythical", p:0.5, c1:"#F59E0B", c2:"#FEF08A", custom:"chem", bio:"Fuses hydrogen into helium and forges every heavier element in its core. You are made of this stuff."},
+ {id:"c_bucky", body:"bucky", n:"Buckminster the C₆₀", u:2, r:"mythical", p:0.35, c1:"#E2E8F0", c2:"#FDE68A", custom:"chem", bio:"Sixty carbon atoms in a soccer-ball cage. Named after the dome architect who would have loved it."},
+ {id:"c_prima", body:"prima", n:"Prima Materia", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#34D399", custom:"chem", bio:"The first matter of every alchemist's dream: fire, water, earth and air in one glowing orb. Roughly 1 in 2,000 eggs."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -436,6 +468,7 @@ const CUSTOM = {
       <rect x="55" y="34" width="10" height="12" fill="${skin}"/>
       ${face(60, 26, 13)}</g>`; },
   bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
+  chem: (p, stage, mood) => window.CS_CHEMART[p.body](p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
       <ellipse cx="${x}" cy="${y}" rx="${r*1.15}" ry="${r}" fill="${p.c1}" stroke="#7F1D1D" stroke-width="1.5"/>

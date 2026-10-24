@@ -465,6 +465,7 @@ select,input[type=date]{font:inherit;color:var(--ink);background:var(--surface);
 /* ---------- courses: top-bar switcher, popover, dashboard bar ---------- */
 :root[data-subject="micro"]:not([data-accent]){--hero1:#059669;--hero2:#065F46}
 :root[data-subject="bio"]:not([data-accent]){--hero1:#0891B2;--hero2:#155E75}
+:root[data-subject="chem"]:not([data-accent]){--hero1:#EA580C;--hero2:#9A3412}
 .course-pill{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 9px 5px 10px;font:inherit;font-weight:800;font-size:.86rem;cursor:pointer;white-space:nowrap;flex:none}
 .course-pill:hover{border-color:var(--accent)}
 .course-pill i{width:9px;height:9px;border-radius:50%;display:inline-block}
@@ -706,6 +707,7 @@ button.av.img:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ct.on{background:var(--cc);border-color:var(--cc);color:#fff}.ct.on .ico{color:#fff}
 @media (max-width:620px){.course-tabs .ct-in{padding-inline:16px}}
 :root[data-subject="bio"]{--subject:#0891B2}
+:root[data-subject="chem"]{--subject:#EA580C}
 .punnett td,.punnett th{text-align:center;min-width:48px}
 .course-tabs{min-width:0;max-width:100%;overflow:hidden}
 
@@ -783,3 +785,11 @@ button.av.img:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .su-stats>*{min-width:0}.su-stats *{white-space:normal;overflow-wrap:anywhere}
 .linklike{min-height:32px}
+
+/* Balance It (Chemistry game) */
+.bl-eq{display:flex;flex-wrap:wrap;align-items:center;gap:10px 8px;padding:18px 14px;margin:12px 0;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:1.15rem}
+.bl-sp{display:inline-flex;align-items:center;gap:4px}
+.bl-in{width:3.1rem;padding:8px 4px;text-align:center;font:inherit;font-weight:800;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.bl-in:focus{outline:none;border-color:var(--subject,var(--accent))}
+.bl-in:disabled{opacity:.9}
+.bl-f{font-weight:700;white-space:nowrap}.bl-op,.bl-arrow{color:var(--muted);font-weight:700;padding:0 2px}

@@ -5,6 +5,7 @@
 const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","fifth.js","content.js","content2.js","frqs2.js","drills.js","content3.js"].map(f => "assets/data/"+f);
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js"].map(f => "assets/data/micro/"+f);
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js"].map(f => "assets/data/bio/"+f);
+const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js"].map(f => "assets/data/chem/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -18,11 +19,20 @@ const C = window.CS_COURSES = {
     chainDesc:"Put the biology steps in order: from a hormone signal to a cell's response, from DNA to protein, from a population to a new species.",
     crunchDesc:"Two minutes of calculations: Hardy–Weinberg, chi-square, water potential, SA:V, energy transfer and population growth. Type the number.",
     drillDesc:"Hardy–Weinberg, chi-square, water potential, population growth: fresh numbers every time.",
-    planGames:["Cross It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]}
+    planGames:["Cross It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]},
+  chem:{k:"chem", name:"Chemistry", short:"Chem", ap:"AP® Chemistry", clep:"CLEP® Chemistry", clepShort:"CLEP® Chemistry",
+    key:"creditsprint.chem.v1", col:"#EA580C", soft:"#FFF7ED", apFmt:"60 multiple choice + 7 free response in 3 hours 15 minutes", clepFmt:"About 75 multiple choice in 90 minutes", blurb:"Atoms, bonding, reactions, kinetics, thermodynamics, equilibrium, acids and bases, electrochemistry.", icon:"flask", data:CHEM, nUnits:9, cat:"Science",
+    graphs:false, unitWord:"Unit",
+    exams:{ap:{full:{n:60, min:90, name:"Full AP® Section I"}, mini:{n:20, min:30, name:"Mini exam"}}, clep:{full:{n:75, min:90, name:"Full-length CLEP®"}, mini:{n:25, min:30, name:"Mini exam"}}},
+    bosses:{1:"The Electron Thief",2:"The Bond Breaker",3:"The Pressure Phantom",4:"The Limiting Reagent",5:"The Slow Burn",6:"The Heat Leech",7:"The Equilibrium Shifter",8:"The Acid Rain Dragon",9:"The Entropy Engine"},
+    chainDesc:"Put the chemistry steps in order: from a limiting reactant problem to a net ionic equation, from a rate law to a galvanic cell.",
+    crunchDesc:"Two minutes of calculations: moles, molarity, gas laws, heat, pH, equilibrium constants and free energy. Type the number.",
+    drillDesc:"Moles, molarity, gas laws, calorimetry, pH and electrochemistry: fresh numbers every time.",
+    planGames:["Balance It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]}
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}
