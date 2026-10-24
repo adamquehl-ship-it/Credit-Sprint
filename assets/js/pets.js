@@ -133,7 +133,7 @@ CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microecon
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
- {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#B07A45", c2:"#E8C79A", custom:"rahul", bio:"A calm, golden-crowned capybara who somehow always knows the answer. Secret pet. Only friends of Credit Sprint get one."}
+ {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
 CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, SECRET).map(p=>[p.id,p]));
@@ -411,23 +411,30 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 const CUSTOM = {
-  /* Rahul: an original capybara. Baby sits in its shell; a yuzu appears on its head as a teen; a golden crown and cape as an adult */
-  rahul: (p, stage, mood) => { const sleepy = mood === "sleepy", sad = mood === "sad"; return `
-    ${stage===3?`<path d="M34 62 C22 80 24 104 34 108 L86 108 C96 104 98 80 86 62Z" fill="#7F1D1D" stroke="#450A0A" stroke-width="1.5" opacity=".95"/>`:""}
-    <ellipse cx="60" cy="88" rx="34" ry="22" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/>
-    <ellipse cx="60" cy="94" rx="20" ry="12" fill="${p.c2}"/>
-    <rect x="36" y="100" width="10" height="9" rx="4" fill="#8A5A30" stroke="#6B4423" stroke-width="1.5"/><rect x="74" y="100" width="10" height="9" rx="4" fill="#8A5A30" stroke="#6B4423" stroke-width="1.5"/>
-    <ellipse cx="60" cy="58" rx="27" ry="23" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/>
-    <ellipse cx="37" cy="43" rx="5" ry="5.5" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/><ellipse cx="83" cy="43" rx="5" ry="5.5" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/>
-    
-    <rect x="39" y="58" width="42" height="21" rx="10" fill="${p.c2}"/>
-    <ellipse cx="60" cy="62" rx="9" ry="4" fill="#4A2C17"/>
-    <path d="M60 67 L60 72 M54 74 Q60 78 66 74" stroke="#4A2C17" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    ${sleepy?`<path d="M42 54 q5 4 10 0 M68 54 q5 4 10 0" stroke="#2B1A0E" stroke-width="2.4" fill="none" stroke-linecap="round"/>`:`${EYE(48,53,4.2)}${EYE(72,53,4.2)}`}
-    ${sad?`<path d="M42 46 l10 3 M78 46 l-10 3" stroke="#4A2C17" stroke-width="2" stroke-linecap="round"/>`:""}
-    <ellipse cx="40" cy="62" rx="4" ry="2.6" fill="#F4A28C" opacity=".6"/><ellipse cx="80" cy="62" rx="4" ry="2.6" fill="#F4A28C" opacity=".6"/>
-    ${stage===2?`<g><ellipse cx="60" cy="31" rx="9" ry="7.5" fill="#FDE047" stroke="#CA8A04" stroke-width="1.5"/><path d="M60 24 q-2 -6 4 -8 q1 5 -4 8z" fill="#4ADE80" stroke="#15803D" stroke-width="1"/><path d="M55 29 q3 -2 5 0" stroke="#FFF7AE" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`:""}
-    ${stage===3?CROWN(37):""}`; },
+  /* Rahul: an original cartoon student. Baby: just head, shoulders and a book, sitting in the shell. Teen: tall and skinny in a suit. Adult: adds a tie, pocket square and a glowing textbook */
+  rahul: (p, stage, mood) => { const sleepy = mood === "sleepy", sad = mood === "sad", skin = "#9A6338", hair = "#14110F", suit = "#1F2A44";
+    const book = (x, y, w, h, glow) => `${glow?`<rect x="${x-3}" y="${y-3}" width="${w+6}" height="${h+6}" rx="5" fill="#86EFAC" opacity=".45"/>`:""}<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.5" fill="#15803D" stroke="#14532D" stroke-width="1.5"/><rect x="${x+w-3}" y="${y+1.5}" width="2.4" height="${h-3}" fill="#F0FDF4"/><text x="${x+(w-3)/2}" y="${y+h/2-1}" text-anchor="middle" font-size="${Math.max(5,w*.26)}" font-weight="800" fill="#F0FDF4" font-family="Manrope, sans-serif">BIO</text><circle cx="${x+(w-3)/2}" cy="${y+h/2+Math.max(5,w*.26)}" r="${w*.1}" fill="none" stroke="#BBF7D0" stroke-width="1"/>`;
+    const face = (cx, cy, r) => `<ellipse cx="${cx}" cy="${cy}" rx="${r*.92}" ry="${r}" fill="${skin}" stroke="#6B3F1E" stroke-width="1.6"/>
+      <path d="M${cx-r*.95} ${cy-r*.1} C${cx-r*1.1} ${cy-r*1.25} ${cx-r*.2} ${cy-r*1.35} ${cx+r*.2} ${cy-r*1.25} C${cx+r*.9} ${cy-r*1.2} ${cx+r*1.15} ${cy-r*.5} ${cx+r*.95} ${cy-r*.1} C${cx+r*.7} ${cy-r*.55} ${cx+r*.2} ${cy-r*.75} ${cx-r*.3} ${cy-r*.7} C${cx-r*.7} ${cy-r*.6} ${cx-r*.85} ${cy-r*.4} ${cx-r*.95} ${cy-r*.1}Z" fill="${hair}"/>
+      <ellipse cx="${cx-r*.93}" cy="${cy+r*.05}" rx="${r*.14}" ry="${r*.22}" fill="${skin}" stroke="#6B3F1E" stroke-width="1.2"/><ellipse cx="${cx+r*.93}" cy="${cy+r*.05}" rx="${r*.14}" ry="${r*.22}" fill="${skin}" stroke="#6B3F1E" stroke-width="1.2"/>
+      ${sleepy?`<path d="M${cx-r*.55} ${cy+r*.05} q${r*.2} ${r*.2} ${r*.4} 0 M${cx+r*.15} ${cy+r*.05} q${r*.2} ${r*.2} ${r*.4} 0" stroke="#14110F" stroke-width="1.8" fill="none" stroke-linecap="round"/>`:`${EYE(cx-r*.35, cy+r*.05, r*.17)}${EYE(cx+r*.35, cy+r*.05, r*.17)}`}
+      <path d="M${cx-r*.55} ${cy-r*.22} l${r*.4} ${sad?r*.12:-r*.03} M${cx+r*.55} ${cy-r*.22} l${-r*.4} ${sad?r*.12:-r*.03}" stroke="${hair}" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M${cx} ${cy+r*.15} l${-r*.08} ${r*.2} l${r*.16} 0" stroke="#6B3F1E" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M${cx-r*.28} ${cy+r*.55} Q${cx} ${cy+r*(sad?.5:.8)} ${cx+r*.28} ${cy+r*.55}" stroke="#4A2410" stroke-width="1.7" fill="none" stroke-linecap="round"/>`;
+    if (stage === 1) return `<path d="M40 108 C38 86 46 74 60 72 C74 74 82 86 80 108Z" fill="${suit}" stroke="#0F172A" stroke-width="1.6"/><path d="M54 74 L60 86 L66 74Z" fill="#fff"/>
+      ${face(60, 52, 19)}${book(64, 82, 24, 18)}`;
+    const adult = stage === 3;
+    return `<g transform="translate(60 110) scale(.88) translate(-60 -110)"><rect x="46" y="88" width="9" height="21" rx="3" fill="#111827" stroke="#0B1020" stroke-width="1.4"/><rect x="65" y="88" width="9" height="21" rx="3" fill="#111827" stroke="#0B1020" stroke-width="1.4"/>
+      <rect x="43" y="105" width="14" height="6" rx="3" fill="#1C1917" stroke="#0B1020" stroke-width="1.2"/><rect x="63" y="105" width="14" height="6" rx="3" fill="#1C1917" stroke="#0B1020" stroke-width="1.2"/>
+      <path d="M44 50 C44 46 50 44 60 44 C70 44 76 46 76 50 L74 92 L46 92Z" fill="${suit}" stroke="#0F172A" stroke-width="1.6"/>
+      <path d="M54 45 L60 66 L66 45Z" fill="#fff" stroke="#CBD5E1" stroke-width="1"/>
+      <path d="M54 45 L60 70 L49 56Z M66 45 L60 70 L71 56Z" fill="#17203A" stroke="#0F172A" stroke-width="1"/>
+      ${adult?`<path d="M58 52 L62 52 L63 58 L60 76 L57 58Z" fill="#F59E0B" stroke="#B45309" stroke-width="1"/><path d="M68 62 l5 0 l0 4 l-5 0Z" fill="#FDE68A"/>`:`<path d="M58 52 L62 52 L63 58 L60 74 L57 58Z" fill="#DC2626" stroke="#7F1D1D" stroke-width="1"/>`}
+      <rect x="34" y="48" width="9" height="34" rx="4" fill="${suit}" stroke="#0F172A" stroke-width="1.5"/><rect x="77" y="48" width="9" height="30" rx="4" fill="${suit}" stroke="#0F172A" stroke-width="1.5"/>
+      <circle cx="38" cy="85" r="4" fill="${skin}" stroke="#6B3F1E" stroke-width="1.2"/>
+      ${book(76, 58, 22, 28, adult)}<circle cx="81" cy="76" r="4" fill="${skin}" stroke="#6B3F1E" stroke-width="1.2"/>
+      <rect x="55" y="34" width="10" height="12" fill="${skin}"/>
+      ${face(60, 26, 13)}</g>`; },
   bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

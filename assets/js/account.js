@@ -186,7 +186,7 @@ function accountView(focusCode){
     const unb = $("#ac-un", m); if (unb) unb.onclick = () => { w.remove(); CS.askUsername(); };
     $$("[data-friends]", m).forEach(b => b.addEventListener("click", () => w.remove()));
     $("#ac-codeform", m).onsubmit = async e => { e.preventDefault(); const msg = $("#ac-codemsg", m), c = $("#ac-code", m).value.trim(); if (!c) return; msg.textContent = "Checking…";
-      try { const rr = await CS.redeemCode(c); w.remove(); if (rr && rr.pet) { if (CS.loadMarket) await CS.loadMarket(); CS.toast("Code accepted. Your secret pet is waiting in Pets."); } else CS.toast("Code accepted. Pro is unlocked on your account."); } catch(err) { msg.textContent = err.message; } };
+      try { const rr = await CS.redeemCode(c); w.remove(); if (rr && rr.pet) { if (CS.loadMarket) await CS.loadMarket(); CS.toast("Rahul redeemed! Find him in Pets → Secret pets."); } else CS.toast("Code accepted. Pro is unlocked on your account."); } catch(err) { msg.textContent = err.message; } };
     if (focusCode) { const ci = $("#ac-code", m); if (ci) ci.focus(); }
     if ($("#ac-file", m)) $("#ac-file", m).onchange = async e => { const f = e.target.files[0]; if (!f) return; const msg = $("#ac-picmsg", m); msg.textContent = "Uploading…";
       try { const r = await api("avatar", {method:"PUT", body:{image: await shrink(f)}}); a.avatar = r.avatar; CS.account = a; renderChip(); draw(); CS.toast("Profile picture updated."); if (live) loadLeague(); }

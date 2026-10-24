@@ -137,7 +137,6 @@ function applyEvents(evts){
     if (e.pet && e.petDelta > 0) for (let i = 0; i < e.petDelta; i++) addPet(e.pet);
     if (e.pet && e.petDelta < 0) for (let i = 0; i < -e.petDelta; i++) removePet(e.pet);
     c.ledger = (c.ledger || 0) + (e.creds || 0); c.ledgerSeen = e.id; changed = true;
-    if (e.reason === "code" && e.pet && PET[e.pet]) CS.toast(`Secret pet unlocked: ${PET[e.pet].n}! Find it in Pets.`);
     if (e.reason === "sold") CS.toast(`Your ${(PET[e.pet]||{}).n || "pet"} sold for ${fmt(e.creds)} creds!`);
   }
   if (changed) { CS.save(); if (CS.syncNow) CS.syncNow(); if (CS.chrome) CS.chrome(); }
