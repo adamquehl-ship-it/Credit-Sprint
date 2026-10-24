@@ -3,6 +3,7 @@
 import {json, start, currentUser} from "../../lib/auth.js";
 import {ensureMember, weekXP} from "../../lib/league.js";
 import {weekKey} from "../../lib/auth.js";
+import {guardProgress} from "../../lib/guard.js";
 export async function onRequestGet({request, env}) {
   const s = await start(request, env, {needBody: false}); if (s.error) return s.error;
   const u = await currentUser(env, request); if (!u) return json({error: "Not signed in."}, 401);
@@ -14,10 +15,11 @@ export async function onRequestPut({request, env}) {
   const u = await currentUser(env, request); if (!u) return json({error: "Not signed in."}, 401);
   const data = s.body.data, at = Math.min(Date.now(), +s.body.updatedAt || Date.now());
   if (!data || typeof data !== "object" || !data.shared) return json({error: "Nothing to save."}, 400);
-  const row = await env.DB.prepare("SELECT updated_at FROM progress WHERE user_id = ?").bind(u.id).first();
+  const row = await env.DB.prepare("SELECT data, updated_at FROM progress WHERE user_id = ?").bind(u.id).first();
   if (row && row.updated_at > at && !s.body.force) return json({stale: true, updatedAt: row.updated_at}, 409);
+  let clamped = {}; try { clamped = (await guardProgress(env.DB, u.id, row, data)).clamped; } catch (e) { console.error("guard failed:", e && e.message); }
   await env.DB.prepare("INSERT INTO progress (user_id, data, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at")
     .bind(u.id, JSON.stringify(data), at).run();
   await ensureMember(env.DB, u.id, weekXP(data.shared, weekKey()));
-  return json({ok: true, updatedAt: at});
+  return json(Object.keys(clamped).length ? {ok: true, updatedAt: at, clamped} : {ok: true, updatedAt: at});
 }

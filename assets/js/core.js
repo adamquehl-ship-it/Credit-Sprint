@@ -63,7 +63,7 @@ CS.defaultDate = exam => {
    badges, plan, appearance) live in a shared record so they follow you between Macro and Micro. */
 const COURSE = window.CS_COURSE; CS.C = COURSE; CS.COURSE = COURSE.k;
 const KEY = COURSE.key, SHARED_KEY = "creditsprint.shared";
-CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered","gems","themes","seasons","league","account","creds"];
+CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","accent","name","remind","pets","badges","tier","proSince","uid","upHide","totalAnswered","gems","themes","seasons","league","account","creds","dqs"];
 const fresh = () => ({v:3, exam:"ap", onboarded:false, goal:60, theme:"system", dateSet:false,
   accent:"indigo", cram:{}, remind:"19:00", name:"",
   answers:{}, mistakes:{}, diag:null, cards:{}, reviews:0, frq:{}, plan:{date:CS.defaultDate("ap")},

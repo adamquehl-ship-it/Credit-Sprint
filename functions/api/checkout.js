@@ -23,8 +23,15 @@ async function handle({request, env}) {
     cancel_url: `${origin}/app.html?course=${course === "all" ? "macro" : course}#home`
   };
   if (cust) body.customer = cust.customer_id; else if (u.email) body.customer_email = u.email;
-  if (P.mode === "subscription") body.subscription_data = {metadata: meta};
-  else { body.payment_intent_data = {metadata: meta}; if (!cust) body.customer_creation = "always"; }
+  const what = "Credit Sprint " + ({exam:"Exam Pass", sprint:"30-Day Sprint", sub1:"Monthly (one class)", suball:"Monthly (all classes)"})[plan] + (course === "all" ? "" : " · " + course);
+  body.custom_text = {submit: {message: "Access turns on the moment you pay. A receipt is emailed to you."}};
+  if (P.mode === "subscription") body.subscription_data = {metadata: meta, description: what};
+  else {
+    /* receipt_email makes Stripe email a receipt in live mode; the suffix shows on the card statement after your account's descriptor prefix */
+    body.payment_intent_data = {metadata: meta, description: what, statement_descriptor_suffix: "CREDITSPRINT", receipt_email: u.email || undefined};
+    body.invoice_creation = {enabled: "true", invoice_data: {description: what, metadata: meta, footer: "Questions? Reply to your receipt email. creditsprintprep.com"}};
+    if (!cust) body.customer_creation = "always";
+  }
   try { const ses = await stripe(env, "checkout/sessions", body); return json({url: ses.url}); }
   catch (e) { console.error("Stripe checkout failed:", e && e.message); return json({error: "Checkout couldn't start. Please try again in a minute, or email support if it keeps happening."}, 400); }
 }

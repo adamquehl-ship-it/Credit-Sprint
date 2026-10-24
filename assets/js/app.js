@@ -178,14 +178,14 @@ render.home = () => {
       </div>
     </div>
     <div class="kpis">
-      <div class="kpi"><span class="eyebrow" style="color:var(--flame)">Streak</span><span class="v">${st}<small> day${st===1?"":"s"}</small></span><span class="muted small">${s.freezes?`${s.freezes} streak freeze${s.freezes>1?"s":""} ready`:"Hit 7 days to earn a streak freeze"}</span></div>
+      <div class="kpi"><span class="eyebrow" style="color:color-mix(in srgb,var(--flame) 70%,var(--ink))">Streak</span><span class="v">${st}<small> day${st===1?"":"s"}</small></span><span class="muted small">${s.freezes?`${s.freezes} streak freeze${s.freezes>1?"s":""} ready`:"Hit 7 days to earn a streak freeze"}</span></div>
       <div class="kpi"><span class="eyebrow">Today</span><span class="v">${todayXP}<small> / ${s.goal} XP</small></span>${meter(todayXP/s.goal,"mint")}</div>
       <div class="kpi"><span class="eyebrow">Level ${lv.lv}</span><span class="v">${s.xp.toLocaleString()}<small> XP</small></span>${meter(lv.into/lv.need)}<span class="muted tiny">${lv.need-lv.into} XP to level ${lv.lv+1}</span></div>
       <div class="kpi"><span class="eyebrow">This week</span><div class="week">${week.map(w=>`<div title="${w.xp} XP"><i class="${w.xp>=s.goal||w.frozen?"on":""}" style="height:${Math.max(6,Math.round(w.xp/maxW*44))}px"></i><span>${esc(w.label)}</span></div>`).join("")}</div></div>
     </div>
     ${CS.upgradeCard ? CS.upgradeCard() : ""}
     ${CS.petCard ? CS.petCard() : ""}
-    ${CS.dqCard ? CS.dqCard() : ""}
+    ${CS.dqCard ? CS.dqCard() : ""}${CS.whyCard ? CS.whyCard() : ""}
     <div class="stack">
       <div class="spread"><h2>Today's quests</h2><span class="muted small">${doneN}/3 done${doneN===3?" · nice work":""}</span></div>
       <div class="quest">${tasks.map(x=>`<button class="task ${x.done?"done":""}" data-go="${x.go}" ${x.mode?`data-mode="${x.mode}"`:""} ${x.unit?`data-unit="${x.unit}"`:""} ${x.game?`data-game="${x.game}"`:""}>
@@ -420,6 +420,7 @@ function quiz(p){
     <div class="opts">${q.opts.map((o,j)=>{ const cls = done ? (o.ok?"right":(j===r.picked?"wrong":"")) : "";
       return `<button class="opt ${cls}" data-j="${j}" ${done?"disabled":""}><span class="k">${L[j]}</span><span>${esc(o.t)}</span>${done&&(o.ok||j===r.picked)?`<span class="why">${esc(o.w)}</span>`:""}</button>`; }).join("")}</div>
     ${done?`${q.id[0]==="q"?`<details class="small"><summary class="muted">Why the other choices are wrong</summary><ul style="margin:8px 0 0;padding-left:1.2em">${q.opts.filter((o,j)=>!o.ok&&j!==r.picked).map(o=>`<li><b>${esc(o.t)}:</b> ${esc(o.w)}</li>`).join("")}</ul></details>`:""}
+      ${CS.whyChips ? CS.whyChips(q, r.picked != null && !q.opts[r.picked].ok) : ""}
       <div class="row-wrap"><button class="btn" id="q-next">${r.i+1<qs.length?"Next question":"See results"} <span class="kbd" style="color:inherit;border-color:currentColor">Enter</span></button>${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI tutor · coming soon</button>` : `<button class="btn ghost" id="q-tutor">${I("spark")}Explain it differently</button>`}</div><div id="q-tutor-box"></div>`:`<p class="faint small">Press <span class="kbd">1</span>–<span class="kbd">5</span> to answer.</p>`}`;
   if (!done) $$(".opt", p).forEach(b => b.onclick = () => pick(+b.dataset.j));
   else { $("#q-next").onclick = next; $("#q-next").focus({preventScroll:true}); if ($("#q-tutor")) $("#q-tutor").onclick = () => CS.tutor($("#q-tutor-box"), {q:q.q, options:q.opts.map(o=>o.t), correct:q.opts.find(o=>o.ok).t, picked:q.opts[r.picked].t, why:q.opts.find(o=>o.ok).w}); }
@@ -649,7 +650,7 @@ render.frq = () => {
         ${G?`<div class="stack" style="gap:8px"><span class="eyebrow">Graph task</span><p><b>${esc(G.task)}</b></p><div id="frq-graph" style="max-width:520px"></div></div>`:""}
         <label for="frq-draft" class="eyebrow">Your written answer</label>
         <textarea id="frq-draft" placeholder="(a) ...&#10;(b) ...&#10;Sketch graphs on paper, then describe them here.">${esc(st.draft)}</textarea>
-        <div class="row-wrap">${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI feedback · coming soon</button>` : `<button class="btn" id="frq-ai">${I("spark")}Get AI feedback</button>`}<button class="btn ${CS.SOON.ai ? "" : "ghost"}" id="frq-toggle">${st.show?"Hide rubric":"Score it myself"}</button></div>
+        <div class="row-wrap">${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI feedback · coming soon</button>` : `<button class="btn" id="frq-ai">${I("spark")}Get AI feedback</button>`}<button class="btn ghost" id="frq-quick" title="Free. Matches each rubric point against what you wrote.">Quick check (free)</button><button class="btn ${CS.SOON.ai ? "" : "ghost"}" id="frq-toggle">${st.show?"Hide rubric":"Score it myself"}</button></div>
         <div id="frq-ai-out"></div>
         <div ${st.show?"":"hidden"} class="stack" style="gap:14px">
           <div class="spread"><h3>Rubric: check each point you earned</h3><b id="frq-score">${got} / ${f.rubric.length}</b></div>
@@ -661,6 +662,16 @@ render.frq = () => {
   if (frqLocked(f)) { $("#v-frq article.panel").outerHTML = CS.lockPanel(`"${f.title}" is a paid FRQ`, `Free includes the first ${CS.FREE_FRQS} free-response questions. Unlock all ${CS.FRQS.length}, each with a point-by-point rubric and a sample full-credit answer.`); return; }
   $("#frq-draft").oninput = e => { st.draft = e.target.value; CS.save(); };
   $("#frq-toggle").onclick = () => { st.show = !st.show; if (st.show && !st.scored) { st.scored = true; CS.addXP(30); } CS.refresh(); render.frq(); };
+  $("#frq-quick").onclick = () => {
+    const out = $("#frq-ai-out"), ans = $("#frq-draft").value.trim();
+    if (ans.length < 20) { out.innerHTML = `<div class="feedback bad">Write an answer to each part first, then run the quick check.</div>`; return; }
+    const res = CS.autoCheck(f, ans); let auto = 0, hit = 0;
+    res.forEach((x, i) => { if (x.auto) { auto++; st.checks[i] = !!x.earned; if (x.earned) hit++; } });
+    st.show = true; if (!st.scored) { st.scored = true; CS.addXP(30); } CS.save(); CS.refresh(); render.frq();
+    $("#frq-ai-out").innerHTML = `<div class="sample"><span class="eyebrow">Quick check · ${hit}/${auto} points matched</span>
+      <ul style="margin:8px 0 0;padding-left:1.2em">${f.rubric.map((r,i)=>`<li><b>${!res[i].auto?"?":res[i].earned?"✓":"✗"} ${esc(r.split(")")[0])})</b> ${!res[i].auto?"Graphs need your own check against the rubric.":res[i].earned?"Your answer mentions the key ideas.":"Missing a key idea or number. Compare with the rubric."}</li>`).join("")}</ul>
+      <p class="faint tiny" style="margin-top:8px">This checks keywords and numbers, not reasoning. The rubric boxes below are pre-checked; adjust them to match your own judgment.</p></div>`;
+  };
   if (G) CS.drawGraph($("#frq-graph"), G.mk, {expect:G.expect, why:G.why, x:G.x, y:G.y, labels:G.labels, onDone:(ok)=>{ CS.addXP(ok?15:5); CS.refresh(); }});
   if ($("#frq-ai")) $("#frq-ai").onclick = async () => {
     const out = $("#frq-ai-out"), ans = $("#frq-draft").value.trim();

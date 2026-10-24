@@ -92,21 +92,22 @@ CS.render.pets = (o = {}) => {
   $$("#v-pets [data-ptab]").forEach(b => b.onclick = () => { tab = b.dataset.ptab; CS.render.pets({keepScroll:true}); });
 };
 
-/* ---------- merge: 3 of the same pet → 1 random pet of the next rarity ---------- */
+/* ---------- merge: 4 of the same pet → uses 3, keeps 1, and gives 1 random pet of the next rarity ---------- */
+const NEED = 4, USE = 3;
 function renderMerge(el){
   const owned = Object.keys(P().owned).filter(id => PET[id] && PET[id].r !== "secret").sort((a,b) => ORDER.indexOf(PET[a].r) - ORDER.indexOf(PET[b].r) || copies(b) - copies(a));
   el.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Pet fusion</span><h1>Merge pets</h1>
-      <p class="muted">Combine <b>3 copies of the same pet</b> into one random pet of the <b>next rarity up</b>. Get duplicates by hatching eggs or buying them in the Market. Supreme Mythical pets are the top and can't be merged.</p></div></div>
+      <p class="muted">Combine <b>4 copies of the same pet</b>: 3 are used up and <b>1 is always kept</b>, so you never lose a kind of pet. You get one random pet of the <b>next rarity up</b>. Get duplicates by hatching eggs or buying them in the Market. Supreme Mythical pets are the top and can't be merged.</p></div></div>
     <div class="merge-ladder">${ORDER.map((k,i)=>`<span style="--c:${R[k].col}">${R[k].n}</span>${i<ORDER.length-1?"<i>→</i>":""}`).join("")}</div>
-    ${owned.length ? `<div class="pet-grid">${owned.map(id => { const p = PET[id], n = copies(id), ok = n >= 3 && p.r !== "supreme", nx = ORDER[ORDER.indexOf(p.r)+1];
+    ${owned.length ? `<div class="pet-grid">${owned.map(id => { const p = PET[id], n = copies(id), ok = n >= NEED && p.r !== "supreme", nx = ORDER[ORDER.indexOf(p.r)+1];
       return `<div class="pet-card own merge-card" style="--col:${R[p.r].col};--glow:${R[p.r].glow}"><span class="rar" style="color:${R[p.r].col}">${R[p.r].n}</span>${CS.petSVG(id, {size:84, stage:CS.petStage(id)})}
-        <b class="small">${esc(p.n)}</b><span class="copies"><b>${n}</b>/3 copies</span><div class="meter"><i style="width:${Math.min(100, n/3*100)}%;background:${R[p.r].col}"></i></div>
-        ${p.r === "supreme" ? `<span class="tiny muted">Top rarity</span>` : `<button class="btn sm ${ok?"":"ghost"}" data-merge="${id}" ${ok?"":"disabled"}>${ok ? `Merge → ${R[nx].n}` : `Need ${3-n} more`}</button>`}</div>`; }).join("")}</div>`
-      : `<div class="panel"><h3>No pets yet</h3><p class="muted">Hatch eggs by answering questions, then come back with 3 of the same pet.</p></div>`}`;
+        <b class="small">${esc(p.n)}</b><span class="copies"><b>${n}</b>/${NEED} copies</span><div class="meter"><i style="width:${Math.min(100, n/NEED*100)}%;background:${R[p.r].col}"></i></div>
+        ${p.r === "supreme" ? `<span class="tiny muted">Top rarity</span>` : `<button class="btn sm ${ok?"":"ghost"}" data-merge="${id}" ${ok?"":"disabled"}>${ok ? `Merge → ${R[nx].n}` : `Need ${NEED-n} more`}</button>`}</div>`; }).join("")}</div>`
+      : `<div class="panel"><h3>No pets yet</h3><p class="muted">Hatch eggs by answering questions, then come back with 4 of the same pet.</p></div>`}`;
   $$("[data-merge]", el).forEach(b => b.onclick = () => merge(b.dataset.merge));
 }
 function merge(id){
-  const p = PET[id]; if (!p || copies(id) < 3 || p.r === "supreme") return;
+  const p = PET[id]; if (!p || copies(id) < NEED || p.r === "supreme") return;
   const nx = ORDER[ORDER.indexOf(p.r) + 1], set = (setOf(id) || {pets:[]}).pets, pool = set.filter(x => x.r === nx);
   if (!pool.length) return CS.toast("No pets of the next rarity in this set yet.");
   const tot = pool.reduce((a,x)=>a+x.p,0); let r = Math.random()*tot, got = pool[0]; for (const x of pool) { r -= x.p; if (r <= 0) { got = x; break; } }

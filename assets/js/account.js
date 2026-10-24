@@ -32,7 +32,9 @@ const baseSave = CS.save;
 CS.save = () => { baseSave(); try { localStorage.setItem("creditsprint.updated", String(Date.now())); } catch(e) {} if (CS.account) { clearTimeout(syncT); syncT = setTimeout(push, 4000); } };
 async function push(force){
   if (!CS.account || syncing) return; syncing = true;
-  try { await api("progress", {method:"PUT", body:{data:localBundle(), updatedAt:localAt() || Date.now(), force:!!force}}); await loadLeague(); setStatus("Synced"); }
+  try { const pr = await api("progress", {method:"PUT", body:{data:localBundle(), updatedAt:localAt() || Date.now(), force:!!force}});
+    if (pr && pr.clamped) { const s = CS.S(); if (pr.clamped.gems != null) s.gems = pr.clamped.gems; if (pr.clamped.xp != null) s.xp = pr.clamped.xp; baseSave(); }
+    await loadLeague(); setStatus("Synced"); }
   catch(e) { if (e.status === 409) await pull(true); else setStatus("Offline: will sync later"); }
   finally { syncing = false; }
 }

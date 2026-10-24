@@ -46,3 +46,6 @@ CREATE TABLE IF NOT EXISTS league_tiers (
 -- profile pictures (also created automatically by the site the first time they're used)
 CREATE TABLE IF NOT EXISTS avatars (user_id TEXT PRIMARY KEY, data TEXT NOT NULL, v INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS avatar_reports (user_id TEXT NOT NULL, reporter_id TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, reporter_id));
+
+-- gem budget per day (anti-tamper clamp on synced progress; also created automatically the first time it's needed)
+CREATE TABLE IF NOT EXISTS gem_budget (user_id TEXT NOT NULL, day TEXT NOT NULL, gained INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (user_id, day));

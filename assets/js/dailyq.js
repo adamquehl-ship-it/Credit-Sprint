@@ -60,7 +60,10 @@ function grant(rw){ const s = S();
 function check(){
   const dq = ensure(); let changed = false;
   dq.list.forEach(q => { if (!q.done && have(q) >= q.n) { q.done = true; changed = true; grant(q.rw); CS.toast(`Daily quest done: ${q.text}. ${q.rw.t === "egg" ? "You earned an egg (sellable)!" : rwText(q.rw)}`); } });
-  if (!dq.bonus && dq.list.every(q => q.done)) { dq.bonus = true; changed = true; S().gems = (S().gems || 0) + 25; CS.addXP(60); CS.toast("All three daily quests done! +25 gems and +60 XP"); }
+  if (!dq.bonus && dq.list.every(q => q.done)) { dq.bonus = true; changed = true; S().gems = (S().gems || 0) + 25; CS.addXP(60); CS.toast("All three daily quests done! +25 gems and +60 XP");
+    /* quest streak: days in a row with all three done (any class). Shared across classes and shown to friends. */
+    const s = S(), d = CS.today(), q = s.dqs || (s.dqs = {last:"", n:0});
+    if (q.last !== d) { q.n = q.last === CS.addDays(d, -1) ? q.n + 1 : 1; q.last = d; const M = {3:30, 7:75, 14:150, 30:400}[q.n]; if (M) { s.gems = (s.gems || 0) + M; CS.toast(`${q.n}-day quest streak! +${M} gems`); } } }
   if (changed) { CS.save(); if (CS.chrome) CS.chrome(); const el = document.getElementById("dq-card"); if (el) el.outerHTML = card(); }
 }
 CS.dqEvent = (kind, key) => { const c = counters(); if (kind === "game") c.games[key] = true; check(); };
@@ -73,9 +76,11 @@ CS.record = function(q, ok, ...rest){ const out = rec.call(this, q, ok, ...rest)
 const ot = CS.onTask;
 CS.onTask = k => { if (ot) ot(k); try { check(); } catch (e) {} };
 
+function streakNow(){ const q = S().dqs, d = CS.today(); return q && q.last && (q.last === d || q.last === CS.addDays(d, -1)) ? q.n : 0; }
+CS.dqStreak = streakNow;
 function card(){
   const dq = CS.dailyQuests(), done = dq.list.filter(q => q.done).length;
-  return `<div class="stack" id="dq-card"><div class="spread"><h2>Daily quests</h2><span class="muted small">${done}/3 done${dq.bonus ? " · bonus earned" : " · finish all three for +25 gems and +60 XP"}</span></div>
+  return `<div class="stack" id="dq-card"><div class="spread"><h2>Daily quests</h2><span class="muted small">${streakNow() ? "🔥 " + streakNow() + "-day streak · " : ""}${done}/3 done${dq.bonus ? " · bonus earned" : " · finish all three for +25 gems and +60 XP"}</span></div>
     <div class="dq-list">${dq.list.map(q => { const h = Math.min(q.n, have(q)), p = Math.round(h / q.n * 100);
       return `<div class="dq ${q.done ? "done" : ""}"><span class="ck" aria-hidden="true">${q.done ? "✓" : ""}</span>
         <span class="stack" style="gap:4px;flex:1;min-width:0"><b class="small">${esc(q.text)}</b><span class="dq-bar" aria-hidden="true"><i style="width:${p}%"></i></span><span class="tiny muted">${h}/${q.n}</span></span>
