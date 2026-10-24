@@ -26,7 +26,7 @@ async function handle({request, env}) {
   if (P.mode === "subscription") body.subscription_data = {metadata: meta};
   else { body.payment_intent_data = {metadata: meta}; if (!cust) body.customer_creation = "always"; }
   try { const ses = await stripe(env, "checkout/sessions", body); return json({url: ses.url}); }
-  catch (e) { console.error("Stripe checkout failed:", e && e.message); return json({error: "Checkout couldn't start (" + String((e && e.message) || "unknown").slice(0, 160) + "). Try again in a minute."}, 502); }
+  catch (e) { console.error("Stripe checkout failed:", e && e.message); return json({error: "Checkout couldn't start (" + String((e && e.message) || "unknown").slice(0, 160) + "). Try again in a minute."}, 400); }
 }
 
 /* any unexpected crash (database, config) comes back as a readable message instead of a blank server error */
