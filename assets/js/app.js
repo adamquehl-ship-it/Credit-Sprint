@@ -104,6 +104,7 @@ function settings(){
       <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n])=>`<button data-goal="${v}" aria-pressed="${s.goal===v}"><b>${n} · ${v} XP</b></button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Appearance</span><div class="seg three" style="max-width:320px">${[["light","sun","Light"],["dark","moon","Dark"],["system","auto","System"]].map(([k,ic,n])=>`<button data-th="${k}" aria-pressed="${s.theme===k}">${I(ic)}${n}</button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Plan</span><div class="row-wrap">${CS.isPro&&CS.isPro()?`<span class="tag good">Pass Plan</span><span class="muted small">Every Pro feature unlocked.</span>`:`<span class="tag">Free</span><button class="btn sm" data-up="open">Upgrade to Pass Plan</button>`}</div></div>
+      <div class="stack"><span class="eyebrow">Account</span><div class="row-wrap">${CS.account?`<span class="tag good">Signed in</span><span class="small">${esc(CS.account.name||"")}</span>`:`<span class="muted small">Sign in to save progress across devices and join weekly leagues.</span>`}<button class="btn ghost sm" data-account="open">${CS.account?"Manage account":"Sign in"}</button></div></div>
       <div class="stack"><span class="eyebrow">Color theme</span><div class="row-wrap">${CS.ACCENTS.map(a=>{ const ok = CS.level().lv >= a.lv; return `<button class="chip" data-ac="${a.k}" aria-pressed="${s.accent===a.k}" ${ok?"":"disabled"} title="${ok?a.n:`Unlocks at level ${a.lv}`}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a.c};vertical-align:-1px;margin-right:6px"></span>${a.n}${ok?"":` · Lv ${a.lv}`}</button>`; }).join("")}</div><span class="muted small">Level up to unlock more colors. You're level ${CS.level().lv}.</span></div>
       <div class="stack"><span class="eyebrow">Daily reminder</span><div class="row-wrap"><input type="time" id="st-time" value="${esc(s.remind)}" style="font:inherit;padding:7px 10px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink)">
         <a class="btn ghost sm" id="st-gcal" target="_blank" rel="noopener">Add to Google Calendar</a><button class="btn ghost sm" id="st-ics">Download calendar file</button></div>
@@ -153,7 +154,7 @@ render.home = () => {
   const banner = risk ? `<div class="feedback bad spread"><span><b>${I("flame")} Your ${st}-day streak ends at midnight.</b> One quick quest keeps it alive${s.freezes?` (or a streak freeze will cover today)`:""}.</span><button class="btn sm" data-go="games" data-game="daily">Save my streak</button></div>`
     : (!s.dateSet && s.exam==="ap" ? "" : "");
   const cert = CS.certificateReady();
-  $("#v-home").innerHTML = CS.coursesBar() + banner + `
+  $("#v-home").innerHTML = CS.coursesBar() + banner + (CS.questBlock ? CS.questBlock() : "") + `
     <div class="hello">
       <div class="hero-card">
         <svg class="bg" viewBox="0 0 200 160" aria-hidden="true"><path d="M10 150 L190 10" stroke="#fff" stroke-width="10"/><path d="M10 10 L190 150" stroke="#fff" stroke-width="10"/><circle cx="100" cy="80" r="16" fill="#fff"/></svg>

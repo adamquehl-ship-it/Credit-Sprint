@@ -104,6 +104,11 @@ function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:n
   const P = s.pets; [P.eggs, P.pending||[]].forEach(list => list.forEach(e => { if (e.r !== "mystery") { e.r = "mystery"; e.need = EGG_NEED; e.prog = Math.min(e.prog, EGG_NEED-1); } }));
   return P; }
 let uid = 0;
+/* roll with a minimum rarity (season-pass eggs): odds are re-scaled over the allowed rarities */
+function rollRarityMin(min){ const i0 = Math.max(0, ORDER.indexOf(min)), ks = ORDER.slice(i0), tot = ks.reduce((a,k)=>a+CS.RARITY[k].p,0); let r = Math.random()*tot; for (const k of ks) { r -= CS.RARITY[k].p; if (r <= 0) return k; } return ks[0]; }
+/* add an egg to the nest (season rewards, gem shop) */
+CS.giveEgg = (minR) => { const P = st(); const e = {id:"e"+Date.now()+(uid++), r:"mystery", prog:0, need:EGG_NEED, at:CS.today()}; if (minR && minR !== "common") e.minR = minR; P.eggs.push(e); CS.save(); return e; };
+CS.RARITY_NAME = k => CS.RARITY[k] ? CS.RARITY[k].n : k;
 function rollRarity(rnd=Math.random){ let r = rnd()*100; for (const k of ORDER) { r -= CS.RARITY[k].p; if (r <= 0) return k; } return "common"; }
 function rollPet(rarity){ const pool = SET.filter(p=>p.r===rarity), tot = pool.reduce((a,p)=>a+p.p,0); let r = Math.random()*tot; for (const p of pool) { r -= p.p; if (r <= 0) return p; } return pool[0]; }
 CS.petBoost = () => { const a = st().active; return a ? CS.RARITY[CS.PET[a].r].boost : 0; };
@@ -455,7 +460,7 @@ CS.petReact = (kind, egg) => {
 /* ---------- egg found + hatch animations ---------- */
 function overlay(html){ const w = document.createElement("div"); w.className = "modal-wrap"; w.innerHTML = `<div class="modal pet-modal" role="dialog" aria-modal="true">${html}</div>`; document.body.appendChild(w); return w; }
 function hatch(egg){
-  const rar = egg.forceR || rollRarity(); const P = st(), pet = rollPet(rar), R = CS.RARITY[rar], dup = !!P.owned[pet.id];
+  const rar = egg.forceR || (egg.minR ? rollRarityMin(egg.minR) : rollRarity()); const P = st(), pet = rollPet(rar), R = CS.RARITY[rar], dup = !!P.owned[pet.id];
   if (dup) { P.owned[pet.id].growth += 15; P.owned[pet.id].copies = (P.owned[pet.id].copies||1)+1; CS.addXP(50); }
   else P.owned[pet.id] = {growth:0, at:CS.today(), copies:1};
   P.hatched++; if (!P.active) P.active = pet.id; CS.save(); CS.refresh && CS.refresh();
@@ -502,7 +507,7 @@ CS.render.pets = () => {
       <div class="panel">
         <span class="eyebrow">Incubator</span>
         ${egg ? `<div class="row-wrap" style="gap:18px;align-items:center"><div class="egg-wobble">${CS.eggSVG(egg.r, egg.prog, egg.need, 96)}</div>
-          <div class="stack" style="gap:6px;flex:1;min-width:160px"><h3 style="color:${CS.RARITY[egg.r].col}">${CS.RARITY[egg.r].n} egg</h3><span class="muted small">${egg.need-egg.prog} more correct answer${egg.need-egg.prog===1?"":"s"} to hatch</span>
+          <div class="stack" style="gap:6px;flex:1;min-width:160px"><h3 style="color:${CS.RARITY[egg.r].col}">${egg.minR?CS.RARITY[egg.minR].n+"+ mystery":"Mystery"} egg</h3><span class="muted small">${egg.need-egg.prog} more correct answer${egg.need-egg.prog===1?"":"s"} to hatch</span>
           <div class="meter" style="height:10px"><i style="width:${egg.prog/egg.need*100}%;background:${CS.RARITY[egg.r].col}"></i></div><span class="tiny faint">${egg.prog}/${egg.need}</span></div></div>
           <div class="row-wrap"><button class="btn" data-go="practice" data-mode="mixed">Answer questions</button><button class="btn ghost" data-go="games" data-game="sprint">Sprint to hatch</button></div>`
         : `<div class="row-wrap" style="gap:18px;align-items:center"><div style="opacity:.4">${CS.eggSVG("mystery",0,1,96)}</div><div class="stack" style="gap:6px;flex:1;min-width:160px"><h3>Next egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</h3><span class="muted small">Every ${EGG_EVERY} questions you answer, right or wrong, earns a mystery egg.</span>
@@ -540,7 +545,7 @@ CS.petCard = () => {
   return `<div class="panel flat pet-mini" data-go="pets" role="button" tabindex="0">
     <div class="pet-stage-sm ${mood}">${A ? CS.petSVG(A.id, {size:76, mood}) : CS.eggSVG("mystery", egg?egg.prog:0, egg?egg.need:1, 60)}</div>
     <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="eyebrow">${A?esc(A.n):"Your pet"}</span>
-      ${egg ? `<b>${CS.RARITY[egg.r].n} egg: ${egg.need-egg.prog} correct answer${egg.need-egg.prog===1?"":"s"} to hatch</b><div class="meter thin"><i style="width:${egg.prog/egg.need*100}%;background:${CS.RARITY[egg.r].col}"></i></div>`
+      ${egg ? `<b>${egg.minR?CS.RARITY[egg.minR].n+"+ mystery":"Mystery"} egg: ${egg.need-egg.prog} correct answer${egg.need-egg.prog===1?"":"s"} to hatch</b><div class="meter thin"><i style="width:${egg.prog/egg.need*100}%;background:${CS.RARITY[egg.r].col}"></i></div>`
         : `<b>Next mystery egg in ${CS.nextEggIn()} question${CS.nextEggIn()===1?"":"s"}</b><div class="meter thin"><i style="width:${(EGG_EVERY-CS.nextEggIn())/EGG_EVERY*100}%"></i></div>`}
       <span class="muted tiny">${A?`Lv ${CS.petLevel(A.id)} ${STAGE[CS.petStage(A.id)]} · +${Math.round(CS.RARITY[A.r].boost*100)}% XP`:`${SET.filter(p=>P.owned[p.id]).length}/${SET.length} pets discovered`}</span></div></div>`;
 };

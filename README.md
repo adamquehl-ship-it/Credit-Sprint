@@ -44,6 +44,24 @@ Free users see an upgrade card on the dashboard, a "Free plan" button in the sid
 Until the links are filled in, the Upgrade button tells students every Pro feature is free during early access.
 Note: the `#pro-welcome` unlock is saved in the browser only. Before charging at scale, add accounts and a Stripe webhook so Pro status is verified on the server.
 
+## Turning on accounts and weekly leagues
+Accounts are optional for students. Without them, progress stays in the browser and the dashboard shows a practice league against computer opponents. With them, students can sign in with an **email code**, **Google** or a **username and password**, their progress syncs across devices, and they compete in real weekly leagues.
+
+The code is already in the repo: `functions/api/auth/*`, `functions/api/me.js`, `functions/api/progress.js`, `functions/api/league.js`, `lib/auth.js`, `lib/league.js`, the database layout in `db/schema.sql`, and the app side in `assets/js/account.js`.
+
+1. **Create the database.** Cloudflare dashboard → Storage & Databases → D1 SQL Database → Create → name it `creditsprint`. Open it → Console → paste all of `db/schema.sql` → Run.
+2. **Connect it to the site.** Workers & Pages → your Pages project → Settings → Bindings → Add → D1 database. Variable name `DB`, database `creditsprint`. Username + password sign-in works as soon as this is done.
+3. **Email codes (Resend).** Make a free account at resend.com → API Keys → Create. In Pages → Settings → Variables and Secrets add `RESEND_API_KEY` (type Secret). In Resend → Domains, add `creditsprintprep.com` and copy the DNS records it shows into Cloudflare DNS. Then add `EMAIL_FROM` = `Credit Sprint <login@creditsprintprep.com>`.
+4. **Google sign-in.** console.cloud.google.com → create a project → APIs & Services → OAuth consent screen (External, app name Credit Sprint, your email) → Credentials → Create credentials → OAuth client ID → Web application. Under Authorized JavaScript origins add `https://creditsprintprep.com` and `https://www.creditsprintprep.com`. Copy the Client ID into a variable `GOOGLE_CLIENT_ID`.
+5. **Redeploy.** Deployments → latest → ⋯ → Retry deployment, so the new settings take effect. Then open the site and click **Sign in** in the sidebar.
+
+How it works: sessions are a random token in an HttpOnly cookie (60 days). Passwords are salted PBKDF2 hashes. Email codes expire after 10 minutes and allow 5 tries. Students must confirm they're 13 or older to create an account, and leaderboards show only first name and last initial. Students can delete their account from the account window.
+Leagues: groups of up to 30 in the same tier (Bronze → Silver → Emerald → Sapphire → Diamond), ranked by XP earned Monday to Sunday (UTC). At the start of each week the top 3 move up and the bottom 2 move down.
+Before a big launch, add a privacy policy page that explains what you store (email or username, display name, study progress).
+
+## Seasons
+Seasons last 2 weeks, starting Monday, January 5, 2026, and cycle through 8 map themes (`CS.THEMES` in `assets/js/quest.js`). Each season has an 8-tier pass: a free lane for everyone and a Pass lane for Pro (open to everyone until checkout links are set). Rewards are gems, mystery eggs (some with a minimum rarity) and streak freezes; gems buy freezes and eggs in the shop on the season card.
+
 ## Deploy
 Cloudflare Pages, connected to this repository. Framework preset: None. Build command: none. Output directory: `/`. The `functions/` folder is picked up automatically.
 

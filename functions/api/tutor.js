@@ -7,8 +7,9 @@ export async function onRequestPost({request, env}) {
   const blocked = guard(request, env); if (blocked) return blocked;
   let body; try { body = await request.json(); } catch { return json({error: "Bad JSON."}, 400); }
   const c = body.ctx || {};
-  const exam = body.exam === "clep" ? "CLEP Principles of Macroeconomics" : "AP Macroeconomics";
-  const system = `You are Credit Sprint's macroeconomics tutor for a student preparing for the ${exam} exam.
+  const subj = body.course === "micro" ? "Microeconomics" : "Macroeconomics";
+  const exam = body.exam === "clep" ? `CLEP Principles of ${subj}` : `AP ${subj}`;
+  const system = `You are Credit Sprint's ${subj.toLowerCase()} tutor for a student preparing for the ${exam} exam.
 The student just answered this practice question:
 Question: ${clip(c.q, 600)}
 Choices: ${(c.options || []).map((o, i) => `(${"ABCDE"[i]}) ${clip(o, 200)}`).join(" ")}

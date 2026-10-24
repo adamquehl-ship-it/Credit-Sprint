@@ -17,7 +17,7 @@ CS.tutor = (box, ctx) => {
     msgs.push({role:"user", content:text}); add("me", text);
     const wait = document.createElement("div"); wait.className = "t-msg ai faint"; wait.textContent = "Thinking…"; log.appendChild(wait);
     try {
-      const r = await fetch("/api/tutor", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({ctx, messages:msgs.slice(-8), exam:S().exam})});
+      const r = await fetch("/api/tutor", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({ctx, messages:msgs.slice(-8), exam:S().exam, course:CS.COURSE})});
       if (!r.ok) throw new Error(r.status);
       const j = await r.json(); wait.remove(); msgs.push({role:"assistant", content:j.reply}); add("ai", j.reply);
     } catch(e) { wait.remove(); add("ai", OFFLINE); }
@@ -30,7 +30,7 @@ CS.tutor = (box, ctx) => {
 /* ---------- AI FRQ scoring (/api/score) ---------- */
 CS.aiScore = async (frq, answer) => {
   const r = await fetch("/api/score", {method:"POST", headers:{"content-type":"application/json"},
-    body:JSON.stringify({prompt:frq.prompt, parts:frq.parts, rubric:frq.rubric, answer})});
+    body:JSON.stringify({prompt:frq.prompt, parts:frq.parts, rubric:frq.rubric, answer, course:CS.COURSE})});
   if (!r.ok) throw new Error(r.status);
   return r.json();
 };
