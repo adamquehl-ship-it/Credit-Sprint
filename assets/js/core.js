@@ -68,7 +68,7 @@ const fresh = () => ({v:3, exam:"ap", onboarded:false, goal:60, theme:"system", 
   answers:{}, mistakes:{}, diag:null, cards:{}, reviews:0, frq:{}, plan:{date:CS.defaultDate("ap")},
   xp:0, days:{}, frozen:{}, freezes:0, freezeAwarded:{}, best:{}, badges:{}, exams:[], tasks:{}, daily:{}, bosses:{}, games:0});
 let S = fresh();
-const readJSON = k => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch(e) { return null; } };
+const readJSON = k => { try { const r = window.CS_STORE.get(k); return r ? JSON.parse(r) : null; } catch(e) { return null; } };
 try {
   const raw = readJSON(KEY);
   if (raw) S = Object.assign(fresh(), raw);
@@ -85,11 +85,11 @@ Object.keys(S.mistakes||{}).forEach(k => { if (typeof S.mistakes[k] === "number"
 CS.S = () => S;
 CS.mistakesDue = () => Object.entries(S.mistakes).filter(([k,m]) => (m.due||0) <= Date.now()).map(([k])=>k);
 CS.save = () => { try {
-  localStorage.setItem(KEY, JSON.stringify(S));
+  window.CS_STORE.set(KEY, JSON.stringify(S));
   const sh = {exam:S.exam}; CS.SHARED.forEach(f => { if (S[f] !== undefined) sh[f] = S[f]; });
-  localStorage.setItem(SHARED_KEY, JSON.stringify(sh));
+  window.CS_STORE.set(SHARED_KEY, JSON.stringify(sh));
 } catch(e) {} };
-CS.resetAll = () => { try { Object.values(window.CS_COURSES).forEach(c => localStorage.removeItem(c.key)); localStorage.removeItem(SHARED_KEY); localStorage.removeItem("creditsprint.v2"); } catch(e) {} S = fresh(); CS.save(); };
+CS.resetAll = () => { try { Object.values(window.CS_COURSES).forEach(c => window.CS_STORE.remove(c.key)); window.CS_STORE.remove(SHARED_KEY); window.CS_STORE.remove("creditsprint.v2"); } catch(e) {} S = fresh(); CS.save(); };
 /* summary of any course's saved progress, for the course switcher */
 CS.courseSummary = k => {
   const c = window.CS_COURSES[k], raw = k === COURSE.k ? S : readJSON(c.key);

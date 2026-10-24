@@ -146,6 +146,13 @@ function practiceLeague(){
 CS.leagueData = () => (CS.liveLeague && CS.liveLeague()) || practiceLeague();
 const timeLeft = endKey => { const ms = new Date(endKey+"T00:00:00") - new Date(), d = Math.floor(ms / CS.DAY), h = Math.floor(ms % CS.DAY / 36e5); return d > 0 ? `${d}d ${h}h left` : `${h}h left`; };
 CS.leagueCard = () => {
+  if (window.CS_STORE && window.CS_STORE.guest && !CS.account) { const lg = CS.LEAGUES[0];
+    return `<div class="panel qcard league-card locked" style="--lg:${lg.c}">
+    <div class="spread"><div class="stack" style="gap:0"><span class="eyebrow" style="color:var(--lg)">Weekly league</span><b>Leagues are for members</b></div><span class="tag">${timeLeft(CS.addDays(weekStart(), 7))}</span></div>
+    <ol class="lg">${["Maya K.","Jordan P.","You","Sam R.","Priya D."].map((n, i) => `<li class="${n==="You"?"me":""}"><span class="rk">${i+1}</span><span class="av">${n[0]}</span><span class="nm">${n}</span><span class="xp">??? XP</span></li>`).join("")}</ol>
+    <span class="small">Compete with real students for the top 3 spots each week, move up from ${lg.n} to Diamond, and keep your streak, pets and XP safe on every device.</span>
+    <button class="btn sm" data-account="signup">Sign up free to join this week's league</button>
+  </div>`; }
   const L = CS.leagueData(), lg = CS.LEAGUES[L.tier] || CS.LEAGUES[0], n = L.members.length;
   const myRank = L.members.findIndex(m => m.me) + 1, ahead = myRank > 1 ? L.members[myRank-2] : null;
   const rows = L.members.slice(0, 15).map((m, i) => { const r = i + 1;

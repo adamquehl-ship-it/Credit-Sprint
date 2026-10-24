@@ -65,6 +65,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .topbar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);
   padding-top:env(safe-area-inset-top,0px)}
 .topbar .in{display:flex;align-items:center;gap:12px;padding-block:10px;max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.top-acct{flex:none;white-space:nowrap}
+button.top-acct.on{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border:1px solid var(--rule);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:.86rem;cursor:pointer}
+button.top-acct.on:hover{border-color:var(--accent)}
+button.top-acct.on .acct-av{width:28px;height:28px;font-size:.8rem;background:var(--mint);color:#fff}
+@media (max-width:560px){button.top-acct.on{padding:3px}button.top-acct.on .hide-sm{display:none}.topbar .in .title{font-size:0}}
 .topbar .title{font-weight:800;font-size:1rem;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .menu-btn{display:none;border:1px solid var(--rule);background:var(--surface);border-radius:10px;padding:6px}
 .mob-brand{display:none}
@@ -602,3 +607,12 @@ select,input[type=date]{font:inherit;color:var(--ink);background:var(--surface);
 .acct-modal{max-width:520px;gap:14px}
 .acct-in{font:inherit;padding:10px 12px;border-radius:12px;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);width:100%}
 .acct-in:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+/* guest mode notice + locked league */
+.guest-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px max(20px,env(safe-area-inset-right,0px)) 8px max(20px,env(safe-area-inset-left,0px));background:var(--warn-bg);border-bottom:1px solid var(--rule);font-size:.86rem}
+.guest-bar[hidden]{display:none}
+.guest-bar>span{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.guest-bar>span b{white-space:nowrap}
+.guest-bar svg{width:18px;height:18px;flex:none;color:var(--warn,#B45309)}
+.league-card.locked .lg{filter:blur(2.5px);opacity:.7;pointer-events:none;user-select:none}
+@media (max-width:560px){.guest-bar{padding-inline:16px}.guest-bar .btn{width:100%}}

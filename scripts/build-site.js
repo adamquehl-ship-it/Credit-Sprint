@@ -48,7 +48,7 @@ ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 <body><div class="site">
 <header class="snav"><div class="wrap"><a class="brand" href="${up}index.html">${LOGO}<span>Credit Sprint</span></a>
 <nav aria-label="Site"><a href="${up}index.html#courses">Courses</a><a href="${up}index.html#features">Features</a><a href="${up}index.html#games">Games</a><a href="${up}guides/index.html">Study guides</a><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a></nav>
-<a class="btn sm" href="${up}index.html#courses">Start free</a></div></header>
+<div class="row-wrap" style="gap:8px;flex-wrap:nowrap"><a class="btn ghost sm" href="${up}app.html?signup=1">Sign up</a><a class="btn sm" href="${up}index.html#courses">Start free</a></div></div></header>
 ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
 <div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® Macroeconomics and Microeconomics.</span></div>
@@ -86,7 +86,7 @@ out("index.html", page({
     <p class="lead">Credit Sprint turns econ into a daily habit: a 10-minute diagnostic, a plan built around your weakest units, ${nQ} practice questions that explain every answer, and games that make the graphs stick.</p>
     <div class="stack" style="gap:10px"><span class="eyebrow">Choose your course</span>
       <div class="ccards">${COURSES.map(courseCard).join("")}</div></div>
-    <span class="muted small">No account needed. Take both: your streak, XP and pets carry over.</span>
+    <span class="muted small">Try it free, then make a free account to save progress. Take both courses: your streak, XP and pets carry over.</span>
   </div>
   <div class="mock-stack" aria-hidden="true">
     <div class="mock-a"><div class="hero-card" style="--hero1:#059669;--hero2:#065F46"><span class="eyebrow">Good evening · AP® Microeconomics</span><h1 style="font-size:1.7rem">12-day streak. Keep it alive.</h1>
@@ -149,7 +149,7 @@ out("index.html", page({
     <details><summary>Can I study Macro and Micro at the same time?</summary><p>Yes. Switch courses any time from the top of the dashboard. Each course keeps its own scores and study plan, while your streak, XP, badges and pets carry over.</p></details>
     <details><summary>Does it work for both AP® and CLEP®?</summary><p>Yes. Switch exams any time. The practice exam length, unit weights, score estimate and study plan all change to match.</p></details>
     <details><summary>How accurate is the score prediction?</summary><p>It's a rough estimate based on your recent answers in each unit, weighted like the real exam. Use it to see whether you're trending up, not as an official score.</p></details>
-    <details><summary>Do I need an account?</summary><p>No. You can start studying right away and your progress is saved in your browser. Sign in with an email code, Google or a username to save progress across devices and join weekly leagues.</p></details>
+    <details><summary>Do I need an account?</summary><p>You can try any course right away as a guest, but guest progress is erased when you close the tab. To save your progress and join weekly leagues, create a free account with an email code, Google or a username. Anything you did as a guest carries into your new account.</p></details>
     <details><summary>How much time do I need?</summary><p>Ten to fifteen minutes a day is enough to make steady progress. With less than a month to go, switch on the 30-day cram plan.</p></details>
   </div>
 </div></section>
@@ -311,7 +311,7 @@ const ul = items => `<ul>${items.map(x=>`<li>${x}</li>`).join("")}</ul>`;
 legal("privacy.html", "Privacy Policy", "How Credit Sprint collects, uses and protects information from students who use the site.",
   `<p style="font-size:1.05rem">Credit Sprint is a study site for AP® and CLEP® economics. We collect only what we need to run it, we don't sell personal information, and we don't show ads. This policy explains what we collect and what you can do about it.</p>`,
 [
- ["What we collect", `<p><b>If you don't create an account</b>, your study progress (answers, scores, streaks, pets, settings) is saved only in your own browser. We don't receive it.</p>
+ ["What we collect", `<p><b>If you don't create an account</b>, your study progress (answers, scores, streaks, pets, settings) stays in your browser tab and is erased when you close it. We don't receive it.</p>
   <p><b>If you create an account</b>, we store:</p>${ul([
    "How you sign in: your email address (email codes), your Google account's email, account ID and first name (Google sign-in), or your username and a scrambled (hashed) version of your password. We never see or store your Google password, and we can't read your Credit Sprint password.",
    "The name you choose for leaderboards. We show it as your first name and last initial only.",
@@ -329,7 +329,7 @@ legal("privacy.html", "Privacy Policy", "How Credit Sprint collects, uses and pr
  ["Your choices and rights", ul([
    "<b>Delete your account</b> any time: open the app, click your name in the sidebar, then Delete my account. This removes your account, saved progress and league history from our servers.",
    "<b>Change your leaderboard name</b> from the same account window.",
-   "<b>Use the site without an account.</b> Everything except syncing and real leagues works without signing in.",
+   "<b>Try the site without an account.</b> Guest mode works without signing in, but guest progress isn't saved after you close the tab and guests can't join leagues.",
    "<b>Clear local progress</b> by using Reset all progress in Settings or clearing your browser data.",
    "Depending on where you live, you may have the right to access, correct or delete your information. Email us and we'll help."])],
  ["How long we keep it", `<p>We keep account information while your account exists. When you delete your account, we remove it from our database right away. Sign-in codes expire after 10 minutes, and sign-in sessions after 60 days.</p>`],
@@ -339,7 +339,7 @@ legal("privacy.html", "Privacy Policy", "How Credit Sprint collects, uses and pr
 legal("terms.html", "Terms of Service", "The rules for using Credit Sprint, the AP and CLEP economics study site.",
   `<p style="font-size:1.05rem">These terms are an agreement between you and Credit Sprint. By using the site, you agree to them. If you're under 18, please review them with a parent or guardian.</p>`,
 [
- ["Who can use Credit Sprint", `<p>Anyone can use the site without an account. To create an account you must be at least 13 years old. If you're under 18, you need permission from a parent or guardian.</p>`],
+ ["Who can use Credit Sprint", `<p>Anyone can try the site as a guest without an account. Saving progress and joining leagues require a free account. To create an account you must be at least 13 years old. If you're under 18, you need permission from a parent or guardian.</p>`],
  ["Your account", ul(["Keep your sign-in details private. You're responsible for activity on your account.","Give accurate information, and choose a leaderboard name that isn't offensive, misleading or someone else's.","You can delete your account at any time from the account window in the app."])],
  ["Fair play", `<p>Leagues, leaderboards, season passes and rewards are for fun and motivation. Don't use bots, scripts, shared accounts or tricks to inflate your XP or anyone else's. We may reset progress, remove someone from a league or suspend an account that breaks these rules.</p>`],
  ["Acceptable use", ul(["Don't try to break, overload or get around the security of the site.","Don't copy, resell or republish our questions, guides or other content.","Don't use the AI tutor to generate anything unrelated to studying, or anything harmful."])],
