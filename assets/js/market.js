@@ -94,7 +94,7 @@ CS.render.pets = (o = {}) => {
 
 /* ---------- merge: 3 of the same pet → 1 random pet of the next rarity ---------- */
 function renderMerge(el){
-  const owned = Object.keys(P().owned).filter(id => PET[id]).sort((a,b) => ORDER.indexOf(PET[a].r) - ORDER.indexOf(PET[b].r) || copies(b) - copies(a));
+  const owned = Object.keys(P().owned).filter(id => PET[id] && PET[id].r !== "secret").sort((a,b) => ORDER.indexOf(PET[a].r) - ORDER.indexOf(PET[b].r) || copies(b) - copies(a));
   el.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Pet fusion</span><h1>Merge pets</h1>
       <p class="muted">Combine <b>3 copies of the same pet</b> into one random pet of the <b>next rarity up</b>. Get duplicates by hatching eggs or buying them in the Market. Supreme Mythical pets are the top and can't be merged.</p></div></div>
     <div class="merge-ladder">${ORDER.map((k,i)=>`<span style="--c:${R[k].col}">${R[k].n}</span>${i<ORDER.length-1?"<i>→</i>":""}`).join("")}</div>
@@ -137,6 +137,7 @@ function applyEvents(evts){
     if (e.pet && e.petDelta > 0) for (let i = 0; i < e.petDelta; i++) addPet(e.pet);
     if (e.pet && e.petDelta < 0) for (let i = 0; i < -e.petDelta; i++) removePet(e.pet);
     c.ledger = (c.ledger || 0) + (e.creds || 0); c.ledgerSeen = e.id; changed = true;
+    if (e.reason === "code" && e.pet && PET[e.pet]) CS.toast(`Secret pet unlocked: ${PET[e.pet].n}! Find it in Pets.`);
     if (e.reason === "sold") CS.toast(`Your ${(PET[e.pet]||{}).n || "pet"} sold for ${fmt(e.creds)} creds!`);
   }
   if (changed) { CS.save(); if (CS.syncNow) CS.syncNow(); if (CS.chrome) CS.chrome(); }
@@ -159,7 +160,7 @@ function renderMarket(el){
     <p class="muted">List pets for creds, buy the ones you're missing, or send one straight to a friend (set the price to 0 for a gift). Earn creds by studying: quizzes, lessons, games, bosses, exams and milestones${CS.planFor && CS.planFor() ? " (your plan adds +10%)" : ". Paid plans earn 10% more"}. The market keeps a 10% fee on each sale.</p></div></div>`;
   if (!CS.account) { el.innerHTML = head + `<div class="panel lock-panel"><span class="lock-ico">${I("lock")}</span><div class="stack" style="gap:6px"><h3>Sign up to trade</h3><p class="muted">The market is for students with a free account, so every trade is saved to someone real. You keep earning creds as a guest, and they move into your new account.</p></div><button class="btn" data-account="signup">Create a free account</button></div>`; return; }
   if (!mkt) { el.innerHTML = head + `<div class="panel">${mktErr ? `<p class="feedback bad">${esc(mktErr)}</p><button class="btn sm" id="mk-retry">Try again</button>` : `<p class="muted">Loading the market…</p>`}</div>`; const r = $("#mk-retry", el); if (r) r.onclick = loadMarket; return; }
-  const sellable = Object.keys(P().owned).filter(id => PET[id]).sort((a,b) => ORDER.indexOf(PET[b].r) - ORDER.indexOf(PET[a].r));
+  const sellable = Object.keys(P().owned).filter(id => PET[id] && PET[id].r !== "secret").sort((a,b) => ORDER.indexOf(PET[b].r) - ORDER.indexOf(PET[a].r));
   const others = mkt.listings.filter(l => !l.mine), mineOpen = (mkt.mine || []).filter(l => l.status === "open"), sold = (mkt.mine || []).filter(l => l.status === "sold").slice(0, 5);
   el.innerHTML = head + `
     <div class="market-top">

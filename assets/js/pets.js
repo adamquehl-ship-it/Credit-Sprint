@@ -19,6 +19,8 @@ CS.RARITY = {
 const ORDER = ["common","uncommon","rare","epic","legendary","mythical","supreme"];
 /* every egg is a mystery egg: rarity is rolled at hatch with the odds above, so every egg has the same chances */
 CS.RARITY.mystery = {n:"Mystery", p:0, hatch:15, boost:0, col:"#6366F1", glow:"#EEF2FF"};
+/* secret pets: never in eggs, merges or the market; only given out by special codes */
+CS.RARITY.secret = {n:"Secret", p:0, hatch:0, boost:0.40, col:"#E11D48", glow:"#FFE4E6"};
 const EGG_NEED = 15;
 CS.RARITY_ORDER = ORDER;
 
@@ -130,7 +132,11 @@ const BIO = [
 CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO).map(p=>[p.id,p]));
+const SECRET = [
+ {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#B07A45", c2:"#E8C79A", custom:"rahul", bio:"A calm, golden-crowned capybara who somehow always knows the answer. Secret pet. Only friends of Credit Sprint get one."}
+];
+CS.SECRET_PETS = SECRET;
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -253,7 +259,7 @@ function fxLayers(r, id, still, p = {}){
 const EGGSHELL = `<path d="M28 98 L34 90 L40 98 L46 89 L53 98 L60 89 L67 98 L74 89 L80 98 L86 90 L92 98 C92 110 80 116 60 116 C40 116 28 110 28 98Z" fill="#FFFBEB" stroke="#D6C08A" stroke-width="2" stroke-linejoin="round"/><circle cx="42" cy="106" r="2.4" fill="#E9D8A6"/><circle cx="70" cy="108" r="3" fill="#E9D8A6"/><circle cx="82" cy="102" r="1.8" fill="#E9D8A6"/><path d="M36 102 Q40 112 52 113" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".8"/>`;
 function wrapPet(p, size, inner, sc, still, stage){
   if (stage === 1) inner += EGGSHELL;
-  const id = "pg" + (++gid), fx = fxLayers(p.r, id, still, p);
+  const id = "pg" + (++gid), fx = fxLayers(p.r === "secret" ? "supreme" : p.r, id, still, p);
   const shadow = `<ellipse cx="60" cy="112" rx="30" ry="5" fill="#000" opacity=".1"/>`;
   return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" role="img" aria-label="${esc(p.n)}" style="overflow:visible"><defs>${fx.defs}</defs>${fx.back}${shadow}<g transform="translate(60 110) scale(${sc}) translate(-60 -110)">${inner}</g>${fx.front}</svg>`;
 }
@@ -405,6 +411,23 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 const CUSTOM = {
+  /* Rahul: an original capybara. Baby sits in its shell; a yuzu appears on its head as a teen; a golden crown and cape as an adult */
+  rahul: (p, stage, mood) => { const sleepy = mood === "sleepy", sad = mood === "sad"; return `
+    ${stage===3?`<path d="M34 62 C22 80 24 104 34 108 L86 108 C96 104 98 80 86 62Z" fill="#7F1D1D" stroke="#450A0A" stroke-width="1.5" opacity=".95"/>`:""}
+    <ellipse cx="60" cy="88" rx="34" ry="22" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/>
+    <ellipse cx="60" cy="94" rx="20" ry="12" fill="${p.c2}"/>
+    <rect x="36" y="100" width="10" height="9" rx="4" fill="#8A5A30" stroke="#6B4423" stroke-width="1.5"/><rect x="74" y="100" width="10" height="9" rx="4" fill="#8A5A30" stroke="#6B4423" stroke-width="1.5"/>
+    <ellipse cx="60" cy="58" rx="27" ry="23" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/>
+    <ellipse cx="37" cy="43" rx="5" ry="5.5" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/><ellipse cx="83" cy="43" rx="5" ry="5.5" fill="${p.c1}" stroke="#6B4423" stroke-width="2"/>
+    
+    <rect x="39" y="58" width="42" height="21" rx="10" fill="${p.c2}"/>
+    <ellipse cx="60" cy="62" rx="9" ry="4" fill="#4A2C17"/>
+    <path d="M60 67 L60 72 M54 74 Q60 78 66 74" stroke="#4A2C17" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    ${sleepy?`<path d="M42 54 q5 4 10 0 M68 54 q5 4 10 0" stroke="#2B1A0E" stroke-width="2.4" fill="none" stroke-linecap="round"/>`:`${EYE(48,53,4.2)}${EYE(72,53,4.2)}`}
+    ${sad?`<path d="M42 46 l10 3 M78 46 l-10 3" stroke="#4A2C17" stroke-width="2" stroke-linecap="round"/>`:""}
+    <ellipse cx="40" cy="62" rx="4" ry="2.6" fill="#F4A28C" opacity=".6"/><ellipse cx="80" cy="62" rx="4" ry="2.6" fill="#F4A28C" opacity=".6"/>
+    ${stage===2?`<g><ellipse cx="60" cy="31" rx="9" ry="7.5" fill="#FDE047" stroke="#CA8A04" stroke-width="1.5"/><path d="M60 24 q-2 -6 4 -8 q1 5 -4 8z" fill="#4ADE80" stroke="#15803D" stroke-width="1"/><path d="M55 29 q3 -2 5 0" stroke="#FFF7AE" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`:""}
+    ${stage===3?CROWN(37):""}`; },
   bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
@@ -584,7 +607,7 @@ CS.petMood = () => { const s = S(), today = s.days[CS.today()]||0, h = new Date(
 CS.render = CS.render || {};
 let petFilter = "all", petSet = CS.COURSE;
 CS.render.pets = () => {
-  const P = st(), v = $("#v-pets"), egg = P.eggs[0], A = P.active ? CS.PET[P.active] : null, ownedN = Object.keys(P.owned).length;
+  const P = st(), v = $("#v-pets"), egg = P.eggs[0], A = P.active ? CS.PET[P.active] : null, ownedN = Object.keys(P.owned).filter(k => (CS.PET[k]||{}).r !== "secret").length;
   const mood = CS.petMood(), moodTxt = {happy:"is happy you're studying today.", sleepy:"is sleepy. Answer a question to wake it up.", sad:"is worried about your streak!"}[mood];
   const SETP = CS.PET_SETS[petSet].pets;
   const list = SETP.filter(p => petFilter==="all" || p.r===petFilter).sort((a,b)=>ORDER.indexOf(a.r)-ORDER.indexOf(b.r));
@@ -617,18 +640,22 @@ CS.render.pets = () => {
       return `<button class="pet-card ${o?"own":""} ${P.active===p.id?"act":""}" data-pid="${p.id}" style="--col:${R.col};--glow:${R.glow}" ${o?"":"aria-disabled=\"true\""}>
         <span class="rar ${p.r==="supreme"?"sup":""}" style="color:${R.col}">${R.n}</span>${CS.petSVG(p.id, {size:92, locked:!o, stage:o?CS.petStage(p.id):1})}
         <b class="small">${o?esc(p.n):"???"}</b><span class="tiny muted">${p.p}% · ${p.u?`Unit ${p.u}`:"Every unit"}${o&&o.copies>1?` · ×${o.copies}`:""}</span>
-        ${o?`<span class="tiny">${P.active===p.id?"Active":"Lv "+CS.petLevel(p.id)}</span>`:""}</button>`; }).join("")}</div>`;
+        ${o?`<span class="tiny">${P.active===p.id?"Active":"Lv "+CS.petLevel(p.id)}</span>`:""}</button>`; }).join("")}</div>
+    ${SECRET.some(p=>P.owned[p.id]) ? `<div class="spread"><h2>Secret pets</h2><span class="tiny muted">Not in eggs, merges or the market</span></div>
+    <div class="pet-grid">${SECRET.filter(p=>P.owned[p.id]).map(p=>{ const o = P.owned[p.id], R = CS.RARITY.secret;
+      return `<button class="pet-card own ${P.active===p.id?"act":""}" data-pid="${p.id}" style="--col:${R.col};--glow:${R.glow}"><span class="rar sup" style="color:${R.col}">${R.n}</span>${CS.petSVG(p.id, {size:92, stage:CS.petStage(p.id)})}<b class="small">${esc(p.n)}</b><span class="tiny muted">+${Math.round(R.boost*100)}% XP${o.copies>1?` · ×${o.copies}`:""}</span><span class="tiny">${P.active===p.id?"Active":"Lv "+CS.petLevel(p.id)}</span></button>`; }).join("")}</div>` : ""}`;
   $$("#v-pets [data-pf]").forEach(b => b.onclick = () => { petFilter = b.dataset.pf; CS.render.pets(); });
   $$("#v-pets [data-ps]").forEach(b => b.onclick = () => { petSet = b.dataset.ps; CS.render.pets({keepScroll:true}); });
   $$("#v-pets [data-pid]").forEach(b => b.onclick = () => { const id = b.dataset.pid; if (!P.owned[id]) return; petDetail(id); });
 };
 function petDetail(id){
   const P = st(), p = CS.PET[id], R = CS.RARITY[p.r], o = P.owned[id];
-  const w = overlay(`<div class="spread"><span class="eyebrow" style="color:${R.col}">${R.n} · ${p.u?`Unit ${p.u}`:"Every unit"} · ${p.p}% chance</span><button class="btn ghost sm" id="pd-x">Close</button></div>
+  const w = overlay(`<div class="spread"><span class="eyebrow" style="color:${R.col}">${R.n} · ${p.r==="secret"?"Not obtainable from eggs":`${p.u?`Unit ${p.u}`:"Every unit"} · ${p.p}% chance`}</span><button class="btn ghost sm" id="pd-x">Close</button></div>
     <div class="row-wrap" style="justify-content:center;gap:8px">${[1,2,3].map(sg=>`<div class="stack" style="align-items:center;gap:2px;opacity:${CS.petStage(id)>=sg?1:.35}">${CS.petSVG(id,{size:sg===3?120:sg===2?100:84, stage:sg})}<span class="tiny muted">${STAGE[sg]}</span></div>`).join("")}</div>
     <h2>${esc(p.n)}</h2><p class="muted">${esc(p.bio)}</p>
     <p class="small">Level ${CS.petLevel(id)} · ${o.growth} correct answers together · hatched ${esc(o.at)}${o.copies>1?` · ${o.copies} copies`:""} · +${Math.round(R.boost*100)}% XP while active</p>
-    <div class="row-wrap">${P.active===id?`<span class="tag good">Active pet</span>`:`<button class="btn" id="pd-act">Make active</button>`}</div>`);
+    <div class="row-wrap">${P.active===id?`<span class="tag good">Active pet</span>`:`<button class="btn" id="pd-act">Make active</button>`}${CS.giftPet&&p.r!=="secret"?`<button class="btn ghost" id="pd-gift">🎁 Gift to a friend</button>`:""}</div>`);
+  const gf = $("#pd-gift", w); if (gf) gf.onclick = () => { w.remove(); CS.giftPet(id); };
   $("#pd-x", w).onclick = () => w.remove();
   const a = $("#pd-act", w); if (a) a.onclick = () => { P.active = id; CS.save(); w.remove(); CS.render.pets(); CS.toast(`${p.n} is now your active pet.`); };
 }
