@@ -60,7 +60,7 @@ CS.render.store = () => {
       ${has ? `<button class="btn ${on ? "ghost" : ""} sm" data-equip="${t.k}" ${on ? "disabled" : ""}>${on ? "Equipped" : "Equip"}</button>`
         : `<button class="btn ${g >= t.price ? "" : "ghost"} sm" data-buytheme="${t.k}" ${g >= t.price ? "" : "disabled"}>💎 ${t.price.toLocaleString()}</button>`}</div>`; }).join("");
   $("#v-store").innerHTML = `<div class="stack" style="gap:18px">
-    <div class="panel st-head"><div class="stack" style="gap:2px"><span class="eyebrow">Store</span><h2 style="margin:0">Spend your gems</h2>
+    <div class="panel st-head"><div class="stack" style="gap:2px"><span class="eyebrow">Store</span><h1 style="margin:0">Spend your gems</h1>
       <span class="small muted">Earn gems from the season pass (up to ${(pg[0] + pg[1]).toLocaleString()} per season) and quest chests (40 each).</span></div>
       <div class="st-bal"><b>💎 ${g.toLocaleString()}</b><span class="tiny muted">your gems</span></div></div>
     <section class="stack" style="gap:10px"><h3 class="st-h">Eggs</h3><div class="st-grid">${eggCards}</div>

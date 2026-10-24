@@ -25,9 +25,10 @@ CS.seasonInfo = (key = CS.today()) => {
 };
 CS.seasonXP = si => { let x = 0; for (let d = 0; d < LEN; d++) x += S().days[CS.addDays(si.start, d)] || 0; return x; };
 
-/* ---------- season pass: 50 tiers, 15,000 season XP in total (tier n costs 55 + 10 x (n-1) XP) ---------- */
+/* ---------- season pass: 50 tiers, 5,675 season XP in total (tier n costs 40 + 3 x (n-1) XP).
+   A casual student (~100 XP a day) reaches about tier 20; a dedicated one (~400 XP a day) finishes the pass. ---------- */
 const NT = 50;
-CS.TIERS = (() => { let t = 0; return Array.from({length:NT}, (_, i) => (t += 55 + 10*i)); })();
+CS.TIERS = (() => { let t = 0; return Array.from({length:NT}, (_, i) => (t += 40 + 3*i)); })();
 /* free lane: gems most tiers, a streak freeze every 7th, eggs to the nest every 5th/10th. Pass lane: gems, plus an INSTANT-hatch egg every 5th tier */
 const FREE = Array.from({length:NT}, (_, i) => { const n = i+1;
   return n === 50 ? "egg:rare" : n % 10 === 0 ? "egg:uncommon" : n % 5 === 0 ? "egg" : n % 7 === 0 ? "freeze" : "gems:" + (15 + n); });
@@ -121,11 +122,14 @@ CS.seasonCard = () => {
     const st = got ? "got" : lock ? "lock" : reach ? "ready" : "", inst = r.split(":")[2];
     return `<button class="sp-cell ${lane} ${st}" data-claim="${lane}:${i}" ${got || (!reach && !lock) ? "disabled" : ""} title="${lock?"Unlock with Pass Plan":reach?(got?"Claimed":"Claim"):`Reach ${CS.TIERS[i].toLocaleString()} season XP`}">
       <span class="ri">${lock?"🔒":icon(r)}</span><span class="rl">${label(r)}</span>${inst?`<span class="sp-inst" title="Hatches the moment you claim it">⚡</span>`:""}${st==="ready"?`<span class="claim">Claim</span>`:got?`<span class="ok">✓</span>`:""}</button>`; };
+  const elapsed = Math.max(1, 15 - si.left), perDay = xp / elapsed, proj = Math.min(NT, CS.TIERS.filter(t => perDay * 14 >= t).length);
+  const pace = xp > 0 && elapsed >= 2 ? `<span class="tiny muted">At your pace (about ${Math.round(perDay)} XP a day) you'll reach tier ${proj} by the end of the season.</span>` : "";
   const n = CS.seasonClaimable(), focus = Math.max(0, Math.min(NT - 1, tierNow - 1));
   return `<div class="panel qcard season-card">
     <div class="spread"><div class="stack" style="gap:0"><span class="eyebrow">Season ${si.num} · ${esc(si.theme.n)}</span><b>Season pass</b></div><span class="tag">${si.left} day${si.left===1?"":"s"} left</span></div>
     <div class="stack" style="gap:6px"><div class="spread small"><b>Tier ${tierNow} of ${CS.TIERS.length}</b><span class="muted">${xp.toLocaleString()} / ${hi.toLocaleString()} season XP</span></div>
       <div class="meter mint"><i style="width:${Math.min(100, (xp - lo) / Math.max(1, hi - lo) * 100)}%"></i></div></div>
+    ${pace}
     <div class="spread"><span class="tiny muted">⚡ Pass-lane eggs hatch the moment you claim them.</span>${n?`<button class="btn sm" data-claimall>Claim all (${n})</button>`:""}</div>
     <div class="sp-scroll" data-focus="${focus}"><div class="sp-grid"><span class="sp-h"></span><span class="lane sp-h">Free</span><span class="lane pass sp-h">Pass${beta?` <em>free in beta</em>`:""}</span>
       ${CS.TIERS.map((t, i) => `<span class="sp-n ${xp >= t ? "on" : ""}" data-tier="${i}">${i+1}</span>${cell("free", FREE[i], i)}${cell("pass", PASS[i], i)}`).join("")}</div></div>

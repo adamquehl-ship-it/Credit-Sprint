@@ -25,6 +25,7 @@ CS.go = (v, opts={}) => {
   VIEWS.forEach(x => { $("#v-"+x).hidden = x !== v; });
   try { if (location.hash !== "#"+v) history.replaceState(null, "", "#"+v); } catch(e) {}
   render[v](opts);
+  { const el = $("#v-"+v); if (el && !el.querySelector("h1")) el.insertAdjacentHTML("afterbegin", `<h1 class="sr-only">${TITLES[v]||v}</h1>`); }
   if (v === "home" && CS.focusPass) CS.focusPass();
   CS.chrome();
   if (!opts.keepScroll) window.scrollTo({top:0});
@@ -629,9 +630,9 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------- FRQ ---------- */
-let frqId = "f1";
+let frqId = null;
 render.frq = () => {
-  const v = $("#v-frq"), f = CS.FRQS.find(x=>x.id===frqId);
+  const v = $("#v-frq"), f = CS.FRQS.find(x=>x.id===frqId) || CS.FRQS[0]; frqId = f.id;
   const st = S().frq[f.id] || (S().frq[f.id] = {draft:"", show:false, checks:f.rubric.map(()=>false)});
   if (st.checks.length !== f.rubric.length) st.checks = f.rubric.map(()=>false);
   const got = st.checks.filter(Boolean).length, G = (window.CS_FRQ_GRAPHS||{})[f.id];
