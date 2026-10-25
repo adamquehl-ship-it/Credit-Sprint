@@ -3,7 +3,7 @@
 (function(){
 "use strict";
 const CS = window.CS, $ = CS.$, esc = CS.esc, S = () => CS.S();
-const COURSE_NAME = {macro:"Macroeconomics", micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History"};
+const COURSE_NAME = {macro:"Macroeconomics", micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History"};
 
 /* ---------- share a result (picture + text) ---------- */
 function card(title, big, sub){

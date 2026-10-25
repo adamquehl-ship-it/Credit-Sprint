@@ -79,8 +79,9 @@ try {
   if (!shared && COURSE.k !== "macro") shared = readJSON(window.CS_COURSES.macro.key);
   if (shared) CS.SHARED.forEach(f => { if (shared[f] !== undefined) S[f] = shared[f]; });
   /* a new course inherits the exam choice from the other course until the student changes it */
-  if (!raw && shared && shared.exam && !S.onboarded && !COURSE.clepOnly) S.exam = shared.exam;
+  if (!raw && shared && shared.exam && !S.onboarded && !COURSE.clepOnly && !COURSE.apOnly) S.exam = shared.exam;
   if (COURSE.clepOnly) { S.exam = "clep"; if (!S.dateSet) S.plan.date = CS.defaultDate("clep"); }
+  if (COURSE.apOnly) { S.exam = "ap"; if (!S.dateSet) S.plan.date = CS.defaultDate("ap"); }
 } catch(e) {}
 /* migrate old mistakes format (number) to spaced-review records */
 Object.keys(S.mistakes||{}).forEach(k => { if (typeof S.mistakes[k] === "number") S.mistakes[k] = {n:S.mistakes[k], due:0}; });
@@ -90,14 +91,14 @@ CS.SOON = {ai: true, pfp: true};
 CS.mistakesDue = () => Object.entries(S.mistakes).filter(([k,m]) => (m.due||0) <= Date.now()).map(([k])=>k);
 CS.save = () => { try {
   window.CS_STORE.set(KEY, JSON.stringify(S));
-  const sh = COURSE.clepOnly ? {} : {exam:S.exam}; CS.SHARED.forEach(f => { if (S[f] !== undefined) sh[f] = S[f]; });
+  const sh = (COURSE.clepOnly || COURSE.apOnly) ? {} : {exam:S.exam}; CS.SHARED.forEach(f => { if (S[f] !== undefined) sh[f] = S[f]; });
   window.CS_STORE.set(SHARED_KEY, JSON.stringify(sh));
 } catch(e) {} };
 CS.resetAll = () => { try { Object.values(window.CS_COURSES).forEach(c => window.CS_STORE.remove(c.key)); window.CS_STORE.remove(SHARED_KEY); window.CS_STORE.remove("creditsprint.v2"); } catch(e) {} S = fresh(); CS.save(); };
 /* summary of any course's saved progress, for the course switcher */
 CS.courseSummary = k => {
   const c = window.CS_COURSES[k], raw = k === COURSE.k ? S : readJSON(c.key);
-  if (!raw) return {k, started:false, answered:0, units:0, exam:c.clepOnly ? "clep" : (COURSE.clepOnly ? "ap" : S.exam), days:null, diag:false};
+  if (!raw) return {k, started:false, answered:0, units:0, exam:c.clepOnly ? "clep" : c.apOnly ? "ap" : (COURSE.clepOnly ? "ap" : S.exam), days:null, diag:false};
   const ans = raw.answers || {}, answered = Object.values(ans).reduce((s,a)=>s+a.length,0);
   const m = Object.values(ans).filter(a=>a.length).map(a=>a.reduce((x,y)=>x+y,0)/a.length);
   const date = raw.plan && raw.plan.date, days = date ? Math.round((new Date(date+"T12:00:00") - new Date())/CS.DAY) : null;
@@ -225,6 +226,7 @@ const P = {
   x:'<path d="M6 6l12 12M18 6 6 18"/>',
   grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
   mega:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/>',
   flask:'<path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/><path d="M7.5 15h9"/>',
   dna:'<path d="M7 3c0 6 10 6 10 12M17 3c0 6-10 6-10 12M7 21c0-3 3-4.5 5-6M17 21c0-3-3-4.5-5-6"/><path d="M8.5 6h7M8.5 12h7M9 18h6"/>',

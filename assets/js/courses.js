@@ -7,6 +7,7 @@ const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
 const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/mkt/"+f);
+const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"].map(f => "assets/data/apworld/"+f);
 const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
@@ -41,6 +42,16 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of timeline recall: which period does each event, person or law belong to? Type the period number, 1 to 9.",
     drillDesc:"Date the event: name the AP® period (1 to 9) for key events, people and laws. Fresh questions every time.",
     planGames:["Timeline Sort","Source Match","Sprint","Match-up","Chain Reaction","True or False"]},
+  apworld:{k:"apworld", name:"World History", short:"World History", ap:"AP\u00AE World History: Modern", clep:"", clepShort:"", apOnly:true,
+    key:"creditsprint.apworld.v1", col:"#0F766E", soft:"#F0FDFA", apFmt:"55 multiple choice, 3 SAQs, a DBQ and an LEQ in 3 hours 15 minutes", clepFmt:"", blurb:"Global tapestry and trade networks, land-based empires, the Atlantic world, revolutions, industrialization, world wars, the Cold War and globalization.", icon:"globe", data:APWORLD, nUnits:9, cat:"History",
+    graphs:false, unitWord:"Unit",
+    apExamText:"The real exam has 55 multiple-choice questions in 55 minutes (40% of your score), then 3 short-answer questions, a document-based question and a long essay in 100 minutes. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:55, min:55, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:20, name:"Mini exam"}}, clep:{full:{n:55, min:55, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:20, name:"Mini exam"}}},
+    bosses:{1:"The Dynasty Dragon",2:"The Caravan Bandit",3:"The Sultan's Cannon",4:"The Galleon Ghost",5:"The Guillotine Golem",6:"The Smokestack Titan",7:"The Trench Warlord",8:"The Wall Warden",9:"The Supply Chain Specter"},
+    chainDesc:"Put the events in order: from trade routes to empires, from revolution to industry, from world war to global village.",
+    crunchDesc:"Two minutes of timeline recall: which AP\u00AE era does each event, person or empire belong to? Type 1 to 4.",
+    drillDesc:"Place the event: name the AP\u00AE era for key events, empires and people. Fresh questions every time.",
+    planGames:["Timeline Sort","Source Match","Sprint","Match-up","Chain Reaction","True or False"]},
   mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
     key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
     graphs:false, unitWord:"Unit",
@@ -53,7 +64,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

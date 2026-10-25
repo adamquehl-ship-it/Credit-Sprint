@@ -47,8 +47,8 @@ CS.chrome = () => {
     <span class="chip-stat hide-sm" title="Today's goal: ${today}/${s.goal} XP">${ring(today/s.goal)}${today}/${s.goal}</span>
     <span class="chip-stat hide-sm" title="Level ${lv.lv}: ${lv.into}/${lv.need} XP to next">${I("bolt")}Lv ${lv.lv}</span>`;
   if (CS.upgradeSide && $("#side-up")) $("#side-up").innerHTML = CS.upgradeSide();
-  $$(".examseg button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.exam === s.exam); if (CS.C.clepOnly && b.dataset.exam === "ap") b.hidden = true; });
-  if (CS.C.clepOnly) $$(".examseg").forEach(e => { e.style.gridTemplateColumns = "1fr"; });
+  $$(".examseg button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.exam === s.exam); if (CS.C.clepOnly && b.dataset.exam === "ap") b.hidden = true; if (CS.C.apOnly && b.dataset.exam === "clep") b.hidden = true; });
+  if (CS.C.clepOnly || CS.C.apOnly) $$(".examseg").forEach(e => { e.style.gridTemplateColumns = "1fr"; });
   $$(".themeseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === s.theme));
   const dte = daysToExam();
   $("#exam-when").innerHTML = `${dte>=0?`<b>${dte}</b> days to go`:"Exam date passed"} · ${new Date(s.plan.date+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"})}${!s.dateSet?` <span class="tag warn">assumed</span>`:""}`;
@@ -84,7 +84,7 @@ function onboarding(){
         <span class="muted tiny">You can add other courses any time. Your streak, XP and pets carry over.</span></div>
       <div class="stack"><span class="eyebrow">Which exam are you taking?</span>
         <div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${ex==="ap"}"><b>${esc(CS.C.ap)}</b><span class="muted small">${esc(CS.C.apFmt||"")}</span></button>`}
-        <button data-ex="clep" aria-pressed="${ex==="clep"}"><b>${esc(CS.C.clepShort)}</b><span class="muted small">${esc(CS.C.clepFmt||"")}</span></button></div></div>
+        ${CS.C.apOnly ? "" : `<button data-ex="clep" aria-pressed="${ex==="clep"}"><b>${esc(CS.C.clepShort)}</b><span class="muted small">${esc(CS.C.clepFmt||"")}</span></button>`}</div></div>
       <div class="stack"><label class="eyebrow" for="ob-date">Exam date</label>
         <input type="date" id="ob-date" value="${esc(date)}" style="max-width:220px">
         <span class="muted small">${ex==="ap"?"We'll assume May 1 until you set the date from your school's AP® schedule.":"CLEP® exams can be scheduled any time. Pick your target date."}</span></div>
@@ -104,7 +104,7 @@ function settings(){
   function draw(){
     m.innerHTML = `<div class="spread"><h2>Settings</h2><button class="btn ghost sm" id="st-x">Done</button></div>
       <div class="stack"><span class="eyebrow">Course</span><div class="opt-grid">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}"><b>${esc(c.name)}</b></button>`).join("")}</div></div>
-      <div class="stack"><span class="eyebrow">Exam</span><div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${s.exam==="ap"}"><b>${esc(CS.C.ap)}</b></button>`}<button data-ex="clep" aria-pressed="${s.exam==="clep"}"><b>${esc(CS.C.clepShort)}</b></button></div></div>
+      <div class="stack"><span class="eyebrow">Exam</span><div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${s.exam==="ap"}"><b>${esc(CS.C.ap)}</b></button>`}${CS.C.apOnly ? "" : `<button data-ex="clep" aria-pressed="${s.exam==="clep"}"><b>${esc(CS.C.clepShort)}</b></button>`}</div></div>
       <div class="stack"><label class="eyebrow" for="st-date">Exam date</label><input type="date" id="st-date" value="${esc(s.plan.date)}" style="max-width:220px"></div>
       <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n])=>`<button data-goal="${v}" aria-pressed="${s.goal===v}"><b>${n} · ${v} XP</b></button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Appearance</span><div class="seg three" style="max-width:320px">${[["light","sun","Light"],["dark","moon","Dark"],["system","auto","System"]].map(([k,ic,n])=>`<button data-th="${k}" aria-pressed="${s.theme===k}">${I(ic)}${n}</button>`).join("")}</div></div>
@@ -230,7 +230,7 @@ render.learn = (o) => {
   if (o.lab) { learnUnit = "lab"; labKey = o.lab; labShift = {}; }
   if (o.mode === "vid") { learnUnit = "vid"; vidSel = o.game || null; }
   const items = CS.UNITS.map(u=>`<button aria-current="${u.id===learnUnit}" data-u="${u.id}"><span class="num">${u.id}</span>${esc(u.short)}</button>`).join("")
-    + `<button aria-current="${learnUnit==="vid"}" data-u="vid"><span class="num">${I("spark")}</span>Animated explainers</button>${CS.hasGraphs()?`<button aria-current="${learnUnit==="lab"}" data-u="lab"><span class="num">${I("chart")}</span>Graph Lab</button>`:""}<button aria-current="${learnUnit==="clep"}" data-u="clep"><span class="num">${I("cap")}</span>CLEP® hub</button><button aria-current="${learnUnit==="res"}" data-u="res"><span class="num">${I("ext")}</span>Official resources</button>`;
+    + `<button aria-current="${learnUnit==="vid"}" data-u="vid"><span class="num">${I("spark")}</span>Animated explainers</button>${CS.hasGraphs()?`<button aria-current="${learnUnit==="lab"}" data-u="lab"><span class="num">${I("chart")}</span>Graph Lab</button>`:""}${CS.C.apOnly ? "" : `<button aria-current="${learnUnit==="clep"}" data-u="clep"><span class="num">${I("cap")}</span>CLEP® hub</button>`}<button aria-current="${learnUnit==="res"}" data-u="res"><span class="num">${I("ext")}</span>Official resources</button>`;
   $("#v-learn").innerHTML = `<div class="split"><nav class="sidelist" aria-label="Units">${items}</nav><article class="panel" id="learn-body"></article></div>`;
   $$("#v-learn .sidelist button").forEach(b => b.onclick = () => { const u = b.dataset.u; learnUnit = isNaN(+u) ? u : +u; render.learn({}); });
   if (stopEx) { stopEx(); stopEx = null; }
@@ -240,7 +240,7 @@ render.learn = (o) => {
   if (learnUnit === "res") return renderRes();
   const u = CS.UNITS[learnUnit-1], m = CS.mastery(u.id);
   $("#learn-body").innerHTML = `
-    <div class="row-wrap">${CS.C.clepOnly ? "" : `<span class="tag acc">AP® ${u.ap}</span>`}<span class="${CS.C.clepOnly ? "tag acc" : "tag"}">CLEP® ${u.clep}</span><span class="tag">Your mastery ${CS.pct(m)}</span></div>
+    <div class="row-wrap">${CS.C.clepOnly ? "" : `<span class="tag acc">AP® ${u.ap}</span>`}${CS.C.apOnly ? "" : `<span class="${CS.C.clepOnly ? "tag acc" : "tag"}">CLEP® ${u.clep}</span>`}<span class="tag">Your mastery ${CS.pct(m)}</span></div>
     <h2>Unit ${u.id}: ${esc(u.name)}</h2>
     <div class="guide">
       <div class="stack" style="gap:18px">
@@ -694,7 +694,7 @@ render.plan = () => {
   const s = S(), v = $("#v-plan"), days = daysToExam();
   v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Built from your results</span><h1>Study plan</h1></div></div>
     <div class="panel"><div class="plan-form">
-      <div class="field"><label for="plan-exam">Exam</label><select id="plan-exam">${CS.C.clepOnly ? "" : `<option value="ap">${esc(CS.C.ap)}</option>`}<option value="clep">${esc(CS.C.clep)}</option></select></div>
+      <div class="field"><label for="plan-exam">Exam</label><select id="plan-exam">${CS.C.clepOnly ? "" : `<option value="ap">${esc(CS.C.ap)}</option>`}${CS.C.apOnly ? "" : `<option value="clep">${esc(CS.C.clep)}</option>`}</select></div>
       <div class="field"><label for="plan-date">Exam date</label><input type="date" id="plan-date" value="${esc(s.plan.date)}"></div>
       <div class="field"><label for="plan-goal">Daily goal</label><select id="plan-goal">${GOALS.map(([g,n])=>`<option value="${g}">${n} · ${g} XP</option>`).join("")}</select></div>
       <button class="btn ghost sm" data-go="practice" data-mode="diagnostic">${s.diag?"Retake diagnostic":"Take the diagnostic"}</button></div>
@@ -759,7 +759,7 @@ function renderCram(days){
 /* ---------- courses: switcher + dashboard bar ---------- */
 function courseLine(sm){
   const c = window.CS_COURSES[sm.k], ex = sm.exam === "clep" ? "CLEP®" : "AP®";
-  if (!sm.started) return c.clepOnly ? "CLEP® · not started" : `${ex} or CLEP® · not started`;
+  if (!sm.started) return c.clepOnly ? "CLEP® · not started" : c.apOnly ? "AP® · not started" : `${ex} or CLEP® · not started`;
   return `${ex} · ${sm.answered} answered${sm.avg!=null?` · ${CS.pct(sm.avg)} avg mastery`:""}${sm.days!=null&&sm.days>=0?` · ${sm.days} days to go`:""}`;
 }
 CS.coursesBar = () => {

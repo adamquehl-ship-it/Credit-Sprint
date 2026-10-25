@@ -21,8 +21,8 @@ const GAMES = [
   ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"mix", n:"Mix Master", ic:"cards", d:"60 seconds. Sort each marketing move into the right P: Product, Price, Place or Promotion. A mistake costs 3 seconds.", best:()=>S().best.mix!=null?`Best: ${S().best.mix} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"position", n:"Perceptual Map", ic:"chart", d:"Read the brand description, then tap the quadrant of the perceptual map where it sits. Positioning, fast.", best:()=>S().best.position!=null?`Best: ${S().best.position}/8`:"Not played yet", isNew:true}] : []),
-  ...(CS.COURSE==="apush" ? [{k:"timeline", n:"Timeline Sort", ic:"link", d:"Four events appear out of order. Tap them from earliest to latest. Chronological reasoning is the heart of APUSH.", best:()=>S().best.timeline!=null?`Best: ${S().best.timeline}/8`:"Not played yet", isNew:true}] : []),
-  ...(CS.COURSE==="apush" ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
+  ...((CS.COURSE==="apush"||CS.COURSE==="apworld") ? [{k:"timeline", n:"Timeline Sort", ic:"link", d:"Four events appear out of order. Tap them from earliest to latest. Chronological reasoning is the heart of AP® history.", best:()=>S().best.timeline!=null?`Best: ${S().best.timeline}/8`:"Not played yet", isNew:true}] : []),
+  ...((CS.COURSE==="apush"||CS.COURSE==="apworld") ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
@@ -132,7 +132,7 @@ function boss(area){
 function chain(area){
   const ROUNDS = 3, set = CS.shuffle(CS.CHAINS).slice(0, ROUNDS);
   let r = 0, perfect = 0, totalMiss = 0;
-  area.innerHTML = `<p style="max-width:62ch">Each round gives you the steps of an economic chain reaction, scrambled. Tap them in the right order. Every wrong tap is a strike.</p><div><button class="btn lg" id="c-go">Start · ${ROUNDS} chains</button></div>`;
+  area.innerHTML = `<p style="max-width:62ch">Each round gives you the steps of ${CS.C.cat==="History"?"a chain of events":"a chain reaction"}, scrambled. Tap them in the right order. Every wrong tap is a strike.</p><div><button class="btn lg" id="c-go">Start · ${ROUNDS} chains</button></div>`;
   $("#c-go").onclick = () => round();
   function round(){
     if (r >= ROUNDS) return end();
@@ -195,7 +195,7 @@ function tf(area){
 /* ---------- Number Crunch ---------- */
 function crunch(area){
   const SECS = 120;
-  area.innerHTML = `<p style="max-width:62ch">Two minutes of ${CS.C.short.toLowerCase()} math with fresh numbers every time. Type your answer and press Enter. Skipping costs 5 seconds.</p><div><button class="btn lg" id="n-go">Start</button></div>`;
+  area.innerHTML = `<p style="max-width:62ch">${CS.C.cat==="History"?"Two minutes of timeline recall with fresh events every time. Type the era or period number and press Enter.":`Two minutes of ${CS.C.short.toLowerCase()} math with fresh numbers every time. Type your answer and press Enter.`} Skipping costs 5 seconds.</p><div><button class="btn lg" id="n-go">Start</button></div>`;
   $("#n-go").onclick = go;
   function go(){
     let right = 0, n = 0, end = Date.now()+SECS*1000, over = false, last = "";
@@ -900,7 +900,7 @@ function position(area){
 /* ---------- Timeline Sort (U.S. History): tap four events from earliest to latest ---------- */
 function timeline(area){
   const ROUNDS = 8; let i = 0, right = 0, misses = 0, pool = [], pickedEv = null;
-  const EVS = () => (window.CS_APUSH_EV || []).map(e => ({n: e[0], y: e[1], u: e[2]}));
+  const EVS = () => ((CS.COURSE==="apworld" ? window.CS_WORLD_EV : window.CS_APUSH_EV) || []).map(e => ({n: e[0], y: e[1], u: e[2]}));
   area.innerHTML = `<p style="max-width:62ch">Each round shows four events in a random order. Tap them from the earliest to the latest. A wrong tap costs the round its perfect score. Eight rounds per game.</p><div><button class="btn accent" id="tl-go">Start · ${ROUNDS} rounds</button></div>`;
   $("#tl-go").onclick = () => { pool = CS.shuffle(EVS()); i = 0; right = 0; round(); };
   function deal(){
@@ -961,7 +961,7 @@ const SRC = [
 function source(area){
   const ROUNDS = 8; let i = 0, right = 0, pool = [];
   area.innerHTML = `<p style="max-width:62ch">Each round shows a short original excerpt written in the style of an exam source. Choose the event, movement or person it comes from. Eight excerpts per game.</p><div><button class="btn accent" id="sm-go">Start · ${ROUNDS} excerpts</button></div>`;
-  $("#sm-go").onclick = () => { pool = CS.shuffle(SRC.slice()); i = 0; right = 0; round(); };
+  $("#sm-go").onclick = () => { pool = CS.shuffle((CS.COURSE==="apworld" ? (window.CS_WORLD_SRC||[]) : SRC).slice()); i = 0; right = 0; round(); };
   function round(){
     if (i >= ROUNDS) return end();
     const q = pool[i], opts = CS.shuffle([q[1]].concat(q[2]));

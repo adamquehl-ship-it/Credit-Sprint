@@ -79,4 +79,35 @@ window.CS_HISTART = {
   /* crowned hourglass (supreme) */
   hourglass: (p, st, m) => bob(`<rect x="28" y="12" width="64" height="10" rx="5" fill="${p.c1}" stroke="#78350F" stroke-opacity=".6" stroke-width="2.4"/><rect x="28" y="98" width="64" height="10" rx="5" fill="${p.c1}" stroke="#78350F" stroke-opacity=".6" stroke-width="2.4"/><path d="M36 22 H84 Q84 46 62 60 Q84 74 84 98 H36 Q36 74 58 60 Q36 46 36 22Z" fill="#E0F2FE" fill-opacity=".7" stroke="#0369A1" stroke-opacity=".6" stroke-width="3"/><path d="M42 28 H78 Q76 42 60 54 Q44 42 42 28Z" fill="${p.c2}" opacity=".9"/><path d="M42 98 Q50 80 60 76 Q70 80 78 98Z" fill="${p.c2}"/><path d="M60 58 V80" stroke="${p.c2}" stroke-width="2"><animate attributeName="opacity" values=".3;1;.3" dur="1.2s" repeatCount="indefinite"/></path>${st >= 2 ? [[14,30],[106,40],[18,86],[104,92]].map(([x,y]) => spark(x, y, .9)).join("") : ""}${face(60, 38, m, .6, st)}${crown(12, 60)}`)
 };
+/* ---- shared styling: sticker outline, glow aura, halo shape, limbs and a per-pet motion, all picked from the pet's id ---- */
+(function(){
+const H = id => { let h = 7; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0; return h; };
+const star = (n, r1, r2) => Array.from({length: n * 2}, (_, i) => { const a = Math.PI * i / n - Math.PI / 2, r = i % 2 ? r2 : r1; return (60 + r * Math.cos(a)).toFixed(1) + "," + (62 + r * Math.sin(a)).toFixed(1); }).join(" ");
+const raw = window.CS_HISTART;
+Object.keys(raw).forEach(k => { const fn = raw[k];
+  raw[k] = (p, st, m) => {
+    const h = H(p.id || k), rk = RANK[p.r] || 0, id = "w" + (h % 99999) + "s" + st;
+    const pose = h % 4, motion = (h >> 3) % 4, halo = (h >> 5) % 4;
+    const hb = `<g stroke="#1F2430" stroke-opacity=".55" stroke-width="2.2"><circle cx="@X" cy="@Y" r="6.5" fill="${p.c2}"/></g>`;
+    const arm = (x1, y1, x2, y2) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#1F2430" stroke-opacity=".55" stroke-width="10" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="${p.c1}" stroke-width="6.4" stroke-linecap="round"/>` + hb.replace("@X", x2).replace("@Y", y2);
+    const arms = st < 2 ? "" : [
+      arm(60, 70, 8, 52) + arm(60, 70, 112, 86),
+      arm(60, 66, 10, 30) + arm(60, 66, 110, 30),
+      arm(60, 74, 6, 84) + arm(60, 74, 114, 84),
+      arm(60, 70, 10, 90) + arm(60, 66, 108, 26)][pose];
+    const leg = x => `<path d="M${x} 92 V110" stroke="#1F2430" stroke-opacity=".55" stroke-width="10" stroke-linecap="round"/><path d="M${x} 92 V110" stroke="${p.c2}" stroke-width="6.4" stroke-linecap="round"/>`;
+    const legs = st === 3 ? leg(44) + leg(76) : st === 2 ? leg(48) + leg(72) : "";
+    const hc = [p.c2, p.c1, "#FDE047", "#67E8F9"][halo];
+    const haloShape = [`<circle cx="60" cy="62" r="54" fill="${hc}" opacity=".3"/>`, `<polygon points="${star(8, 58, 46)}" fill="${hc}" opacity=".32"/>`, `<rect x="10" y="12" width="100" height="100" rx="30" fill="${hc}" opacity=".3" transform="rotate(${(h % 5) * 9 + 8} 60 62)"/>`, `<polygon points="${star(6, 58, 38)}" fill="${hc}" opacity=".32"/>`][halo];
+    const aura = rk >= 3 ? `<defs><radialGradient id="${id}g"><stop offset="0" stop-color="${p.c2}" stop-opacity=".85"/><stop offset="1" stop-color="${p.c2}" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="62" r="60" fill="url(#${id}g)"><animate attributeName="r" values="54;62;54" dur="2.6s" repeatCount="indefinite"/></circle>` : "";
+    const ring = rk >= 4 ? `<g><circle cx="60" cy="62" r="58" fill="none" stroke="${rk >= 6 ? "#F472B6" : "#FDE047"}" stroke-width="2.4" stroke-dasharray="6 9" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 60 62" to="360 60 62" dur="${rk >= 6 ? 6 : 12}s" repeatCount="indefinite"/></circle></g>` : "";
+    const orbit = rk >= 5 ? `<g><animateTransform attributeName="transform" type="rotate" from="0 60 62" to="-360 60 62" dur="9s" repeatCount="indefinite"/>${spark(60, 6, .9, "#fff")}${spark(116, 62, .8, "#FDE047")}${spark(8, 70, .8, "#F9A8D4")}</g>` : "";
+    const flt = `<filter id="${id}f" x="-15%" y="-15%" width="130%" height="130%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/><feFlood flood-color="#fff"/><feComposite in2="d" operator="in" result="o"/><feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#0F172A" flood-opacity=".35" result="sh"/><feMerge><feMergeNode in="sh"/><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+    const mot = [`<animateTransform attributeName="transform" type="rotate" values="-3 60 100;3 60 100;-3 60 100" dur="3s" repeatCount="indefinite"/>`,
+      `<animateTransform attributeName="transform" type="scale" values="1 1;1.04 .96;1 1" dur="1.8s" additive="sum" repeatCount="indefinite"/>`,
+      `<animateTransform attributeName="transform" type="translate" values="0 0;3 0;0 0;-3 0;0 0" dur="3.4s" repeatCount="indefinite"/>`, ""][motion];
+    return `<defs>${flt}</defs>${aura}${haloShape}${ring}<g filter="url(#${id}f)"><g>${mot}${arms}${legs}${fn(p, st, m)}</g></g>${orbit}`;
+  };
+});
+})();
 })();
