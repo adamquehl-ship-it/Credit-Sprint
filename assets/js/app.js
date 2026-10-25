@@ -764,7 +764,8 @@ function courseLine(sm){
   return `${ex} · ${sm.answered} answered${sm.avg!=null?` · ${CS.pct(sm.avg)} avg mastery`:""}${sm.days!=null&&sm.days>=0?` · ${sm.days} days to go`:""}`;
 }
 CS.coursesBar = () => {
-  const list = Object.values(window.CS_COURSES).map(c => ({c, sm:CS.courseSummary(c.k)}));
+  const all = Object.values(window.CS_COURSES).map(c => ({c, sm:CS.courseSummary(c.k)}));
+  const list = all.filter(({c, sm}) => sm.started || c.k === CS.COURSE), more = all.length - list.length;
   return `<section class="courses-bar" aria-label="My courses"><div class="spread"><h2>My courses</h2><span class="muted small">Streak, XP and pets are shared across courses</span></div>
     <div class="course-cards">${list.map(({c, sm}) => { const cur = c.k === CS.COURSE;
       return `<button class="course-card ${cur?"cur":""}" data-course="${c.k}" style="--cc:${c.col};--cs:${c.soft}">
@@ -773,7 +774,7 @@ CS.coursesBar = () => {
           <span class="muted small">${esc(courseLine(sm))}</span>
           ${CS_STATLINE(c.k)?`<span class="cc-stat">${esc(CS_STATLINE(c.k))}</span>`:""}
           <span class="cc-meter"><i style="width:${Math.round((sm.avg||0)*100)}%"></i></span></span>
-        <span class="cc-go">${cur?"Continue":sm.started?"Switch →":"Start free →"}</span></button>`; }).join("")}</div></section>`;
+        <span class="cc-go">${cur?"Continue":sm.started?"Switch →":"Start free →"}</span></button>`; }).join("")}</div>${more>0?`<div><button class="btn ghost sm" data-addcourse="1">+ Add a course (${more} more)</button></div>`:""}</section>`;
 };
 function coursePicker(){
   let pop = $("#course-pop"); if (pop) { closeCoursePicker(); return; }
@@ -802,7 +803,7 @@ function coursePicker(){
 }
 function cpEsc(e){ if (e.key === "Escape") closeCoursePicker(); }
 function closeCoursePicker(){ const p = $("#course-pop"), s = $("#course-scrim"); if (p) p.remove(); if (s) s.remove(); document.removeEventListener("keydown", cpEsc); const b = $("#course-pill"); if (b) b.setAttribute("aria-expanded","false"); }
-document.addEventListener("click", e => { const b = e.target.closest("[data-course]"); if (!b) return; if (b.dataset.course === CS.COURSE) { closeCoursePicker(); if (current !== "home") CS.go("home"); return; } CS.switchCourse(b.dataset.course); });
+document.addEventListener("click", e => { if (e.target.closest("[data-addcourse]")) { coursePicker(); return; } const b = e.target.closest("[data-course]"); if (!b) return; if (b.dataset.course === CS.COURSE) { closeCoursePicker(); if (current !== "home") CS.go("home"); return; } CS.switchCourse(b.dataset.course); });
 
 /* ---------- boot ---------- */
 CS.applyFreezes();
