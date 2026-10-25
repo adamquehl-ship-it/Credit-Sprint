@@ -6,6 +6,7 @@ const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
+const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","drills.js"].map(f => "assets/data/mkt/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -28,11 +29,20 @@ const C = window.CS_COURSES = {
     chainDesc:"Put the chemistry steps in order: from a limiting reactant problem to a net ionic equation, from a rate law to a galvanic cell.",
     crunchDesc:"Two minutes of calculations: moles, molarity, gas laws, heat, pH, equilibrium constants and free energy. Type the number.",
     drillDesc:"Moles, molarity, gas laws, calorimetry, pH and electrochemistry: fresh numbers every time.",
-    planGames:["Balance It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]}
+    planGames:["Balance It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]},
+  mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
+    key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
+    graphs:false, unitWord:"Unit",
+    exams:{ap:{full:{n:100, min:90, name:"Full-length CLEP®"}, mini:{n:25, min:22, name:"Mini exam"}}, clep:{full:{n:100, min:90, name:"Full-length CLEP®"}, mini:{n:25, min:22, name:"Mini exam"}}},
+    bosses:{1:"The Greenwash Ghost",2:"The Product Pusher",3:"The Biased Survey",4:"The Impulse Imp",5:"The One-Size-Fits-All",6:"The Gatekeeper Buyer",7:"The Commodity Clone",8:"The Price War Wyrm",9:"The Stockout Specter",10:"The Spam Swarm"},
+    chainDesc:"Put the marketing steps in order: from a research problem to a decision, from awareness to purchase, from a product idea to the market.",
+    crunchDesc:"Two minutes of marketing math: markup, margin, break-even, market share, elasticity of demand and reach. Type the number.",
+    drillDesc:"Markups, margins, break-even, market share, elasticity and channel math: fresh numbers every time.",
+    planGames:["Mix Master","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]}
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

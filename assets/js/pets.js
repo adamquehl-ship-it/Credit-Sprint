@@ -8,7 +8,7 @@ const S = () => CS.S();
 
 /* ---------- rarities ---------- */
 CS.RARITY = {
-  common:   {n:"Common",    p:49, hatch:10, boost:0.02, col:"#9CA3AF", glow:"#E5E7EB"},
+  common:   {n:"Common",    p:49, hatch:10, boost:0.02, col:"#6B7280", glow:"#E5E7EB"},
   uncommon: {n:"Uncommon",  p:27.5, hatch:15, boost:0.04, col:"#10B981", glow:"#D1FAE5"},
   rare:     {n:"Rare",      p:14, hatch:25, boost:0.07, col:"#3B82F6", glow:"#DBEAFE"},
   epic:     {n:"Epic",      p:6,  hatch:35, boost:0.10, col:"#A855F7", glow:"#F3E8FF"},
@@ -161,14 +161,45 @@ const CHEM = [
  {id:"c_bucky", body:"bucky", n:"Buckminster the C₆₀", u:2, r:"mythical", p:0.35, c1:"#E2E8F0", c2:"#FDE68A", custom:"chem", bio:"Sixty carbon atoms in a soccer-ball cage. Named after the dome architect who would have loved it."},
  {id:"c_prima", body:"prima", n:"Prima Materia", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#34D399", custom:"chem", bio:"The first matter of every alchemist's dream: fire, water, earth and air in one glowing orb. Roughly 1 in 2,000 eggs."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}};
+const MKT = [
+ {id:"m_cart", body:"cart", n:"Cart Carl", u:4, r:"common", p:6.5, c1:"#60A5FA", c2:"#E0F2FE", custom:"mkt", bio:"Rolls through every aisle and fills up fast. A shopper's basket is the last stop before a purchase decision."},
+ {id:"m_tag", body:"tag", n:"Penny the Price Tag", u:8, r:"common", p:6.5, c1:"#FDBA74", c2:"#FFF7ED", custom:"mkt", bio:"Reads one number and says a lot. Price signals value, covers costs and shapes demand."},
+ {id:"m_coupon", body:"coupon", n:"Clip the Coupon", u:10, r:"common", p:6, c1:"#F472B6", c2:"#FCE7F3", custom:"mkt", bio:"A short-term sales promotion that nudges you to try something. It expires, so act fast."},
+ {id:"m_mega", body:"mega", n:"Mega the Megaphone", u:10, r:"common", p:6, c1:"#FB923C", c2:"#FFEDD5", custom:"mkt", bio:"Pure advertising: paid, nonpersonal and loud. Each wave of sound is a message reaching the audience."},
+ {id:"m_barcode", body:"barcode", n:"Scan the UPC", u:9, r:"common", p:6, c1:"#334155", c2:"#F8FAFC", custom:"mkt", bio:"Beeps at checkout so stores can track inventory and sales without counting by hand."},
+ {id:"m_bag", body:"bag", n:"Bagsy the Shopper", u:9, r:"common", p:6, c1:"#34D399", c2:"#D1FAE5", custom:"mkt", bio:"Retailers sell mostly to final consumers. Bagsy is proof that the sale actually happened."},
+ {id:"m_billboard", body:"billboard", n:"Billy the Billboard", u:10, r:"common", p:6, c1:"#A78BFA", c2:"#EDE9FE", custom:"mkt", bio:"Reaches a mass audience at a low cost per exposure, but cannot say much in a few words."},
+ {id:"m_clip", body:"clip", n:"Poll the Clipboard", u:3, r:"common", p:6, c1:"#FBBF24", c2:"#FFFBEB", custom:"mkt", bio:"Collects primary data one survey at a time. A good sample matters more than a big one."},
+ {id:"m_funnel", body:"funnel", n:"Funnel Fran", u:10, r:"uncommon", p:4, c1:"#8B5CF6", c2:"#EDE9FE", custom:"mkt", bio:"Many people become aware, fewer get interested and only a few buy. Each stage sheds some of the crowd."},
+ {id:"m_stamp", body:"stamp", n:"Approve the Stamp", u:7, r:"uncommon", p:4, c1:"#F87171", c2:"#FEE2E2", custom:"mkt", bio:"Test marketing and screening decide which products get the stamp. Most new ideas never make it."},
+ {id:"m_pie", body:"pie", n:"Share the Pie", u:2, r:"uncommon", p:4, c1:"#60A5FA", c2:"#FDE68A", custom:"mkt", bio:"Market share is your slice of total sales in the market. Grow the slice by winning customers from rivals."},
+ {id:"m_truck", body:"truck", n:"Logi the Truck", u:9, r:"uncommon", p:4, c1:"#F59E0B", c2:"#FEF3C7", custom:"mkt", bio:"Moves goods to where buyers are. Place utility is the value of having the product nearby."},
+ {id:"m_magnet", body:"magnet", n:"Maggie the Magnet", u:5, r:"uncommon", p:4, c1:"#EF4444", c2:"#F1F5F9", custom:"mkt", bio:"Attracts a target market by matching its needs. The right segment comes to the right offer."},
+ {id:"m_stars", body:"stars", n:"Star Rating", u:4, r:"uncommon", p:4, c1:"#FBBF24", c2:"#FEF9C3", custom:"mkt", bio:"Word of mouth is the most trusted promotion. Five happy stars are worth more than a big ad."},
+ {id:"m_mailbox", body:"mailbox", n:"Dmail the Mailbox", u:10, r:"uncommon", p:4, c1:"#3B82F6", c2:"#DBEAFE", custom:"mkt", bio:"Direct marketing sends the message straight to the buyer and measures the response."},
+ {id:"m_target", body:"target", n:"Bullseye the Target Market", u:5, r:"rare", p:3, c1:"#EF4444", c2:"#FEE2E2", custom:"mkt", bio:"Aims at a segment that is big enough, reachable and a good fit. Aim broadly and you hit no one."},
+ {id:"m_compass", body:"compass", n:"Position the Compass", u:5, r:"rare", p:3, c1:"#0EA5E9", c2:"#E0F2FE", custom:"mkt", bio:"Points to where a brand sits in buyers' minds compared with its competitors."},
+ {id:"m_register", body:"register", n:"Cha-Ching the Register", u:8, r:"rare", p:3, c1:"#10B981", c2:"#FEF3C7", custom:"mkt", bio:"Revenue equals price times quantity. The drawer opens only when price and demand agree."},
+ {id:"m_phone", body:"phone", n:"Ping the Smartphone", u:10, r:"rare", p:2.5, c1:"#6366F1", c2:"#E0E7FF", custom:"mkt", bio:"E-commerce and mobile marketing reach buyers anywhere, with personalized messages on demand."},
+ {id:"m_shelf", body:"shelf", n:"Shelf Life", u:9, r:"rare", p:2.5, c1:"#92400E", c2:"#FDE68A", custom:"mkt", bio:"Retail shelf space is scarce. Intensive distribution fights for every shelf it can reach."},
+ {id:"m_bulb", body:"bulb", n:"Lumen the Big Idea", u:7, r:"epic", p:2, c1:"#FACC15", c2:"#FEF9C3", custom:"mkt", bio:"Every new product starts as an idea. Only the ideas that survive screening and testing ever shine."},
+ {id:"m_handshake", body:"handshake", n:"Deal and Dale", u:6, r:"epic", p:2, c1:"#F97316", c2:"#38BDF8", custom:"mkt", bio:"Business buyers value long-term relationships. A handshake starts a contract worth years of orders."},
+ {id:"m_globe", body:"globe", n:"Glo the Global Market", u:1, r:"epic", p:2, c1:"#38BDF8", c2:"#BBF7D0", custom:"mkt", bio:"Marketing crosses borders. Culture, laws and currencies all change how a message lands."},
+ {id:"m_brandgold", body:"brandgold", n:"Aurum the Golden Brand", u:7, r:"legendary", p:1.1, c1:"#FBBF24", c2:"#FEF3C7", custom:"mkt", bio:"Brand equity is the extra value a famous name adds. People pay more just for the logo."},
+ {id:"m_trophy", body:"trophy", n:"Champion the Market Leader", u:2, r:"legendary", p:0.9, c1:"#FBBF24", c2:"#FDE68A", custom:"mkt", bio:"Wins the largest share and sets the pace. Everyone else benchmarks against it."},
+ {id:"m_unicorn", body:"unicorn", n:"Uni the Unicorn Startup", u:2, r:"mythical", p:0.6, c1:"#F5D0FE", c2:"#C084FC", custom:"mkt", bio:"A rare startup that finds product-market fit, scales fast and reaches a billion-dollar valuation."},
+ {id:"m_rocket", body:"rocket", n:"Rocket Growth", u:10, r:"mythical", p:0.5, c1:"#F43F5E", c2:"#F8FAFC", custom:"mkt", bio:"A viral campaign takes off when customers share it with each other. Lift-off needs a big launch and good fuel."},
+ {id:"m_phoenix", body:"phoenix", n:"Rebrand the Phoenix", u:7, r:"mythical", p:0.35, c1:"#F97316", c2:"#FDE68A", custom:"mkt", bio:"A fading brand burns down its old image, rebrands and rises again."},
+ {id:"m_mixmaster", body:"mixmaster", n:"Mix Master Prime", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#F472B6", custom:"mkt", bio:"Product, price, place and promotion in perfect balance. Roughly 1 in 2,000 eggs."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -471,6 +502,7 @@ const CUSTOM = {
       ${face(60, 26, 13)}</g>`; },
   bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
   chem: (p, stage, mood) => window.CS_CHEMART[p.body](p, stage, mood),
+  mkt: (p, stage, mood) => window.CS_MKTART[p.body](p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
       <ellipse cx="${x}" cy="${y}" rx="${r*1.15}" ry="${r}" fill="${p.c1}" stroke="#7F1D1D" stroke-width="1.5"/>

@@ -7,8 +7,8 @@ export async function onRequestPost({request, env}) {
   const blocked = guard(request, env); if (blocked) return blocked;
   let body; try { body = await request.json(); } catch { return json({error: "Bad JSON."}, 400); }
   const c = body.ctx || {};
-  const subj = ({micro:"Microeconomics", bio:"Biology", chem:"Chemistry"})[body.course] || "Macroeconomics";
-  const exam = body.exam === "clep" ? `CLEP Principles of ${subj}` : `AP ${subj}`;
+  const subj = ({micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing"})[body.course] || "Macroeconomics";
+  const exam = body.exam === "clep" ? (["Biology", "Chemistry"].includes(subj) ? `CLEP ${subj}` : `CLEP Principles of ${subj}`) : `AP ${subj}`;
   const system = `You are Credit Sprint's ${subj.toLowerCase()} tutor for a student preparing for the ${exam} exam.
 The student just answered this practice question:
 Question: ${clip(c.q, 600)}

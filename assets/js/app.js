@@ -47,7 +47,8 @@ CS.chrome = () => {
     <span class="chip-stat hide-sm" title="Today's goal: ${today}/${s.goal} XP">${ring(today/s.goal)}${today}/${s.goal}</span>
     <span class="chip-stat hide-sm" title="Level ${lv.lv}: ${lv.into}/${lv.need} XP to next">${I("bolt")}Lv ${lv.lv}</span>`;
   if (CS.upgradeSide && $("#side-up")) $("#side-up").innerHTML = CS.upgradeSide();
-  $$(".examseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.exam === s.exam));
+  $$(".examseg button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.exam === s.exam); if (CS.C.clepOnly && b.dataset.exam === "ap") b.hidden = true; });
+  if (CS.C.clepOnly) $$(".examseg").forEach(e => { e.style.gridTemplateColumns = "1fr"; });
   $$(".themeseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === s.theme));
   const dte = daysToExam();
   $("#exam-when").innerHTML = `${dte>=0?`<b>${dte}</b> days to go`:"Exam date passed"} · ${new Date(s.plan.date+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"})}${!s.dateSet?` <span class="tag warn">assumed</span>`:""}`;
@@ -82,7 +83,7 @@ function onboarding(){
         <div class="opt-grid course-opts">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><b>${esc(c.name)}</b><span class="muted small">${esc(c.blurb)}</span>${CS_STATLINE(c.k)?`<span class="ob-stat">${esc(CS_STATLINE(c.k, true))}</span>`:""}</button>`).join("")}</div>
         <span class="muted tiny">You can add other courses any time. Your streak, XP and pets carry over.</span></div>
       <div class="stack"><span class="eyebrow">Which exam are you taking?</span>
-        <div class="opt-grid"><button data-ex="ap" aria-pressed="${ex==="ap"}"><b>${esc(CS.C.ap)}</b><span class="muted small">${esc(CS.C.apFmt||"")}</span></button>
+        <div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${ex==="ap"}"><b>${esc(CS.C.ap)}</b><span class="muted small">${esc(CS.C.apFmt||"")}</span></button>`}
         <button data-ex="clep" aria-pressed="${ex==="clep"}"><b>${esc(CS.C.clepShort)}</b><span class="muted small">${esc(CS.C.clepFmt||"")}</span></button></div></div>
       <div class="stack"><label class="eyebrow" for="ob-date">Exam date</label>
         <input type="date" id="ob-date" value="${esc(date)}" style="max-width:220px">
@@ -103,7 +104,7 @@ function settings(){
   function draw(){
     m.innerHTML = `<div class="spread"><h2>Settings</h2><button class="btn ghost sm" id="st-x">Done</button></div>
       <div class="stack"><span class="eyebrow">Course</span><div class="opt-grid">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}"><b>${esc(c.name)}</b></button>`).join("")}</div></div>
-      <div class="stack"><span class="eyebrow">Exam</span><div class="opt-grid"><button data-ex="ap" aria-pressed="${s.exam==="ap"}"><b>${esc(CS.C.ap)}</b></button><button data-ex="clep" aria-pressed="${s.exam==="clep"}"><b>${esc(CS.C.clepShort)}</b></button></div></div>
+      <div class="stack"><span class="eyebrow">Exam</span><div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${s.exam==="ap"}"><b>${esc(CS.C.ap)}</b></button>`}<button data-ex="clep" aria-pressed="${s.exam==="clep"}"><b>${esc(CS.C.clepShort)}</b></button></div></div>
       <div class="stack"><label class="eyebrow" for="st-date">Exam date</label><input type="date" id="st-date" value="${esc(s.plan.date)}" style="max-width:220px"></div>
       <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n])=>`<button data-goal="${v}" aria-pressed="${s.goal===v}"><b>${n} · ${v} XP</b></button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Appearance</span><div class="seg three" style="max-width:320px">${[["light","sun","Light"],["dark","moon","Dark"],["system","auto","System"]].map(([k,ic,n])=>`<button data-th="${k}" aria-pressed="${s.theme===k}">${I(ic)}${n}</button>`).join("")}</div></div>
@@ -239,7 +240,7 @@ render.learn = (o) => {
   if (learnUnit === "res") return renderRes();
   const u = CS.UNITS[learnUnit-1], m = CS.mastery(u.id);
   $("#learn-body").innerHTML = `
-    <div class="row-wrap"><span class="tag acc">AP® ${u.ap}</span><span class="tag">CLEP® ${u.clep}</span><span class="tag">Your mastery ${CS.pct(m)}</span></div>
+    <div class="row-wrap">${CS.C.clepOnly ? "" : `<span class="tag acc">AP® ${u.ap}</span>`}<span class="${CS.C.clepOnly ? "tag acc" : "tag"}">CLEP® ${u.clep}</span><span class="tag">Your mastery ${CS.pct(m)}</span></div>
     <h2>Unit ${u.id}: ${esc(u.name)}</h2>
     <div class="guide">
       <div class="stack" style="gap:18px">
@@ -351,7 +352,7 @@ render.practice = (o) => {
   if (exam && !exam.done) return renderExam();
   const v = $("#v-practice"), nm = Object.keys(S().mistakes).length, ex = EXAMS[S().exam];
   v.innerHTML = `
-    <div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(examName())}</span><h1>Practice</h1><p class="muted">${CS.QS.length} original multiple-choice questions, ${CS.SHIFTS.length} graph scenarios and unlimited calculation drills.</p>${CS.hasAccess()?"":`<span class="tag" style="align-self:flex-start">${CS.roundsLeft()} of ${CS.FREE_ROUNDS} free quizzes left today · <button class="linklike" data-up="open">unlimited with a plan</button></span>`}</div>
+    <div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(examName())}</span><h1>Practice</h1><p class="muted">${CS.QS.length} original multiple-choice questions, ${CS.SHIFTS.length ? `${CS.SHIFTS.length} graph scenarios and ` : ""}unlimited calculation drills.</p>${CS.hasAccess()?"":`<span class="tag" style="align-self:flex-start">${CS.roundsLeft()} of ${CS.FREE_ROUNDS} free quizzes left today · <button class="linklike" data-up="open">unlimited with a plan</button></span>`}</div>
       <button class="btn ghost" data-go="practice" data-mode="diagnostic">${I("target")}${S().diag?"Retake diagnostic":"Take the diagnostic"}</button></div>
     <div class="modes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${MODES.map(m=>`<button class="mode" aria-pressed="${pMode===m.k}" data-m="${m.k}"><span class="m-ico">${I(m.ic)}</span>${m.pro?CS.proTag():""}<span class="eyebrow">${m.k==="mistakes"?`${CS.mistakesDue().length} due · ${nm} saved`:m.e}</span><h3>${m.n}</h3><span class="muted small">${m.k==="exam"?`${ex.full.n} questions in ${ex.full.min} minutes, like the real ${examShort()} exam.`:m.d}</span></button>`).join("")}</div>
     <div id="p-body" class="stack" style="gap:16px"></div>`;
@@ -391,7 +392,7 @@ render.practice = (o) => {
     const past = S().exams.filter(e=>e.exam===S().exam).slice(-5).reverse();
     body.innerHTML = `<div class="panel">
       <h3>${esc(examName())} practice exam</h3>
-      <p class="muted" style="max-width:70ch">${S().exam==="ap" ? "The real exam has 60 multiple-choice questions in 70 minutes (about two-thirds of your score), then 3 free-response questions in 60 minutes. Practice FRQs in the Free response tab." : "The real exam has about 80 multiple-choice questions in 90 minutes. Many colleges award credit for a score of 50. There's no free-response section."} Questions are drawn in proportion to the official unit weights. No feedback until you submit.</p>
+      <p class="muted" style="max-width:70ch">${S().exam==="ap" ? "The real exam has 60 multiple-choice questions in 70 minutes (about two-thirds of your score), then 3 free-response questions in 60 minutes. Practice FRQs in the Free response tab." : `The real exam has ${CS.C.clepOnly ? "about 100" : "about 80"} multiple-choice questions in 90 minutes. Many colleges award credit for a score of 50. There's no free-response section.`} Questions are drawn in proportion to the official unit weights. No feedback until you submit.</p>
       <div class="row-wrap"><button class="btn" id="ex-full">${CS.hasAccess()?"":I("lock")}Start full exam · ${ex.full.n} Q · ${ex.full.min} min</button><button class="btn ghost" id="ex-mini">Mini exam · ${ex.mini.n} Q · ${ex.mini.min} min</button></div>
       ${past.length?`<div class="stack" style="gap:6px"><span class="eyebrow">Recent attempts</span>${past.map(e=>`<div class="spread small"><span>${new Date(e.at).toLocaleDateString()} · ${e.n} questions</span><span><b>${e.score}/${e.n}</b> · ${Math.round(e.score/e.n*100)}%</span></div>`).join("")}</div>`:""}
     </div>`;
@@ -693,7 +694,7 @@ render.plan = () => {
   const s = S(), v = $("#v-plan"), days = daysToExam();
   v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Built from your results</span><h1>Study plan</h1></div></div>
     <div class="panel"><div class="plan-form">
-      <div class="field"><label for="plan-exam">Exam</label><select id="plan-exam"><option value="ap">${esc(CS.C.ap)}</option><option value="clep">${esc(CS.C.clep)}</option></select></div>
+      <div class="field"><label for="plan-exam">Exam</label><select id="plan-exam">${CS.C.clepOnly ? "" : `<option value="ap">${esc(CS.C.ap)}</option>`}<option value="clep">${esc(CS.C.clep)}</option></select></div>
       <div class="field"><label for="plan-date">Exam date</label><input type="date" id="plan-date" value="${esc(s.plan.date)}"></div>
       <div class="field"><label for="plan-goal">Daily goal</label><select id="plan-goal">${GOALS.map(([g,n])=>`<option value="${g}">${n} · ${g} XP</option>`).join("")}</select></div>
       <button class="btn ghost sm" data-go="practice" data-mode="diagnostic">${s.diag?"Retake diagnostic":"Take the diagnostic"}</button></div>
@@ -758,7 +759,7 @@ function renderCram(days){
 /* ---------- courses: switcher + dashboard bar ---------- */
 function courseLine(sm){
   const c = window.CS_COURSES[sm.k], ex = sm.exam === "clep" ? "CLEP®" : "AP®";
-  if (!sm.started) return `${ex} or CLEP® · not started`;
+  if (!sm.started) return c.clepOnly ? "CLEP® · not started" : `${ex} or CLEP® · not started`;
   return `${ex} · ${sm.answered} answered${sm.avg!=null?` · ${CS.pct(sm.avg)} avg mastery`:""}${sm.days!=null&&sm.days>=0?` · ${sm.days} days to go`:""}`;
 }
 CS.coursesBar = () => {

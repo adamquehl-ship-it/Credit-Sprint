@@ -831,3 +831,14 @@ footer a{display:inline-block;padding:7px 4px}
 .why-bars{display:grid;gap:8px}
 .why-row{display:grid;grid-template-columns:minmax(120px,170px) 1fr 2.2em;align-items:center;gap:10px}
 @media (max-width:520px){.why-row{grid-template-columns:100px 1fr 2em}}
+:root[data-subject="mkt"]:not([data-accent]){--hero1:#DB2777;--hero2:#9D174D}
+:root[data-subject="mkt"]{--subject:#DB2777}
+
+/* marketing games */
+.mx-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mx-btns .btn.big{padding:16px 10px;font-size:1rem}
+.pm-wrap{display:grid;gap:6px;max-width:460px;margin:12px 0}.pm-yl,.pm-xl{font-size:.8rem;font-weight:700;color:var(--muted);text-align:center}
+.pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pm-q{min-height:84px;border:2px solid var(--rule);border-radius:14px;background:var(--surface);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.78rem;font-weight:700;cursor:pointer;padding:8px}
+.pm-q span:first-child{opacity:.8}.pm-q:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+.pm-q.right{border-color:var(--good);background:var(--good-bg);color:var(--ink)}.pm-q.wrong{border-color:var(--bad,#DC2626);background:var(--bad-bg,#FEE2E2);color:var(--ink)}
+@media (max-width:480px){.mx-btns .btn.big{padding:14px 6px;font-size:.92rem}}

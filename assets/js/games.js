@@ -19,6 +19,8 @@ const GAMES = [
   ...(CS.COURSE==="bio" ? [{k:"sorter", n:"Cell Sorter", ic:"cards", d:"60 seconds. Sort each fact into the right bucket: prokaryote or eukaryote, mitosis or meiosis, DNA or RNA and more.", best:()=>S().best.sorter!=null?`Best: ${S().best.sorter} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="chem" ? [{k:"periodic", n:"Periodic Hunt", ic:"flask", d:"Clues lead you to an element. Tap it on the periodic table: groups, valence electrons, trends and atomic numbers.", best:()=>S().best.periodic!=null?`Best: ${S().best.periodic}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="mkt" ? [{k:"mix", n:"Mix Master", ic:"cards", d:"60 seconds. Sort each marketing move into the right P: Product, Price, Place or Promotion. A mistake costs 3 seconds.", best:()=>S().best.mix!=null?`Best: ${S().best.mix} sorted`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="mkt" ? [{k:"position", n:"Perceptual Map", ic:"chart", d:"Read the brand description, then tap the quadrant of the perceptual map where it sits. Positioning, fast.", best:()=>S().best.position!=null?`Best: ${S().best.position}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
@@ -47,7 +49,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -805,6 +807,91 @@ function periodic(area){
     area.innerHTML = `<span class="eyebrow">Periodic Hunt · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"Mendeleev would be proud.":"Rows are periods (shells) and columns are groups (valence electrons). Use both to locate any element."}</p>
       <div class="row-wrap"><button class="btn" id="pt-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="1">Review Unit 1</button></div>`;
     $("#pt-again").onclick = () => { i = 0; right = 0; round(); };
+  }
+}
+
+/* ---------- Mix Master (Marketing): sort each move into Product, Price, Place or Promotion ---------- */
+const MIX = [
+ ["Redesigning the package so it is easier to open",0],["Adding a two-year warranty",0],["Launching a new flavor",0],["Changing the brand name and logo",0],["Adding a longer battery to the next model",0],["Offering free installation and support",0],["Building a line of travel-size versions",0],["Dropping a weak product from the line",0],["Improving quality control on the factory floor",0],["Adding a recyclable, eco-friendly material",0],["Creating a premium version for top-end buyers",0],["Putting nutrition facts on the label",0],
+ ["Cutting the price by 20% to gain market share",1],["Offering a 2/10, net 30 cash discount",1],["Launching with a high skimming price",1],["Pricing at $9.99 instead of $10",1],["Bundling three items for one lower price",1],["Giving a quantity discount on orders over 1,000",1],["Raising the price to signal prestige",1],["Offering a rebate after purchase",1],["Setting a student discount",1],["Using penetration pricing for a new snack",1],["Matching a competitor's lower price",1],["Charging a low price for the razor and more for blades",1],
+ ["Selling through a network of independent dealers",2],["Opening a store in the mall",2],["Shipping direct to buyers from the website",2],["Choosing intensive distribution for a candy bar",2],["Using rail to move bulk goods to a warehouse",2],["Adding a regional distribution center to cut delivery time",2],["Selecting only a few upscale department stores",2],["Setting up a franchise system",2],["Stocking shelves so the product never sells out",2],["Delivering by drone to nearby customers",2],["Negotiating shelf space with a supermarket",2],["Selling through an app and in stores",2],
+ ["Running a Super Bowl commercial",3],["Handing out free samples at the mall",3],["Sponsoring a local youth soccer team",3],["Sending a coupon in the mail",3],["Training the sales team to present to buyers",3],["Paying an influencer to post about the product",3],["Sending a press release to the news media",3],["Running a sweepstakes",3],["Buying search ads for the brand",3],["Building an email newsletter for customers",3],["Placing the brand in a hit movie",3],["Putting up a billboard on the highway",3]
+];
+function mix(area){
+  const NAMES = ["Product", "Price", "Place", "Promotion"];
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. Each move belongs to one of the four Ps. Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="mx-go">Start</button></div>`;
+  $("#mx-go").onclick = start;
+  function start(){ items = CS.shuffle(MIX.slice()); show(); timer = setInterval(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(MIX.slice());
+    const it = items[0];
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Sorted <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div>
+      <div class="mx-btns">${NAMES.map((n, i) => `<button class="btn big" data-b="${i}">${i+1} · ${n}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { const ok = b === it[1]; CS.record({u:2}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: "${it[0]}" is a ${NAMES[it[1]]} decision.`; } };
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key)) choose(+e.key - 1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("mix", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Mix Master · results</span><div class="result-big">${score}</div><p class="muted">moves sorted, ${miss} missed${nb?" · new personal best":""}. ${score>=25?"Your marketing mix is perfectly balanced.":"Ask what the move changes: the offer (product), what it costs (price), where it is sold (place), or how it is communicated (promotion)."}</p>
+      <div class="row-wrap"><button class="btn" id="mx-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="2">Review Unit 2</button></div>`;
+    $("#mx-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+
+/* ---------- Perceptual Map (Marketing): tap the quadrant where the brand sits ---------- */
+/* each: [x axis low, x axis high, y axis low, y axis high, description, x (0 low, 1 high), y (0 low, 1 high), why] */
+const MAPS = [
+ ["Low price","High price","Low quality","High quality","A luxury watch brand sold at very high prices with exceptional craftsmanship.",1,1,"High on both price and quality."],
+ ["Low price","High price","Low quality","High quality","A discount store brand with basic goods at the lowest prices.",0,0,"Low price and basic quality."],
+ ["Low price","High price","Low quality","High quality","A premium brand that charges a lot but is known for average, ordinary quality.",1,0,"High price but low quality is overpriced."],
+ ["Low price","High price","Low quality","High quality","A value brand that offers excellent quality at a low price.",0,1,"Low price with high quality is a strong value position."],
+ ["Traditional","Modern","Affordable","Expensive","A trendy tech startup selling pricey, cutting-edge gadgets.",1,1,"Modern and expensive."],
+ ["Traditional","Modern","Affordable","Expensive","A classic family diner with an old-fashioned menu and low prices.",0,0,"Traditional and affordable."],
+ ["Traditional","Modern","Affordable","Expensive","A heritage luxury house known for timeless, costly products.",0,1,"Traditional but expensive."],
+ ["Traditional","Modern","Affordable","Expensive","A new budget app that looks sleek and costs very little.",1,0,"Modern and affordable."],
+ ["Slow service","Fast service","Basic menu","Wide menu","A drive-thru chain serving a huge menu in under two minutes.",1,1,"Fast service and wide menu."],
+ ["Slow service","Fast service","Basic menu","Wide menu","A sit-down restaurant with a long menu and leisurely service.",0,1,"Slow but wide."],
+ ["Slow service","Fast service","Basic menu","Wide menu","A food truck serving three items quickly.",1,0,"Fast but a basic menu."],
+ ["Slow service","Fast service","Basic menu","Wide menu","A small cafe with a short menu where each coffee is made slowly by hand.",0,0,"Slow and basic."],
+ ["Casual","Formal","Low price","High price","A tuxedo rental shop with premium prices for formal events.",1,1,"Formal and high priced."],
+ ["Casual","Formal","Low price","High price","A thrift store selling cheap jeans and t-shirts.",0,0,"Casual and low priced."],
+ ["Casual","Formal","Low price","High price","A designer streetwear brand selling expensive hoodies.",0,1,"Casual but high priced."],
+ ["Casual","Formal","Low price","High price","An office-wear chain selling affordable dress shirts.",1,0,"Formal but low priced."],
+ ["Mass market","Niche","Mainstream","Innovative","A specialty brand selling cutting-edge gear for a small group of climbers.",1,1,"Niche and innovative."],
+ ["Mass market","Niche","Mainstream","Innovative","A household-name soda sold everywhere with a classic recipe.",0,0,"Mass market and mainstream."],
+ ["Mass market","Niche","Mainstream","Innovative","A popular phone maker that launches breakthrough features for millions of buyers.",0,1,"Mass market but innovative."],
+ ["Mass market","Niche","Mainstream","Innovative","A small shop selling traditional hand-made pottery to collectors.",1,0,"Niche but mainstream style."],
+ ["Healthy","Indulgent","Low price","High price","A premium chocolate that is rich, decadent and expensive.",1,1,"Indulgent and high priced."],
+ ["Healthy","Indulgent","Low price","High price","A budget salad bar offering light, low-priced meals.",0,0,"Healthy and low priced."],
+ ["Healthy","Indulgent","Low price","High price","An organic juice bar selling nutritious drinks at a high price.",0,1,"Healthy and high priced."],
+ ["Healthy","Indulgent","Low price","High price","A dollar menu with fried, sugary treats.",1,0,"Indulgent and low priced."]
+];
+function position(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  area.innerHTML = `<p style="max-width:62ch">Each round describes a brand and shows a two-axis perceptual map. Tap the quadrant where the brand sits. Eight maps per game.</p><div><button class="btn accent" id="pm-go">Start · ${ROUNDS} maps</button></div>`;
+  $("#pm-go").onclick = () => { pool = CS.shuffle(MAPS.slice()); round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const m = pool[i], lab = (x, y) => `${x === 1 ? m[1] : m[0]} and ${y === 1 ? m[3] : m[2]}`.toLowerCase();
+    const cell = (x, y) => `<button class="pm-q" data-x="${x}" data-y="${y}" aria-label="${esc(lab(x, y))}"><span>${esc(x === 1 ? m[1] : m[0])}</span><span>${esc(y === 1 ? m[3] : m[2])}</span></button>`;
+    area.innerHTML = `<div class="hud"><span>Map <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><p class="qtext">${esc(m[4])}</p>
+      <div class="pm-wrap"><div class="pm-yl">${esc(m[3])} ↑</div><div class="pm-grid">${cell(0,1)}${cell(1,1)}${cell(0,0)}${cell(1,0)}</div><div class="pm-xl">← ${esc(m[0])} · ${esc(m[1])} →</div><div class="pm-yl">↓ ${esc(m[2])}</div></div><div id="pm-fb"></div>`;
+    let done = false;
+    $$(".pm-q", area).forEach(b => b.onclick = () => { if (done) return; done = true; const ok = +b.dataset.x === m[5] && +b.dataset.y === m[6]; CS.record({u:5}, ok, false); if (ok) right++;
+      $$(".pm-q", area).forEach(q => { q.disabled = true; if (+q.dataset.x === m[5] && +q.dataset.y === m[6]) q.classList.add("right"); else if (q === b) q.classList.add("wrong"); });
+      $("#pm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":`It sits in the ${esc(lab(m[5], m[6]))} quadrant.`}</b> ${esc(m[7])}</div><div style="margin-top:10px"><button class="btn" id="pm-next">${i+1<ROUNDS?"Next map":"See results"}</button></div>`;
+      $("#pm-next").onclick = () => { i++; round(); }; $("#pm-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#pm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("position", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Perceptual Map · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You can see exactly where every brand sits in buyers' minds.":"A perceptual map plots how buyers see brands on two attributes. Find each axis first, then place the brand."}</p>
+      <div class="row-wrap"><button class="btn" id="pm-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="5">Review Unit 5</button></div>`;
+    $("#pm-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(MAPS.slice()); round(); };
   }
 }
 })();

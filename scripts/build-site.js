@@ -10,6 +10,7 @@ const W = load("assets/data", ["questions.js","questions2.js","questions3.js","q
 const WM = load("assets/data/micro", ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"]);
 const WC = load("assets/data/chem", ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"]);
 const WB = load("assets/data/bio", ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"]);
+const WK = load("assets/data/mkt", ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","drills.js"]);
 const UNITS = W.CS_UNITS, Q = W.CS_QUESTIONS_RAW, FIFTH = W.CS_FIFTH;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const slug = s => s.toLowerCase().replace(/®/g,"").replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
@@ -66,29 +67,30 @@ const out = (rel, html) => { const p = path.join(ROOT, rel); fs.mkdirSync(path.d
 const urls = [];
 
 /* ---------- landing ---------- */
-const nQ = Q.length + WM.CS_QUESTIONS_RAW.length + WB.CS_QUESTIONS_RAW.length + WC.CS_QUESTIONS_RAW.length, nF = W.CS_FRQS.length + WM.CS_FRQS.length + WB.CS_FRQS.length + WC.CS_FRQS.length, nC = W.CS_CARDS_RAW.length + WM.CS_CARDS_RAW.length + WB.CS_CARDS_RAW.length + WC.CS_CARDS_RAW.length;
+const nQ = Q.length + WM.CS_QUESTIONS_RAW.length + WB.CS_QUESTIONS_RAW.length + WC.CS_QUESTIONS_RAW.length + WK.CS_QUESTIONS_RAW.length, nF = W.CS_FRQS.length + WM.CS_FRQS.length + WB.CS_FRQS.length + WC.CS_FRQS.length + WK.CS_FRQS.length, nC = W.CS_CARDS_RAW.length + WM.CS_CARDS_RAW.length + WB.CS_CARDS_RAW.length + WC.CS_CARDS_RAW.length + WK.CS_CARDS_RAW.length;
 const COURSES = [
   {k:"macro", name:"Macroeconomics", col:"#4F46E5", soft:"#EEF2FF", ic:"bank", q:Q.length, f:W.CS_FRQS.length, c:W.CS_CARDS_RAW.length, units:UNITS.map(u=>u.short), blurb:"GDP, inflation, money and banking, fiscal and monetary policy, international trade.", games:"Fed Chair, Shift It, Chain Reaction"},
   {k:"micro", name:"Microeconomics", col:"#059669", soft:"#ECFDF5", ic:"chart", q:WM.CS_QUESTIONS_RAW.length, f:WM.CS_FRQS.length, c:WM.CS_CARDS_RAW.length, units:WM.CS_UNITS.map(u=>u.short), blurb:"Supply and demand, elasticity, costs, perfect competition, monopoly, game theory, labor markets, externalities.", games:"Profit Max, Nash Hunt, Shift It"},
   {k:"bio", name:"Biology", col:"#0891B2", soft:"#ECFEFF", ic:"dna", q:WB.CS_QUESTIONS_RAW.length, f:WB.CS_FRQS.length, c:WB.CS_CARDS_RAW.length, units:WB.CS_UNITS.map(u=>u.short), blurb:"Biochemistry, cells, energy, the cell cycle, genetics, gene expression, evolution and ecology, plus CLEP® organismal biology.", games:"Cross It, Chain Reaction, Number Crunch"},
   {k:"chem", name:"Chemistry", col:"#EA580C", soft:"#FFF7ED", ic:"flask", q:WC.CS_QUESTIONS_RAW.length, f:WC.CS_FRQS.length, c:WC.CS_CARDS_RAW.length, units:WC.CS_UNITS.map(u=>u.short), blurb:"Atomic structure, bonding, intermolecular forces, reactions, kinetics, thermodynamics, equilibrium, acids and bases, electrochemistry.", games:"Balance It, Chain Reaction, Number Crunch"},
+  {k:"mkt", name:"Marketing", col:"#DB2777", soft:"#FDF2F8", ic:"target", clepOnly:true, q:WK.CS_QUESTIONS_RAW.length, f:WK.CS_FRQS.length, c:WK.CS_CARDS_RAW.length, units:WK.CS_UNITS.map(u=>u.short), blurb:"Marketing and society, the marketing concept, research, consumer behavior, segmentation and positioning, B2B, products and brands, pricing, distribution, promotion and e-commerce.", games:"Mix Master, Perceptual Map, Number Crunch"},
 ];
 const courseCard = c => `<a class="ccard" href="app.html?course=${c.k}" style="--cc:${c.col};--cs:${c.soft}">
-  <span class="ccard-top"><span class="ccard-ico">${ic(c.ic,26)}</span><span class="stack" style="gap:2px"><b>${c.name}</b><span class="muted small">AP® and CLEP®</span></span></span>
+  <span class="ccard-top"><span class="ccard-ico">${ic(c.ic,26)}</span><span class="stack" style="gap:2px"><b>${c.name}</b><span class="muted small">${c.clepOnly?"CLEP® exam":"AP® and CLEP®"}</span></span></span>
   <span class="small">${c.blurb}</span>
   <span class="ccard-stats"><span><b>${c.q}</b> questions</span><span><b>${c.f}</b> FRQs</span><span><b>${c.c}</b> flashcards</span></span>
   <span class="ccard-go">Start ${c.name.replace("economics","")} free ${ic("arrow",18)}</span></a>`;
-const GAMES = [["star","Daily Challenge"],["sword","Boss Battle"],["chart","Shift It"],["bolt","Sprint"],["link","Chain Reaction"],["tf","True or False"],["calc","Number Crunch"],["cards","Match-up"],["bank","Fed Chair · Macro"],["calc","Profit Max · Micro"],["sword","Nash Hunt · Micro"],["dna","Cross It · Biology"],["flask","Balance It · Chemistry"],["paw","Pet collecting"]];
+const GAMES = [["star","Daily Challenge"],["sword","Boss Battle"],["chart","Shift It"],["bolt","Sprint"],["link","Chain Reaction"],["tf","True or False"],["calc","Number Crunch"],["cards","Match-up"],["bank","Fed Chair · Macro"],["calc","Profit Max · Micro"],["sword","Nash Hunt · Micro"],["dna","Cross It · Biology"],["flask","Balance It · Chemistry"],["cards","Mix Master · Marketing"],["chart","Perceptual Map · Marketing"],["paw","Pet collecting"]];
 const check = ic("check",18);
 const lock = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 out("index.html", page({
-  title:"Credit Sprint · Study for AP® & CLEP® Macroeconomics, Microeconomics, Biology and Chemistry", canon:"/",
-  desc:`Earn college credit in macroeconomics, microeconomics, biology and chemistry. ${nQ} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
+  title:"Credit Sprint · Study for AP® & CLEP® Macroeconomics, Microeconomics, Biology, Chemistry and Marketing", canon:"/",
+  desc:`Earn college credit in macroeconomics, microeconomics, biology, chemistry and marketing. ${nQ} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
   ld:{"@context":"https://schema.org","@type":"WebSite","name":"Credit Sprint","url":SITE},
   body:`<main>
 <section class="wrap hero2" id="courses">
   <div class="stack" style="gap:20px">
-    <div class="pillrow"><span class="pill">AP® Macroeconomics</span><span class="pill">AP® Microeconomics</span><span class="pill">AP® Biology</span><span class="pill">AP® Chemistry</span><span class="pill">CLEP® Macro</span><span class="pill">CLEP® Micro</span><span class="pill">CLEP® Biology</span></div>
+    <div class="pillrow"><span class="pill">AP® Macroeconomics</span><span class="pill">AP® Microeconomics</span><span class="pill">AP® Biology</span><span class="pill">AP® Chemistry</span><span class="pill">CLEP® Macro</span><span class="pill">CLEP® Micro</span><span class="pill">CLEP® Biology</span><span class="pill">CLEP® Marketing</span></div>
     <h1>Earn the credit. <em>Skip the intro course.</em></h1>
     <p class="lead">Credit Sprint turns studying into a daily habit: a 10-minute diagnostic, a plan built around your weakest units, ${nQ} practice questions that explain every answer, and games that make the hard parts stick.</p>
     <div class="stack" style="gap:10px"><span class="eyebrow">Choose your course</span>
@@ -105,14 +107,14 @@ out("index.html", page({
   </div>
 </section>
 <section class="wrap" style="padding-bottom:56px"><div class="statrow">
-  <div><b>${nQ}</b><span>practice questions</span></div><div><b>${nF}</b><span>free-response prompts</span></div><div><b>${nC}</b><span>flashcards</span></div><div><b>11</b><span>study games</span></div><div><b>58</b><span>pets to collect</span></div>
+  <div><b>${nQ}</b><span>practice questions</span></div><div><b>${nF}</b><span>free-response prompts</span></div><div><b>${nC}</b><span>flashcards</span></div><div><b>19</b><span>study games</span></div><div><b>145</b><span>pets to collect</span></div>
 </div></section>
 <section class="sec alt"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Two courses, four exams</span><h2>Four ways to earn college credit</h2><p>AP® and CLEP® cover the same core material in each course. Study once and you're ready for both. If May doesn't go your way, CLEP® is a second shot.</p></div>
+  <div class="sec-head"><span class="eyebrow">Five courses, nine exams</span><h2>Nine ways to earn college credit</h2><p>AP® and CLEP® cover the same core material in each course. Study once and you're ready for both. If May doesn't go your way, CLEP® is a second shot. Marketing is a CLEP® exam only.</p></div>
   <div class="two">
     ${COURSES.map(c=>`<div class="examcard" style="border-top:4px solid ${c.col}"><span class="row-wrap" style="gap:10px"><span class="ccard-ico" style="--cc:${c.col}">${ic(c.ic,22)}</span><h3>${c.name}</h3></span>
       <p class="muted small">${c.blurb}</p>
-      <ul><li><b>AP®:</b> 60 multiple-choice questions in 70 minutes, then 3 free-response questions</li><li><b>CLEP®:</b> about 80 multiple-choice questions in 90 minutes; a 50 earns credit at many colleges</li><li><b>Units:</b> ${c.units.join(" · ")}</li><li><b>Signature games:</b> ${c.games}</li></ul>
+      <ul>${c.clepOnly?"":`<li><b>AP®:</b> 60 multiple-choice questions in 70 minutes, then 3 free-response questions</li>`}<li><b>CLEP®:</b> about 80 multiple-choice questions in 90 minutes; a 50 earns credit at many colleges</li><li><b>Units:</b> ${c.units.join(" · ")}</li><li><b>Signature games:</b> ${c.games}</li></ul>
       <a class="btn" href="app.html?course=${c.k}" style="align-self:flex-start;background:${c.col}">Study ${c.name}</a></div>`).join("")}
   </div>
 </div></section>
@@ -134,7 +136,7 @@ out("index.html", page({
 <section class="sec" id="how"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">How it works</span><h2>Ten minutes a day to exam-ready</h2></div>
   <div class="steps">
-    <div><h3>Pick a course</h3><p>Macro, Micro, Biology, Chemistry or all four. Take a quick diagnostic and see your weak units right away.</p></div>
+    <div><h3>Pick a course</h3><p>Macro, Micro, Biology, Chemistry, Marketing or all five. Take a quick diagnostic and see your weak units right away.</p></div>
     <div><h3>Plan</h3><p>Set your exam date. Get a week-by-week plan or a 30-day sprint.</p></div>
     <div><h3>Practice daily</h3><p>Walk the quest map with your pet, climb the 2-week season pass and race your weekly league.</p></div>
     <div><h3>Prove it</h3><p>Beat all six unit bosses and ace a practice exam. Then go earn the credit.</p></div>
@@ -349,12 +351,61 @@ out("guides/clep-chemistry-exam-guide.html", page({depth:1, canon:"/guides/clep-
 ${CC2.guide.map(sec=>`<h2>${esc(sec.h)}</h2><ul>${sec.p.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`).join("")}
 <p class="muted small">Sources: ${CC2.sources.map(([n,u])=>`<a href="${esc(u)}">${esc(n)}</a>`).join(" · ")}. Policies change; confirm details on the official CLEP® site.</p></article>
 <aside><div class="panel"><h3>Get CLEP®-ready</h3><p class="muted small">About 75 questions in 90 minutes. Practice with a full-length timed exam in the Chemistry app.</p><a class="btn" href="../app.html?course=chem">Start studying</a></div></aside></main>`}));
+
+/* ---------- Marketing guide pages (CLEP only) ---------- */
+const KQ = WK.CS_QUESTIONS_RAW, KU = WK.CS_UNITS;
+const kqsFor = u => KQ.map((q,i)=>({q,i,F:null})).filter(x=>x.q[0]===u);
+const kGuideLinks = [];
+KU.forEach(u => {
+  const file = `guides/marketing-unit-${u.id}-${slug(u.name)}.html`; kGuideLinks.push({file, u});
+  const sample = kqsFor(u.id).filter((_,k)=>k%6===0).slice(0,5), cards = WK.CS_CARDS_RAW.filter(c=>c[0]===u.id);
+  const fig = WK.CS_FIGS && WK.CS_FIGS[u.graph] ? WK.CS_FIGS[u.graph](0) : "";
+  out(file, page({depth:1, canon:"/"+file,
+    title:`Marketing Unit ${u.id}: ${u.name} Study Guide (CLEP® Principles of Marketing) | Credit Sprint`,
+    desc:`Free study guide for marketing Unit ${u.id}, ${u.name}: key concepts, formulas, exam traps and practice questions with explanations for the CLEP Principles of Marketing exam.`,
+    ld:{"@context":"https://schema.org","@type":"LearningResource","name":`Marketing Unit ${u.id}: ${u.name}`,"educationalLevel":"High school / introductory college","provider":{"@type":"Organization","name":"Credit Sprint","url":SITE}},
+    body:`<main class="wrap doc"><article>
+<p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Study guides</a> / Marketing Unit ${u.id}</p>
+<h1>Credit Sprint's Guide to Marketing Unit ${u.id}: ${esc(u.name)}</h1>
+<div class="row-wrap"><span class="tag good">CLEP® weight ${u.clep}</span></div>
+<p style="font-size:1.08rem">${esc(u.summary)}</p>
+${fig ? `<div class="figure" style="max-width:460px">${fig}</div>` : ""}
+<h2>What you need to know</h2><ul>${u.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+${u.formulas.length ? `<h2>Formulas and rules</h2>${u.formulas.map(f=>`<div class="formula">${esc(f)}</div>`).join("")}` : ""}
+<h2>Exam traps</h2>${u.traps.map(t=>`<div class="trap"><b>Watch for</b>${esc(t)}</div>`).join("")}
+<h2>Key terms</h2><ul>${cards.map(c=>`<li><b>${esc(c[1])}:</b> ${esc(c[2])}</li>`).join("")}</ul>
+<h2>Practice questions</h2><p class="muted">Five of the ${kqsFor(u.id).length} Unit ${u.id} questions in Credit Sprint. Every choice is explained in the app.</p>
+${sample.map((x,k)=>qBlock(x,k+1)).join("")}
+</article>
+<aside><div class="panel"><h3>Practice Marketing Unit ${u.id} free</h3><p class="muted small">${kqsFor(u.id).length} questions, flashcards, a boss battle and a study plan built around your weak spots.</p><a class="btn" href="../app.html?course=mkt">Start studying</a></div>
+<div class="panel flat"><span class="eyebrow">All Marketing units</span>${KU.map(v=>`<a href="marketing-unit-${v.id}-${slug(v.name)}.html" style="${v.id===u.id?"font-weight:800;color:var(--ink)":""}">Unit ${v.id}: ${esc(v.short)}</a>`).join("")}</div></aside></main>`}));
+});
+const KC = WK.CS_CLEP;
+out("guides/clep-marketing-ethics-global-online.html", page({depth:1, canon:"/guides/clep-marketing-ethics-global-online.html",
+  title:"Ethics, Global and Online Marketing Study Guide (CLEP® Principles of Marketing) | Credit Sprint",
+  desc:"Free study guide to ethics, social responsibility, global marketing and online marketing for the CLEP Principles of Marketing exam, with practice questions.",
+  body:`<main class="wrap doc"><article><p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Study guides</a> / Ethics, global and online marketing</p>
+<h1>Credit Sprint's Guide to Ethics, Global and Online Marketing for CLEP® Marketing</h1><span class="tag good" style="align-self:flex-start">${esc(KC.growth.weight)}</span>
+<p style="font-size:1.08rem">${esc(KC.growth.summary)}</p><h2>What you need to know</h2><ul>${KC.growth.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+<h2>Practice questions</h2>${KQ.map((q,i)=>({q,i,F:null})).filter(x=>KC.growth.match.test(x.q[1]+" "+x.q[2][0])).slice(0,6).map((x,k)=>qBlock(x,k+1)).join("")}</article>
+<aside><div class="panel"><h3>Practice ethics, global and online marketing</h3><p class="muted small">Open the CLEP® hub in the Marketing app for the full set.</p><a class="btn" href="../app.html?course=mkt">Start studying</a></div></aside></main>`}));
+out("guides/clep-marketing-exam-guide.html", page({depth:1, canon:"/guides/clep-marketing-exam-guide.html",
+  title:"CLEP® Principles of Marketing Exam Guide: Format, Scores, Credit, Retakes | Credit Sprint",
+  desc:"How the CLEP Principles of Marketing exam works: about 100 questions in 90 minutes, the main content areas, the passing score, credit, at-home testing and the retake policy.",
+  body:`<main class="wrap doc"><article><p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Study guides</a> / CLEP® Marketing exam guide</p>
+<h1>Credit Sprint's Guide to the CLEP® Principles of Marketing Exam</h1>
+${KC.guide.map(sec=>`<h2>${esc(sec.h)}</h2><ul>${sec.p.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`).join("")}
+<p class="muted small">Sources: ${KC.sources.map(([n,u])=>`<a href="${esc(u)}">${esc(n)}</a>`).join(" · ")}. Policies change; confirm details on the official CLEP® site.</p></article>
+<aside><div class="panel"><h3>Get CLEP®-ready</h3><p class="muted small">About 100 questions in 90 minutes. Practice with a full-length timed exam in the Marketing app.</p><a class="btn" href="../app.html?course=mkt">Start studying</a></div></aside></main>`}));
 /* guides hub */
 out("guides/index.html", page({depth:1, canon:"/guides/index.html",
-  title:"Macroeconomics, Microeconomics, Biology and Chemistry Study Guides for AP® and CLEP® | Credit Sprint",
-  desc:"Free unit-by-unit macroeconomics, microeconomics, biology and chemistry study guides with key ideas, formulas, exam traps and practice questions.",
+  title:"Macroeconomics, Microeconomics, Biology, Chemistry and Marketing Study Guides for AP® and CLEP® | Credit Sprint",
+  desc:"Free unit-by-unit macroeconomics, microeconomics, biology, chemistry and marketing study guides with key ideas, formulas, exam traps and practice questions.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Study guides</p>
-<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for macroeconomics, microeconomics, biology and chemistry.</p>
+<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for macroeconomics, microeconomics, biology, chemistry and marketing.</p>
+<h2>Marketing</h2>
+<div class="linkgrid">${kGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>Unit ${u.id}: ${esc(u.name)}</b><span>CLEP® ${u.clep}</span></a>`).join("")}
+<a href="clep-marketing-ethics-global-online.html"><b>Ethics, Global and Online Marketing</b><span>CLEP® about 10–20%</span></a><a href="clep-marketing-exam-guide.html"><b>CLEP® Marketing exam guide</b><span>Format, scores, retakes</span></a></div>
 <h2>Chemistry</h2>
 <div class="linkgrid">${cGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>Unit ${u.id}: ${esc(u.name)}</b><span>AP® ${u.ap} · CLEP® ${u.clep}</span></a>`).join("")}
 <a href="clep-chemistry-descriptive-chemistry.html"><b>Descriptive and Experimental Chemistry</b><span>CLEP® about 23%</span></a><a href="clep-chemistry-exam-guide.html"><b>CLEP® Chemistry exam guide</b><span>Format, scores, retakes</span></a></div>
@@ -426,11 +477,27 @@ CPRACTICE.forEach(([k,name]) => {
 ${probs.map((c,i)=>`<div class="q"><b>Problem ${i+1}.</b><p>${esc(c.q)}</p><details><summary>Show solution</summary><p>${esc(c.work)}</p></details></div>`).join("")}</article>
 <aside><div class="panel"><h3>Unlimited ${esc(name.toLowerCase())} problems</h3><p class="muted small">Fresh numbers every time, instant feedback, and a timed Number Crunch game.</p><a class="btn" href="../app.html?course=chem">Practice in the app</a></div></aside></main>`}));
 });
+
+const KPRACTICE = [["markupcost","Selling price from a markup"],["markupsp","Markup percent on selling price"],["markupon","Markup percent on cost"],["breakevenu","Break-even quantity"],["breakevend","Break-even sales dollars"],["profit","Profit at a given volume"],["elastic","Price elasticity of demand"],["revchange","Revenue after a price change"],["share","Market share"],["relshare","Relative market share"],["cpm","Cost per thousand (CPM)"],["ctr","Click-through rate"],["conv","Conversion rate"],["cash","Cash discount"],["turn","Inventory turnover"],["clv","Customer lifetime value"],["margin","Gross margin percent"]];
+const kpLinks = [];
+KPRACTICE.forEach(([k,name]) => {
+  const d = WK.CS_DRILLS.find(x=>x.k===k); if (!d) return;
+  const file = `practice/marketing-${slug(name)}-practice-problems.html`; kpLinks.push({file,name,u:d.u});
+  const probs = Array.from({length:6}, () => d.gen());
+  out(file, page({depth:1, canon:"/"+file,
+    title:`${name} Practice Problems with Solutions (CLEP® Marketing) | Credit Sprint`,
+    desc:`Six worked ${name.toLowerCase()} practice problems for CLEP Principles of Marketing, with step-by-step solutions. Unlimited new problems in the Credit Sprint app.`,
+    body:`<main class="wrap doc"><article><p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Practice problems</a> / ${esc(name)}</p>
+<h1>${esc(name)} practice problems</h1><p class="muted">Marketing Unit ${d.u}. Try each one, then open the worked solution. The Credit Sprint app generates unlimited new versions with fresh numbers.</p>
+${probs.map((c,i)=>`<div class="q"><b>Problem ${i+1}.</b><p>${esc(c.q)}</p><details><summary>Show solution</summary><p>${esc(c.work)}</p></details></div>`).join("")}</article>
+<aside><div class="panel"><h3>Unlimited ${esc(name.toLowerCase())} problems</h3><p class="muted small">Fresh numbers every time, instant feedback, and a timed Number Crunch game.</p><a class="btn" href="../app.html?course=mkt">Practice in the app</a></div></aside></main>`}));
+});
 out("practice/index.html", page({depth:1, canon:"/practice/index.html",
-  title:"Economics, Biology and Chemistry Practice Problems with Worked Solutions | Credit Sprint",
+  title:"Economics, Biology, Chemistry and Marketing Practice Problems with Worked Solutions | Credit Sprint",
   desc:"Free worked practice problems for Hardy-Weinberg, chi-square, water potential, elasticity, costs, profit, multipliers, money creation, inflation, real GDP and more.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Practice problems</p>
-<h1>Practice problems</h1><p class="muted" style="max-width:60ch">Worked calculation problems for every formula on the AP® and CLEP® macro, micro, biology and chemistry exams.</p>
+<h1>Practice problems</h1><p class="muted" style="max-width:60ch">Worked calculation problems for every formula on the AP® and CLEP® macro, micro, biology, chemistry and marketing exams.</p>
+<h2>Marketing</h2><div class="linkgrid">${kpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Marketing Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
 <h2>Chemistry</h2><div class="linkgrid">${cpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Chemistry Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
 <h2>Biology</h2><div class="linkgrid">${bpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Biology Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
 <h2>Microeconomics</h2><div class="linkgrid">${mpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Micro Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
@@ -498,7 +565,7 @@ urls.push("/app.html");
 fs.writeFileSync(path.join(ROOT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 /* question counts for the app's course cards, course picker, onboarding and sign-up (other courses' data isn't loaded in the app) */
 const stat = w => ({q:w.CS_QUESTIONS_RAW.length, f:w.CS_FRQS.length, c:w.CS_CARDS_RAW.length, u:w.CS_UNITS.length});
-fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. */\nwindow.CS_COURSE_STATS = ${JSON.stringify({macro:stat(W), micro:stat(WM), bio:stat(WB), chem:stat(WC)})};\n`);
+fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. */\nwindow.CS_COURSE_STATS = ${JSON.stringify({macro:stat(W), micro:stat(WM), bio:stat(WB), chem:stat(WC), mkt:stat(WK)})};\n`);
 fs.writeFileSync(path.join(ROOT,"robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
 /* stamp the same version into app.html's CSS and script links */
 const appPath = path.join(ROOT, "app.html");
