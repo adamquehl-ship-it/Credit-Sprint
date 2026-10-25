@@ -87,7 +87,7 @@ const raw = window.CS_HISTART;
 Object.keys(raw).forEach(k => { const fn = raw[k];
   raw[k] = (p, st, m) => {
     const h = H(p.id || k), rk = RANK[p.r] || 0, id = "w" + (h % 99999) + "s" + st;
-    const pose = h % 4, motion = (h >> 3) % 4, halo = (h >> 5) % 4;
+    const pose = h % 4, motion = (h >>> 3) % 4, halo = (h >>> 5) % 4;
     const hb = `<g stroke="#1F2430" stroke-opacity=".55" stroke-width="2.2"><circle cx="@X" cy="@Y" r="6.5" fill="${p.c2}"/></g>`;
     const arm = (x1, y1, x2, y2) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#1F2430" stroke-opacity=".55" stroke-width="10" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="${p.c1}" stroke-width="6.4" stroke-linecap="round"/>` + hb.replace("@X", x2).replace("@Y", y2);
     const arms = st < 2 ? "" : [

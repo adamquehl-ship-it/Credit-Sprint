@@ -404,7 +404,8 @@ CS.petSVG = (pid, opt={}) => {
      teen = props appear, horns/wings/manes come in small, plus sneakers and a scarf;
      adult = full-size horns, wings and props, arms and feet, eyebrows, a chest gem, and a cape for epic+ */
   const X = new Set(p.extra||[]), ink = "#1F2430";
-  let c1 = p.c1, c2 = p.c2;
+  const PS = window.CS_PETSTYLE, hh = PS ? PS.H(p.id) : 0;
+  let c1 = PS ? PS.vivid(p.c1, 1.35) : p.c1, c2 = PS ? PS.vivid(p.c2, 1.25) : p.c2;
   if (stage === 1) { c1 = mixHex(c1, "#FFFFFF", .28); c2 = mixHex(c2, "#FFFFFF", .25); BABY_DROP.forEach(k => X.delete(k)); if (!X.has("stalkeyes") && !X.has("hand")) X.add("bigeyes"); }
   if (stage === 2) TEEN_DROP.forEach(k => X.delete(k));
   const G = (s, cx = 60, cy = 40, k = .6) => stage === 2 ? `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>` : s;
@@ -440,11 +441,22 @@ CS.petSVG = (pid, opt={}) => {
     body = `<path d="M34 104 C26 84 28 64 34 56 L34 34 C34 28 42 28 42 34 L42 50 L44 24 C44 18 52 18 52 24 L52 48 L56 20 C56 14 64 14 64 20 L64 48 L68 26 C68 20 76 20 76 26 L76 58 L84 46 C88 40 96 44 92 52 L82 74 C78 88 74 98 70 104Z" fill="${c1}"${trans} stroke="#F59E0B" stroke-width="2"/>`;
   } else {
     const tall = X.has("longneck") ? 0 : 0;
-    const bx = (X.has("puffer")?40:34) + (stage===3?2:stage===1?-1:0), by = (X.has("longneck")?28:34) + (stage===3?2:stage===1?-3:1);
+    const shp = (X.has("puffer")||X.has("longneck")||X.has("shell")) ? 0 : hh % 5, bx = (X.has("puffer")?40:34) + [0,4,-3,2,-1][shp] + (stage===3?2:stage===1?-1:0), by = (X.has("longneck")?28:34) + [0,-4,3,-2,2][shp] + (stage===3?2:stage===1?-3:1);
     body = `<ellipse cx="60" cy="${(X.has("longneck")?78:72+tall) + (stage===1?3:0)}" rx="${bx}" ry="${by}" fill="${c1}"${trans} stroke="${ink}" stroke-opacity=".12" stroke-width="2"/>
       <ellipse cx="60" cy="${X.has("longneck")?86:82}" rx="22" ry="${X.has("longneck")?18:20}" fill="${c2}"${trans}/>`;
   }
   if (X.has("longneck")) body = `<circle cx="60" cy="30" r="16" fill="${c1}"/>` + body;
+  if (!X.has("hand") && !X.has("patches") && !X.has("mask") && !X.has("wave")) {
+    const shp2 = (X.has("puffer")||X.has("longneck")||X.has("shell")) ? 0 : hh % 5, bx = (X.has("puffer")?40:34) + [0,4,-3,2,-1][shp2] + (stage===3?2:stage===1?-1:0), by = (X.has("longneck")?28:34) + [0,-4,3,-2,2][shp2] + (stage===3?2:stage===1?-3:1), bcy = (X.has("longneck")?78:72) + (stage===1?3:0), cid = "bc" + p.id + stage, pc = ["#fff", dark, "#FDE047", "#fff", dark][(hh>>>4)%5], po = ".32";
+    const pats = [
+      [-22,-8,6,20].map(y=>`<path d="M20 ${bcy+y} Q60 ${bcy+y-12} 100 ${bcy+y}" stroke="${pc}" stroke-width="5" fill="none" opacity="${po}"/>`).join(""),
+      [[44,56,5],[70,60,4],[52,80,4.5],[76,84,5],[60,98,4],[40,86,3.5]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${pc}" opacity="${po}"/>`).join(""),
+      `<path d="M24 ${bcy+8} l9 -9 l9 9 l9 -9 l9 9 l9 -9 l9 9 l9 -9 l9 9 l9 -9" stroke="${pc}" stroke-width="4.5" fill="none" stroke-linejoin="round" opacity="${po}"/>`,
+      [[46,52],[74,56],[40,80],[80,84],[60,100]].map(([x,y])=>`<path d="M${x} ${y-5} l1.8 3.6 4 .6 -2.9 2.8 .7 4 -3.6 -1.9 -3.6 1.9 .7 -4 -2.9 -2.8 4 -.6z" fill="${pc}" opacity=".42"/>`).join(""),
+      `<path d="M30 ${bcy-14} L94 ${bcy+22}" stroke="${pc}" stroke-width="9" opacity="${po}"/><path d="M26 ${bcy-4} L90 ${bcy+32}" stroke="${pc}" stroke-width="3" opacity="${po}"/>`,
+      "", ""][(hh>>>8)%7];
+    body += `<clipPath id="${cid}"><ellipse cx="60" cy="${bcy}" rx="${bx}" ry="${by}"/></clipPath><g clip-path="url(#${cid})">${pats}<ellipse cx="60" cy="${bcy+by}" rx="${bx}" ry="${by*.45}" fill="${dark}" opacity=".22"/><ellipse cx="${46}" cy="${bcy-by*.55}" rx="${bx*.3}" ry="${by*.17}" fill="#fff" opacity=".28" transform="rotate(-25 46 ${bcy-by*.55})"/></g>`;
+  }
   if (stage === 3 && !["hand","claws","flippers","wings","longneck"].some(k=>X.has(k))) body += `<ellipse cx="27" cy="86" rx="6.5" ry="11" fill="${c1}" stroke="${ink}" stroke-opacity=".15" transform="rotate(25 27 86)"/><ellipse cx="93" cy="86" rx="6.5" ry="11" fill="${c1}" stroke="${ink}" stroke-opacity=".15" transform="rotate(-25 93 86)"/>`;
   if (stage === 3 && ["epic","legendary"].includes(p.r) && !X.has("hand")) back = `<path d="M34 62 C18 88 20 108 32 114 L88 114 C100 108 102 88 86 62Z" fill="${CS.RARITY[p.r].col}" opacity=".9"/><path d="M40 66 C30 88 32 104 40 110" stroke="#fff" stroke-width="2" fill="none" opacity=".35"/>` + back;
   if (X.has("patches")) front += `<ellipse cx="47" cy="62" rx="8" ry="10" fill="#222" transform="rotate(-20 47 62)"/><ellipse cx="73" cy="62" rx="8" ry="10" fill="#222" transform="rotate(20 73 62)"/>`;
@@ -530,7 +542,17 @@ CS.petSVG = (pid, opt={}) => {
   if (X.has("flametips")) back += `<path d="M14 24 C6 14 10 4 18 2 C16 10 22 12 20 20Z" fill="#FDE047"/><path d="M106 24 C114 14 110 4 102 2 C104 10 98 12 100 20Z" fill="#FDE047"/><path d="M60 104 C54 116 66 118 60 108" fill="#F97316"/>`;
   const shine = ["epic","legendary"].includes(p.r) && !X.has("hand") ? `<ellipse cx="46" cy="${X.has("longneck")?24:52}" rx="10" ry="6" fill="#fff" opacity=".35" transform="rotate(-25 46 52)"/>` : "";
   const face = X.has("hand") ? `<circle cx="50" cy="70" r="4" fill="${ink}"/><circle cx="66" cy="70" r="4" fill="${ink}"/><path d="M52 80 q6 6 12 0" stroke="${ink}" stroke-width="2.5" fill="none" stroke-linecap="round"/>` : eyes + blush + mouth + tear;
-  return wrapPet(p, size, back+ears+body+front+face+flair+shine, sc, opt.still, stage);
+  const ACC = ["#F43F5E","#3B82F6","#10B981","#A855F7","#F59E0B","#06B6D4"][(hh>>>11)%6];
+  let acc = "";
+  if (stage >= 2 && !X.has("hand") && !X.has("tie") && !X.has("sign") && !X.has("longneck") && !X.has("trunk")) {
+    const a = (hh>>>14)%5;
+    if (a === 0) acc = `<path d="M50 87 l-11 -6 v13 z M70 87 l11 -6 v13 z" fill="${ACC}" stroke="#fff" stroke-width="1.2"/><circle cx="60" cy="87" r="4.2" fill="${ACC}" stroke="#fff" stroke-width="1.2"/>`;
+    else if (a === 1 && !X.has("hardhat") && !X.has("crown")) acc = `<path d="M36 50 Q60 36 84 50" stroke="${ACC}" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="41.5" r="3.4" fill="#FDE047" stroke="#fff" stroke-width="1"/>`;
+    else if (a === 2) acc = `<path d="M40 83 l2.2 4.4 4.8 .7 -3.5 3.4 .8 4.8 -4.3 -2.3 -4.3 2.3 .8 -4.8 -3.5 -3.4 4.8 -.7z" fill="${ACC}" stroke="#fff" stroke-width="1.2" transform="translate(-2 -4)"/>`;
+    else if (a === 3) acc = `<circle cx="40" cy="${eyeY+12}" r="1.5" fill="${ACC}"/><circle cx="44" cy="${eyeY+14}" r="1.5" fill="${ACC}"/><circle cx="80" cy="${eyeY+12}" r="1.5" fill="${ACC}"/><circle cx="76" cy="${eyeY+14}" r="1.5" fill="${ACC}"/>`;
+  }
+  const art = back+ears+body+front+face+acc+flair+shine;
+  return wrapPet(p, size, PS ? PS.wrap(Object.assign({}, p, {c1, c2}), stage, art, false) : art, sc, opt.still, stage);
 };
 
 /* ---------- mythical designs ---------- */
