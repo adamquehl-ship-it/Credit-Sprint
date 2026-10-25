@@ -7,6 +7,7 @@ const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
 const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","drills.js"].map(f => "assets/data/mkt/"+f);
+const APPSYCH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/appsych/"+f);
 const APGOV = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","p16.js","p17.js","p18.js","p19.js","p20.js","p21.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/apgov/"+f);
 const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"].map(f => "assets/data/apworld/"+f);
 const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
@@ -63,6 +64,16 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of civics math: veto overrides, electoral votes, turnout and margins of error. Fresh numbers every time.",
     drillDesc:"Do the civics math: override votes, majorities, electoral votes, turnout and poll ranges. Fresh numbers every time.",
     planGames:["Court Case Match","Branch Check","Amendment Sprint","Source Match","Sprint","True or False"]},
+  appsych:{k:"appsych", name:"Psychology", short:"Psych", ap:"AP\u00AE Psychology", clep:"CLEP\u00AE Introductory Psychology", clepShort:"CLEP\u00AE Intro Psychology",
+    key:"creditsprint.appsych.v1", col:"#7C3AED", soft:"#F5F3FF", apFmt:"75 multiple choice and 2 free-response questions in 2 hours 40 minutes", clepFmt:"About 95 multiple choice in 90 minutes", blurb:"The brain and behavior, memory and thinking, development and learning, social psychology and personality, mental health and treatment: with famous studies and research methods.", icon:"brain", data:APPSYCH, nUnits:5, cat:"Social science",
+    graphs:false, unitWord:"Unit", clepQ:"about 95",
+    apExamText:"The real exam has 75 multiple-choice questions in 90 minutes (66.7% of your score), then 2 free-response questions in 70 minutes (33.3%): an Article Analysis Question and an Evidence-Based Question. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:75, min:90, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:24, name:"Mini exam"}}, clep:{full:{n:95, min:90, name:"Full-length CLEP\u00AE"}, mini:{n:25, min:24, name:"Mini exam"}}},
+    bosses:{1:"The Synapse Specter",2:"The Forgetting Phantom",3:"The Conditioning Colossus",4:"The Bias Beast",5:"The Stress Serpent"},
+    chainDesc:"Put the steps in order: the neuron's signal, a controlled experiment, how memory forms, conditioning and the stages of sleep.",
+    crunchDesc:"Two minutes of psychology math: z-scores, IQ, means, medians and percents. Fresh numbers every time.",
+    drillDesc:"Do the statistics: z-scores, IQ, means, medians, ranges, percents and the normal curve. Fresh numbers every time.",
+    planGames:["Famous Studies Match","Brain Check","Disorder Sort","Bias Spotter","Sprint","True or False"]},
   mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
     key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
     graphs:false, unitWord:"Unit",
@@ -75,7 +86,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

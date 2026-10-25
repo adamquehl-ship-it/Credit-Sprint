@@ -285,14 +285,45 @@ const APGOVP = [
  {id:"g_crowd", body:"crowd", n:"We the People", u:1, r:"mythical", p:0.35, c1:"#0EA5E9", c2:"#FDE68A", custom:"gov", bio:"The Constitution begins with the people, the source of government's power."},
  {id:"g_sage", body:"sage", n:"Professor Civitas", u:0, r:"supreme", p:0.05, c1:"#4C1D95", c2:"#FACC15", custom:"gov", bio:"The wise owl who knows every branch, amendment and landmark case."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}};
+const APPSYP = [
+ {id:"ps_neuron", body:"neuron", n:"Neuron Ned", u:1, r:"common", p:6.5, c1:"#2563EB", c2:"#BFDBFE", custom:"psy", bio:"Neurons fire in an all-or-none action potential and pass messages across the synapse."},
+ {id:"ps_brain", body:"brain", n:"Brainy", u:1, r:"common", p:6, c1:"#EC4899", c2:"#FBCFE8", custom:"psy", bio:"The brain controls thought, emotion and behavior, with different regions handling different jobs."},
+ {id:"ps_dog", body:"dog", n:"Pavlov's Pup", u:3, r:"common", p:6, c1:"#B45309", c2:"#FDE68A", custom:"psy", bio:"Pavlov's dogs learned to salivate at a bell paired with food: classical conditioning."},
+ {id:"ps_pigeon", body:"pigeon", n:"Skinner's Pigeon", u:3, r:"common", p:6, c1:"#64748B", c2:"#E2E8F0", custom:"psy", bio:"Skinner shaped behavior with reinforcement, studying how rewards and schedules change responding."},
+ {id:"ps_bulb", body:"bulb", n:"Insight Bulb", u:2, r:"common", p:6, c1:"#FACC15", c2:"#FEF9C3", custom:"psy", bio:"Insight is the sudden 'aha' that solves a problem after you stop working on it directly."},
+ {id:"ps_rat", body:"rat", n:"Maze Rat Max", u:3, r:"common", p:6, c1:"#A8A29E", c2:"#FDE68A", custom:"psy", bio:"Tolman's rats built cognitive maps of a maze and showed latent learning once a reward appeared."},
+ {id:"ps_moon", body:"moon", n:"Sleepy Moon", u:1, r:"common", p:6, c1:"#6366F1", c2:"#FDE047", custom:"psy", bio:"Sleep runs in 90-minute cycles of NREM stages and REM, when most vivid dreaming happens."},
+ {id:"ps_ring", body:"ring", n:"Mood Ring", u:4, r:"common", p:6, c1:"#8B5CF6", c2:"#5EEAD4", custom:"psy", bio:"Emotions combine bodily arousal, thoughts and expressions; mood rings only change with temperature."},
+ {id:"ps_inkblot", body:"inkblot", n:"Inkblot Izzy", u:4, r:"uncommon", p:4, c1:"#334155", c2:"#A5B4FC", custom:"psy", bio:"Projective tests like the Rorschach ask people to interpret ambiguous inkblots, though validity is debated."},
+ {id:"ps_bobo", body:"bobo", n:"Bobo the Doll", u:3, r:"uncommon", p:4, c1:"#EF4444", c2:"#FDE68A", custom:"psy", bio:"Bandura's Bobo doll study showed that children imitate aggression they watch: observational learning."},
+ {id:"ps_monkey", body:"monkey", n:"Harlow's Monkey", u:3, r:"uncommon", p:4, c1:"#A16207", c2:"#FBCFE8", custom:"psy", bio:"Harlow's monkeys preferred a soft cloth mother to a wire one with food: contact comfort matters."},
+ {id:"ps_cat", body:"cat", n:"Puzzle Box Cat", u:3, r:"uncommon", p:4, c1:"#F97316", c2:"#FDE68A", custom:"psy", bio:"Thorndike's cats learned to escape puzzle boxes by trial and error, leading to the law of effect."},
+ {id:"ps_mirror", body:"mirror", n:"Mirror Mirror", u:3, r:"uncommon", p:4, c1:"#EC4899", c2:"#FDE68A", custom:"psy", bio:"Mirror neurons fire both when you act and when you watch someone else act."},
+ {id:"ps_cloud", body:"cloud", n:"Dream Cloud", u:1, r:"uncommon", p:4, c1:"#818CF8", c2:"#FDE68A", custom:"psy", bio:"Dreams during REM sleep can be vivid, and the body is temporarily paralyzed."},
+ {id:"ps_marshmallow", body:"marshmallow", n:"Marshmallow Test", u:3, r:"uncommon", p:4, c1:"#F9A8D4", c2:"#FDBA74", custom:"psy", bio:"Mischel's marshmallow test studied delay of gratification in preschoolers."},
+ {id:"ps_seahorse", body:"seahorse", n:"Hippo Campus", u:2, r:"rare", p:3, c1:"#14B8A6", c2:"#99F6E4", custom:"psy", bio:"The hippocampus is named for the seahorse and is key to forming new explicit memories."},
+ {id:"ps_almond", body:"almond", n:"Amygdala Al", u:1, r:"rare", p:3, c1:"#B45309", c2:"#FDE68A", custom:"psy", bio:"The amygdala, shaped like an almond, processes fear, aggression and emotional memory."},
+ {id:"ps_elephant", body:"elephant", n:"Memory Elephant", u:2, r:"rare", p:3, c1:"#6366F1", c2:"#C7D2FE", custom:"psy", bio:"Elephants 'never forget,' a nod to the power of long-term memory and the cues that retrieve it."},
+ {id:"ps_blocks", body:"blocks", n:"Piaget's Blocks", u:3, r:"rare", p:3, c1:"#F97316", c2:"#38BDF8", custom:"psy", bio:"Piaget described stages of cognitive development from sensorimotor to formal operational."},
+ {id:"ps_pyramid", body:"pyramid", n:"Maslow's Pyramid", u:4, r:"rare", p:3, c1:"#0EA5E9", c2:"#FDE68A", custom:"psy", bio:"Maslow arranged human needs in a hierarchy from physiological needs to self-actualization."},
+ {id:"ps_couch", body:"couch", n:"Freud's Couch", u:4, r:"epic", p:2, c1:"#7C3AED", c2:"#FBCFE8", custom:"psy", bio:"Psychoanalysis uses free association and dream interpretation to explore unconscious conflicts."},
+ {id:"ps_split", body:"split", n:"Split Brain", u:1, r:"epic", p:2, c1:"#2563EB", c2:"#F43F5E", custom:"psy", bio:"Sperry and Gazzaniga's split-brain patients revealed the different specialties of the hemispheres."},
+ {id:"ps_bell", body:"bell", n:"Bell Belle", u:3, r:"epic", p:2, c1:"#F59E0B", c2:"#FDE68A", custom:"psy", bio:"A bell paired with food becomes a conditioned stimulus that triggers a conditioned response."},
+ {id:"ps_lotus", body:"lotus", n:"Calm Lotus", u:5, r:"legendary", p:1.1, c1:"#EC4899", c2:"#FDE68A", custom:"psy", bio:"Mindfulness and relaxation are used in therapy to lower stress and anxiety."},
+ {id:"ps_synapse", body:"synapse", n:"Synapse Spark", u:1, r:"legendary", p:0.9, c1:"#6366F1", c2:"#14B8A6", custom:"psy", bio:"Neurotransmitters carry messages across the synapse from one neuron to the next."},
+ {id:"ps_butterfly", body:"butterfly", n:"Self-Actualized", u:4, r:"mythical", p:0.6, c1:"#8B5CF6", c2:"#F59E0B", custom:"psy", bio:"Maslow's peak: realizing your full potential and finding meaning."},
+ {id:"ps_galaxy", body:"galaxy", n:"Aurora Mind", u:2, r:"mythical", p:0.5, c1:"#1E1B4B", c2:"#A78BFA", custom:"psy", bio:"Consciousness is awareness of yourself and the world, and one of psychology's deepest questions."},
+ {id:"ps_iceberg", body:"iceberg", n:"Freud's Iceberg", u:4, r:"mythical", p:0.35, c1:"#38BDF8", c2:"#BAE6FD", custom:"psy", bio:"Freud compared the mind to an iceberg, with most of its contents beneath the surface."},
+ {id:"ps_sage", body:"sage", n:"Professor Mentis", u:0, r:"supreme", p:0.05, c1:"#7C3AED", c2:"#FACC15", custom:"psy", bio:"The wise brain who knows every study, disorder and theory in psychology."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -591,7 +622,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -629,6 +660,7 @@ const CUSTOM = {
   chem: (p, stage, mood) => artDraw("CS_CHEMART", p, stage, mood),
   mkt: (p, stage, mood) => artDraw("CS_MKTART", p, stage, mood),
   gov: (p, stage, mood) => artDraw("CS_GOVART", p, stage, mood),
+  psy: (p, stage, mood) => artDraw("CS_PSYART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

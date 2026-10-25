@@ -23,6 +23,11 @@ const GAMES = [
   ...(CS.COURSE==="mkt" ? [{k:"position", n:"Perceptual Map", ic:"chart", d:"Read the brand description, then tap the quadrant of the perceptual map where it sits. Positioning, fast.", best:()=>S().best.position!=null?`Best: ${S().best.position}/8`:"Not played yet", isNew:true}] : []),
   ...((CS.COURSE==="apush"||CS.COURSE==="apworld") ? [{k:"timeline", n:"Timeline Sort", ic:"link", d:"Four events appear out of order. Tap them from earliest to latest. Chronological reasoning is the heart of AP® history.", best:()=>S().best.timeline!=null?`Best: ${S().best.timeline}/8`:"Not played yet", isNew:true}] : []),
   ...((CS.COURSE==="apush"||CS.COURSE==="apworld"||CS.COURSE==="apgov") ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="appsych" ? [
+    {k:"studies", n:"Famous Studies Match", ic:"cards", d:"A classic finding appears. Pick the researcher who found it, from Pavlov to Milgram.", best:()=>S().best.studies!=null?`Best: ${S().best.studies}/8`:"Not played yet", isNew:true},
+    {k:"brainreg", n:"Brain Check", ic:"bolt", d:"60 seconds. A clue describes a brain region or chemical messenger; name it before time runs out.", best:()=>S().best.brainreg!=null?`Best: ${S().best.brainreg} named`:"Not played yet", isNew:true},
+    {k:"dsort", n:"Disorder Sort", ic:"cards", d:"60 seconds. Sort each set of symptoms into the right family of disorders. A mistake costs 3 seconds.", best:()=>S().best.dsort!=null?`Best: ${S().best.dsort} sorted`:"Not played yet", isNew:true},
+    {k:"bias", n:"Bias Spotter", ic:"cards", d:"A short scenario describes a thinking error, social effect or defense mechanism. Name it.", best:()=>S().best.bias!=null?`Best: ${S().best.bias}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="apgov" ? [
     {k:"court", n:"Court Case Match", ic:"cards", d:"A landmark Supreme Court case appears. Pick the ruling that matches it, from Marbury to Dobbs.", best:()=>S().best.court!=null?`Best: ${S().best.court}/8`:"Not played yet", isNew:true},
     {k:"branch", n:"Branch Check", ic:"cards", d:"60 seconds. Sort each power into the legislative, executive or judicial branch. A mistake costs 3 seconds.", best:()=>S().best.branch!=null?`Best: ${S().best.branch} sorted`:"Not played yet", isNew:true},
@@ -55,7 +60,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -136,7 +141,7 @@ function boss(area){
 function chain(area){
   const ROUNDS = 3, set = CS.shuffle(CS.CHAINS).slice(0, ROUNDS);
   let r = 0, perfect = 0, totalMiss = 0;
-  area.innerHTML = `<p style="max-width:62ch">Each round gives you the steps of ${CS.C.cat==="History"?"a chain of events":"a chain reaction"}, scrambled. Tap them in the right order. Every wrong tap is a strike.</p><div><button class="btn lg" id="c-go">Start · ${ROUNDS} chains</button></div>`;
+  area.innerHTML = `<p style="max-width:62ch">Each round gives you the steps of ${CS.C.cat==="History"?"a chain of events":["Government","Social science"].includes(CS.C.cat)?"a process":"a chain reaction"}, scrambled. Tap them in the right order. Every wrong tap is a strike.</p><div><button class="btn lg" id="c-go">Start · ${ROUNDS} chains</button></div>`;
   $("#c-go").onclick = () => round();
   function round(){
     if (r >= ROUNDS) return end();
@@ -1034,6 +1039,105 @@ function amend(area){
     area.innerHTML = `<span class="eyebrow">Amendment Sprint · results</span><div class="result-big">${score}</div><p class="muted">amendments named, ${miss} missed${nb?" · new personal best":""}. ${score>=18?"You know your Constitution.":"Start with the Bill of Rights, then the Reconstruction and voting amendments."}</p>
       <div class="row-wrap"><button class="btn" id="am-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
     $("#am-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+
+/* ---------- Psychology: Famous Studies Match, Brain Check, Disorder Sort, Bias Spotter ---------- */
+function studies(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  const all = () => window.CS_PSY_STUDIES || [];
+  area.innerHTML = `<p style="max-width:62ch">A classic psychology finding appears. Pick the researcher who is known for it. Eight findings per game, from conditioning to conformity.</p><div><button class="btn accent" id="fs-go">Start · ${ROUNDS} findings</button></div>`;
+  $("#fs-go").onclick = () => { pool = CS.shuffle(all().slice()); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], others = CS.shuffle(all().filter(c => c[0] !== q[0])).slice(0,3), opts = CS.shuffle([q].concat(others));
+    area.innerHTML = `<div class="hud"><span>Finding <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote">${esc(q[2])}</blockquote><p class="muted tiny">Which researcher is known for this?</p>
+      <div class="sm-opts">${opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o[0])}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = opts[+b.dataset.o], ok = pick[0] === q[0]; CS.record({u: q[3]}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (opts[+x.dataset.o][0] === q[0]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite."}</b> ${esc(q[0])} (${q[1]}): ${esc(q[2])}${ok?"":` ${esc(pick[0])} is known for a different finding.`}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next finding":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("studies", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Famous Studies Match · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You know your classic studies.":"Link each study to its big idea: conditioning, memory, development, conformity or treatment."}</p>
+      <div class="row-wrap"><button class="btn" id="fs-again">Play again</button><button class="btn ghost" data-go="frq">Try an Article Analysis</button></div>`;
+    $("#fs-again").onclick = () => { pool = CS.shuffle(all().slice()); i = 0; right = 0; round(); };
+  }
+}
+function brainreg(area){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window.CS_PSY_BRAIN || [];
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. A clue describes a brain region, neuron part, sense organ or chemical messenger; pick which one it is. Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="bc-go">Start</button></div>`;
+  $("#bc-go").onclick = start;
+  function start(){ items = CS.shuffle(all().slice()); show(); timer = setInterval(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0], opts = CS.shuffle([it].concat(CS.shuffle(all().filter(a => a[0] !== it[0])).slice(0,3)));
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Correct <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">Which of these ${esc(it[2])}?</div>
+      <div class="mx-btns">${opts.map((o, i) => `<button class="btn big" data-b="${o[0]}">${i+1} · ${esc(o[1])}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = n => { const ok = n === it[0]; CS.record({u: it[3]||1}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: ${it[1]} ${it[2].replace(/^(is|are) /,m=>m)}.`; } };
+    const btns = $$(".mx-btns .btn", area); btns.forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key)) choose(+btns[+e.key - 1].dataset.b); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("brainreg", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Brain Check · results</span><div class="result-big">${score}</div><p class="muted">named, ${miss} missed${nb?" · new personal best":""}. ${score>=18?"You know your neuroscience.":"Start with the lobes, the limbic system and the main neurotransmitters."}</p>
+      <div class="row-wrap"><button class="btn" id="bc-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#bc-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+function dsort(area){
+  const NAMES = ["Anxiety-related", "Mood", "Psychotic or dissociative", "Neurodevelopmental, eating or personality"];
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window.CS_PSY_DIS || [];
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. Each set of symptoms belongs to one family of disorders. Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="ds-go">Start</button></div>`;
+  $("#ds-go").onclick = start;
+  function start(){ items = CS.shuffle(all().slice()); show(); timer = setInterval(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0];
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Sorted <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}.</div>
+      <div class="mx-btns">${NAMES.map((n, i) => `<button class="btn big" data-b="${i}">${i+1} · ${n}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { const ok = b === it[1]; CS.record({u:5}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: those symptoms fit ${it[2]}, which is in the ${NAMES[it[1]].toLowerCase()} group.`; } };
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key)) choose(+e.key - 1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("dsort", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Disorder Sort · results</span><div class="result-big">${score}</div><p class="muted">sorted, ${miss} missed${nb?" · new personal best":""}. ${score>=20?"You can sort the DSM families.":"Anxiety-related disorders center on fear, mood disorders on depression and mania, and psychotic disorders on lost contact with reality."}</p>
+      <div class="row-wrap"><button class="btn" id="ds-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="5">Review Unit 5</button></div>`;
+    $("#ds-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+function bias(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  const all = () => window.CS_PSY_BIAS || [];
+  area.innerHTML = `<p style="max-width:62ch">Each round describes a short everyday scenario. Name the thinking error, social effect or defense mechanism it shows. Eight scenarios per game.</p><div><button class="btn accent" id="bs-go">Start · ${ROUNDS} scenarios</button></div>`;
+  $("#bs-go").onclick = () => { pool = CS.shuffle(all().slice()); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], others = CS.shuffle(all().filter(c => c[1] !== q[1] && c[4] === q[4])).slice(0,3), opts = CS.shuffle([q].concat(others));
+    area.innerHTML = `<div class="hud"><span>Scenario <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote">${esc(q[0])}</blockquote><p class="muted tiny">This best illustrates:</p>
+      <div class="sm-opts">${opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o[1])}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = opts[+b.dataset.o], ok = pick[1] === q[1]; CS.record({u: q[3]}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (opts[+x.dataset.o][1] === q[1]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite: "+esc(q[1])+"."}</b> ${esc(q[2])}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next scenario":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("bias", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Bias Spotter · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"Nothing gets past you.":"Ask whether the scenario is about thinking (heuristics and biases), groups (social effects) or protecting the ego (defense mechanisms)."}</p>
+      <div class="row-wrap"><button class="btn" id="bs-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#bs-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(all().slice()); round(); };
   }
 }
 

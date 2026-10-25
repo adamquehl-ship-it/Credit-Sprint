@@ -458,8 +458,9 @@ function drills(body){
   function finish(ok, val){
     drill.answered = true; drill.n++; if (ok) drill.right++;
     CS.record({u:c.u}, ok); CS.refresh();
-    const unitTxt = c.unit==="%"?"%":c.unit==="¥"?" yen":"";
-    const ansTxt = (c.unit.startsWith("$")?"$":"") + c.ans.toLocaleString() + (c.unit==="$B"?" billion":c.unit==="$M"?" million":unitTxt);
+    const cu = typeof c.unit==="string" ? c.unit : "";
+    const unitTxt = cu==="%"?"%":cu==="¥"?" yen":"";
+    const ansTxt = (cu.startsWith("$")?"$":"") + c.ans.toLocaleString() + (cu==="$B"?" billion":cu==="$M"?" million":unitTxt);
     drills(body);
     $("#dr-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":val==null?"Here's how it works.":`Not quite. You said ${esc(val)}.`}</b> Answer: <b>${esc(ansTxt)}</b>. ${esc(c.work)}</div>
       <div style="margin-top:12px"><button class="btn" id="dr-next">Next problem <span class="kbd" style="color:inherit;border-color:currentColor">Enter</span></button></div>`;

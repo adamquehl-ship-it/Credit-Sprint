@@ -854,3 +854,5 @@ footer a{display:inline-block;padding:7px 4px}
 :root[data-subject="apworld"]{--subject:#0F766E}
 :root[data-subject="apgov"]:not([data-accent]){--hero1:#1E3A8A;--hero2:#172554}
 :root[data-subject="apgov"]{--subject:#1E3A8A}
+:root[data-subject="appsych"]:not([data-accent]){--hero1:#6D28D9;--hero2:#3B0764}
+:root[data-subject="appsych"]{--subject:#7C3AED}
