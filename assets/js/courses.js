@@ -6,7 +6,8 @@ const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
-const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","drills.js"].map(f => "assets/data/mkt/"+f);
+const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/mkt/"+f);
+const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -30,6 +31,16 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of calculations: moles, molarity, gas laws, heat, pH, equilibrium constants and free energy. Type the number.",
     drillDesc:"Moles, molarity, gas laws, calorimetry, pH and electrochemistry: fresh numbers every time.",
     planGames:["Balance It","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]},
+  apush:{k:"apush", name:"U.S. History", short:"US History", ap:"AP® U.S. History", clep:"CLEP® History of the U.S. I and II", clepShort:"CLEP® U.S. History",
+    key:"creditsprint.apush.v1", col:"#B91C1C", soft:"#FEF2F2", apFmt:"55 multiple choice + SAQs, a DBQ and an LEQ in 3 hours 15 minutes", clepFmt:"About 120 multiple choice in 90 minutes (each of the two exams)", blurb:"Contact and colonies, the Revolution, the Constitution, expansion, the Civil War, industrialization, two world wars, the Cold War and modern America.", icon:"flag", data:APUSH, nUnits:9, cat:"History",
+    graphs:false, unitWord:"Period", clepQ:"about 120",
+    apExamText:"The real exam has 55 multiple-choice questions in 55 minutes (40% of your score), then 3 short-answer questions, a document-based question and a long essay in 100 minutes. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:55, min:55, name:"Full-length AP® multiple choice"}, mini:{n:20, min:20, name:"Mini exam"}}, clep:{full:{n:120, min:90, name:"Full-length CLEP®"}, mini:{n:30, min:23, name:"Mini exam"}}},
+    bosses:{1:"The Conquistador",2:"The Plantation Lord",3:"The Redcoat Regiment",4:"The Cotton Baron",5:"The Secession Specter",6:"The Robber Baron",7:"The Doughboy Dragon",8:"The Iron Curtain Guardian",9:"The Gridlock Golem"},
+    chainDesc:"Put the events in order: from colonies to independence, from compromise to civil war, from boom to bust to recovery.",
+    crunchDesc:"Two minutes of timeline recall: which period does each event, person or law belong to? Type the period number, 1 to 9.",
+    drillDesc:"Date the event: name the AP® period (1 to 9) for key events, people and laws. Fresh questions every time.",
+    planGames:["Timeline Sort","Source Match","Sprint","Match-up","Chain Reaction","True or False"]},
   mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
     key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
     graphs:false, unitWord:"Unit",
@@ -42,7 +53,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

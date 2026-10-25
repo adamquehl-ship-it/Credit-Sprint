@@ -192,14 +192,45 @@ const MKT = [
  {id:"m_phoenix", body:"phoenix", n:"Rebrand the Phoenix", u:7, r:"mythical", p:0.35, c1:"#F97316", c2:"#FDE68A", custom:"mkt", bio:"A fading brand burns down its old image, rebrands and rises again."},
  {id:"m_mixmaster", body:"mixmaster", n:"Mix Master Prime", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#F472B6", custom:"mkt", bio:"Product, price, place and promotion in perfect balance. Roughly 1 in 2,000 eggs."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}};
+const APUSHP = [
+ {id:"h_bell", body:"bell", n:"Liberty Belle", u:3, r:"common", p:6.5, c1:"#B45309", c2:"#FDE68A", custom:"hist", bio:"Rang out for independence in 1776. Cracked, but still a symbol of American liberty."},
+ {id:"h_quill", body:"quill", n:"Quill the Pen", u:3, r:"common", p:6, c1:"#64748B", c2:"#E2E8F0", custom:"hist", bio:"Jefferson wrote the Declaration of Independence with one of these in 1776."},
+ {id:"h_tricorn", body:"tricorn", n:"Tri the Tricorn", u:3, r:"common", p:6, c1:"#1E3A8A", c2:"#93C5FD", custom:"hist", bio:"The three-cornered hat of the Revolution. Patriots and Redcoats both wore it."},
+ {id:"h_wagon", body:"wagon", n:"Prairie Schooner", u:4, r:"common", p:6, c1:"#F59E0B", c2:"#FEF3C7", custom:"hist", bio:"Carried pioneers west along the Oregon Trail in the age of Manifest Destiny."},
+ {id:"h_caravel", body:"caravel", n:"Cara the Caravel", u:1, r:"common", p:6, c1:"#92400E", c2:"#FDE68A", custom:"hist", bio:"A small, fast ship that carried European explorers across the Atlantic after 1492."},
+ {id:"h_leaf", body:"leaf", n:"Tobacco Tilly", u:2, r:"common", p:6, c1:"#65A30D", c2:"#ECFCCB", custom:"hist", bio:"Virginia's cash crop. Rolfe's tobacco saved Jamestown and fueled the plantation system."},
+ {id:"h_cotton", body:"cotton", n:"Boll the Cotton", u:4, r:"common", p:6, c1:"#94A3B8", c2:"#F1F5F9", custom:"hist", bio:"King Cotton. After the cotton gin, it drove the spread of slavery across the South."},
+ {id:"h_scroll", body:"scroll", n:"Parch the Declaration", u:3, r:"common", p:6, c1:"#B45309", c2:"#FEF3C7", custom:"hist", bio:"Lists the colonists' grievances and declares that all men are created equal."},
+ {id:"h_cabin", body:"cabin", n:"Frontier Cabin", u:4, r:"uncommon", p:4, c1:"#92400E", c2:"#FDE68A", custom:"hist", bio:"Log cabins gave Americans a symbol of self-reliance on the frontier."},
+ {id:"h_train", body:"train", n:"Locomotive Lou", u:6, r:"uncommon", p:4, c1:"#334155", c2:"#FCA5A5", custom:"hist", bio:"The transcontinental railroad of 1869 tied the nation into one market."},
+ {id:"h_ballot", body:"ballot", n:"Vote the Ballot Box", u:4, r:"uncommon", p:4, c1:"#2563EB", c2:"#DBEAFE", custom:"hist", bio:"Jacksonian democracy expanded the vote to nearly all white men."},
+ {id:"h_radio", body:"radio", n:"Dial the Radio", u:7, r:"uncommon", p:4, c1:"#B45309", c2:"#FDE68A", custom:"hist", bio:"FDR's fireside chats came through radios like this during the Great Depression."},
+ {id:"h_bulb", body:"bulb", n:"Edison's Glow", u:6, r:"uncommon", p:4, c1:"#FACC15", c2:"#FEF9C3", custom:"hist", bio:"The electric light helped drive the Second Industrial Revolution."},
+ {id:"h_cannon", body:"cannon", n:"Fort Sumter Cannon", u:5, r:"uncommon", p:4, c1:"#475569", c2:"#CBD5E1", custom:"hist", bio:"The first shots of the Civil War were fired at Fort Sumter in April 1861."},
+ {id:"h_gavel", body:"gavel", n:"Marshall the Gavel", u:4, r:"uncommon", p:4, c1:"#92400E", c2:"#FDE68A", custom:"hist", bio:"Chief Justice Marshall's Court established judicial review in Marbury v. Madison."},
+ {id:"h_dome", body:"dome", n:"Capitol Cap", u:3, r:"rare", p:3, c1:"#E2E8F0", c2:"#94A3B8", custom:"hist", bio:"Home of Congress, where the Great Compromise shaped the legislative branch."},
+ {id:"h_bison", body:"bison", n:"Buffalo Bill-ion", u:6, r:"rare", p:3, c1:"#78350F", c2:"#D6D3D1", custom:"hist", bio:"Hunted to near extinction in the late 1800s, which ended the Plains way of life."},
+ {id:"h_modelt", body:"modelt", n:"Tin Lizzie", u:7, r:"rare", p:2.5, c1:"#0F172A", c2:"#E2E8F0", custom:"hist", bio:"Henry Ford's Model T put America on wheels with the assembly line."},
+ {id:"h_sputnik", body:"sputnik", n:"Sputnik Spark", u:8, r:"rare", p:2.5, c1:"#94A3B8", c2:"#E0F2FE", custom:"hist", bio:"The Soviet satellite of 1957 sparked the Space Race and the NDEA."},
+ {id:"h_torch", body:"torch", n:"Torch Bearer", u:6, r:"rare", p:3, c1:"#F59E0B", c2:"#FEF3C7", custom:"hist", bio:"Lit the way for millions of immigrants arriving at Ellis Island."},
+ {id:"h_eagle", body:"eagle", n:"Liberty Eagle", u:3, r:"epic", p:2, c1:"#78350F", c2:"#F8FAFC", custom:"hist", bio:"The bald eagle became the national bird and a symbol of the new republic."},
+ {id:"h_topper", body:"topper", n:"Abe's Topper", u:5, r:"epic", p:2, c1:"#111827", c2:"#6B7280", custom:"hist", bio:"Lincoln's stovepipe hat stands for the Union, emancipation and the Gettysburg Address."},
+ {id:"h_atom", body:"atom", n:"Atom Age", u:8, r:"epic", p:2, c1:"#38BDF8", c2:"#E0F2FE", custom:"hist", bio:"The Manhattan Project began the nuclear age and shaped the Cold War."},
+ {id:"h_statue", body:"statue", n:"Lady Liberty", u:6, r:"legendary", p:1.1, c1:"#34D399", c2:"#A7F3D0", custom:"hist", bio:"A gift from France that welcomed millions of immigrants to New York Harbor."},
+ {id:"h_parchment", body:"parchment", n:"The Living Constitution", u:3, r:"legendary", p:0.9, c1:"#FBBF24", c2:"#FEF3C7", custom:"hist", bio:"We the People. The framework of government, adapted by amendments."},
+ {id:"h_moon", body:"moon", n:"Eagle Has Landed", u:8, r:"mythical", p:0.6, c1:"#94A3B8", c2:"#F1F5F9", custom:"hist", bio:"Apollo 11 put Americans on the Moon in 1969, the high point of the Space Race."},
+ {id:"h_flag", body:"flag", n:"Star-Spangled Flag", u:3, r:"mythical", p:0.5, c1:"#DC2626", c2:"#FFFFFF", custom:"hist", bio:"Inspired the national anthem when it survived the bombardment of Fort McHenry."},
+ {id:"h_dove", body:"dove", n:"Peace Dove", u:9, r:"mythical", p:0.35, c1:"#E2E8F0", c2:"#FFFFFF", custom:"hist", bio:"The end of the Cold War promised a new era of peace and cooperation."},
+ {id:"h_hourglass", body:"hourglass", n:"Chrono the Timekeeper", u:0, r:"supreme", p:0.05, c1:"#FDE68A", c2:"#F472B6", custom:"hist", bio:"Keeps every period of American history in order, from 1491 to today."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -503,6 +534,7 @@ const CUSTOM = {
   bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
   chem: (p, stage, mood) => window.CS_CHEMART[p.body](p, stage, mood),
   mkt: (p, stage, mood) => window.CS_MKTART[p.body](p, stage, mood),
+  hist: (p, stage, mood) => window.CS_HISTART[p.body](p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
       <ellipse cx="${x}" cy="${y}" rx="${r*1.15}" ry="${r}" fill="${p.c1}" stroke="#7F1D1D" stroke-width="1.5"/>

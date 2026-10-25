@@ -21,6 +21,8 @@ const GAMES = [
   ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"mix", n:"Mix Master", ic:"cards", d:"60 seconds. Sort each marketing move into the right P: Product, Price, Place or Promotion. A mistake costs 3 seconds.", best:()=>S().best.mix!=null?`Best: ${S().best.mix} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"position", n:"Perceptual Map", ic:"chart", d:"Read the brand description, then tap the quadrant of the perceptual map where it sits. Positioning, fast.", best:()=>S().best.position!=null?`Best: ${S().best.position}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="apush" ? [{k:"timeline", n:"Timeline Sort", ic:"link", d:"Four events appear out of order. Tap them from earliest to latest. Chronological reasoning is the heart of APUSH.", best:()=>S().best.timeline!=null?`Best: ${S().best.timeline}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="apush" ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
@@ -49,7 +51,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -892,6 +894,90 @@ function position(area){
     area.innerHTML = `<span class="eyebrow">Perceptual Map · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You can see exactly where every brand sits in buyers' minds.":"A perceptual map plots how buyers see brands on two attributes. Find each axis first, then place the brand."}</p>
       <div class="row-wrap"><button class="btn" id="pm-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="5">Review Unit 5</button></div>`;
     $("#pm-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(MAPS.slice()); round(); };
+  }
+}
+
+/* ---------- Timeline Sort (U.S. History): tap four events from earliest to latest ---------- */
+function timeline(area){
+  const ROUNDS = 8; let i = 0, right = 0, misses = 0, pool = [], pickedEv = null;
+  const EVS = () => (window.CS_APUSH_EV || []).map(e => ({n: e[0], y: e[1], u: e[2]}));
+  area.innerHTML = `<p style="max-width:62ch">Each round shows four events in a random order. Tap them from the earliest to the latest. A wrong tap costs the round its perfect score. Eight rounds per game.</p><div><button class="btn accent" id="tl-go">Start · ${ROUNDS} rounds</button></div>`;
+  $("#tl-go").onclick = () => { pool = CS.shuffle(EVS()); i = 0; right = 0; round(); };
+  function deal(){
+    for (let tries = 0; tries < 60; tries++) {
+      const four = CS.shuffle(EVS()).slice(0, 4).sort((a, b) => a.y - b.y);
+      if (four.every((e, j) => j === 0 || e.y - four[j-1].y >= 4)) return four;
+    }
+    return CS.shuffle(EVS()).slice(0, 4).sort((a, b) => a.y - b.y);
+  }
+  function round(){
+    if (i >= ROUNDS) return end();
+    const sorted = deal(), show = CS.shuffle(sorted.slice()); let next = 0, missed = false;
+    area.innerHTML = `<div class="hud"><span>Round <b>${i+1}</b>/${ROUNDS}</span><span>Perfect <b>${right}</b></span></div><p class="qtext">Tap the events in order, earliest first.</p>
+      <div class="tl-list">${show.map((e, j) => `<button class="tl-ev" data-j="${j}">${esc(e.n.charAt(0).toUpperCase() + e.n.slice(1))}</button>`).join("")}</div><div id="tl-fb" style="min-height:2.6em" class="tiny muted"></div>`;
+    $$(".tl-ev", area).forEach(b => b.onclick = () => {
+      if (b.disabled) return; const e = show[+b.dataset.j];
+      if (e === sorted[next]) { b.disabled = true; b.classList.add("right"); b.insertAdjacentHTML("beforeend", `<span class="tl-yr">${e.y}</span>`); CS.record({u: e.u}, true, false); next++;
+        if (next === 4) { if (!missed) right++; const f = $("#tl-fb"); f.innerHTML = `<div class="feedback ${missed?"bad":"good"}"><b>${missed?"All four placed, with a slip.":"Perfect order."}</b></div><div style="margin-top:10px"><button class="btn" id="tl-next">${i+1<ROUNDS?"Next round":"See results"}</button></div>`; $("#tl-next").onclick = () => { i++; round(); }; $("#tl-next").focus({preventScroll:true}); } }
+      else { missed = true; misses++; CS.record({u: e.u}, false, false); b.classList.add("wrong"); setTimeout(() => b.classList.remove("wrong"), 500); const f = $("#tl-fb"); if (f && next < 4) f.textContent = "Not the earliest one left. Try again."; }
+    });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("timeline", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Timeline Sort · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You hold the whole timeline in your head.":"Anchor each event to its period first, then order them within it."} ${misses} wrong tap${misses===1?"":"s"}.</p>
+      <div class="row-wrap"><button class="btn" id="tl-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="1">Review the periods</button></div>`;
+    $("#tl-again").onclick = () => { i = 0; right = 0; misses = 0; pool = []; round(); };
+  }
+}
+
+/* ---------- Source Match (U.S. History): which event or movement does this original excerpt come from? ---------- */
+/* each: [excerpt, correct answer, [3 wrong answers], explanation, unit] */
+const SRC = [
+ ["\"We came to this land to build a community that all the world can see, a city on a hill.\"","The Puritan settlement of Massachusetts Bay",["The Virginia Company at Jamestown","The Spanish missions of New Mexico","The Quaker colony of Pennsylvania"],"Winthrop's 'city upon a hill' described the Puritans' hope to model a godly society.",2],
+ ["\"Parliament has no right to tax us when we send no one to speak for us there.\"","Colonial protest of the Stamp Act",["The Whiskey Rebellion","The nullification crisis","The Seneca Falls Convention"],"'No taxation without representation' marked colonial objections to Parliament's taxes after 1765.",3],
+ ["\"The union is too weak. Each state does as it pleases, and Congress cannot even pay its debts.\"","A Federalist argument for a new Constitution",["An Anti-Federalist argument against ratification","A Loyalist argument against independence","A Populist argument for free silver"],"Federalists said the Articles of Confederation left the national government too weak.",3],
+ ["\"The government should not mix its treasure with private banks, which favor the rich over the farmer.\"","Andrew Jackson's fight with the Second Bank",["Hamilton's plan for a national bank","Henry Clay's American System","Carnegie's Gospel of Wealth"],"Jackson attacked the Bank of the United States as a privileged institution.",4],
+ ["\"Our factory girls work from dawn to dusk, and we have decided to leave our looms until our pay is restored.\"","The Lowell mill strikes of the 1830s",["The Pullman Strike","The Triangle Fire protests","The Haymarket Affair"],"Mill women protested wage cuts in the 1830s, in an early women's labor action.",4],
+ ["\"We hold these truths to be self-evident, that all men and women are created equal.\"","The Declaration of Sentiments at Seneca Falls",["The Declaration of Independence","The Gettysburg Address","The Nineteenth Amendment"],"The 1848 declaration rewrote Jefferson's words to include women.",4],
+ ["\"The land is open, the soil is rich, and it is our destiny to spread across the whole continent.\"","Manifest Destiny",["The Monroe Doctrine","The Open Door Policy","Containment"],"Manifest Destiny justified westward expansion in the 1840s.",5],
+ ["\"A house divided against itself cannot stand. This government cannot endure permanently half slave and half free.\"","Lincoln's 1858 speech on slavery",["Calhoun's defense of nullification","John Brown's last speech","Jefferson Davis's inaugural address"],"Lincoln warned that the nation could not stay divided over slavery.",5],
+ ["\"Freedom came, but the land stayed with the planters, and we worked their fields for a share of the crop.\"","Sharecropping in the Reconstruction South",["The Homestead Act","The Dust Bowl migration","The Great Migration"],"Sharecropping tied freedpeople to planters through debt and shares of the crop.",5],
+ ["\"The rich have grown richer by the labor of the poor, and the farmers cry out for relief from the railroads and the banks.\"","The Populist movement of the 1890s",["The Progressive movement","The New Deal","The Civil Rights Movement"],"Populists demanded reforms to help farmers against banks and railroads.",6],
+ ["\"Let us work hard, learn trades, and earn respect, and equality will follow.\"","Booker T. Washington's Atlanta Compromise",["W. E. B. Du Bois's Niagara Movement","Marcus Garvey's Back-to-Africa movement","The Black Power movement"],"Washington urged economic progress over immediate demands for political rights.",6],
+ ["\"The nation that does not extend its markets will fall behind, and our flag must follow our trade.\"","American imperialism in the 1890s",["Isolationism of the 1930s","The Marshall Plan","Washington's Farewell Address"],"Imperialists stressed markets, naval power and national greatness.",7],
+ ["\"The meat was rotten, the workers were sick, and nobody in the government seemed to care.\"","A muckraking exposé of the meatpacking industry",["A report on the Dust Bowl","A critique of the New Deal","A defense of Social Darwinism"],"Muckrakers exposed unsafe food and labor, which led to the Pure Food and Drug Act.",7],
+ ["\"We have nothing to fear but fear itself, and the government will act to put people back to work.\"","Franklin Roosevelt's first inaugural address",["Herbert Hoover's rugged individualism","Woodrow Wilson's war message","Calvin Coolidge's business speech"],"Roosevelt promised action to fight the Great Depression.",7],
+ ["\"Our boys are overseas, and we at home must grow our own food and buy war bonds.\"","The home front in World War II",["The Red Scare","Prohibition enforcement","The Progressive movement"],"The home front involved rationing, victory gardens and war bonds.",7],
+ ["\"If we do not stop them there, one nation after another will fall, like a row of dominoes.\"","The domino theory of the Cold War",["The Roosevelt Corollary","Isolationism","Détente"],"The domino theory justified U.S. involvement in Vietnam.",8],
+ ["\"We shall not be moved. We will sit at the counter until we are served, without raising a hand in anger.\"","The 1960 sit-in movement",["The Black Power movement","The Niagara Movement","The Harlem Renaissance"],"Sit-ins used nonviolent direct action against segregation.",8],
+ ["\"The government must help the poor, the old and the sick, and build a Great Society.\"","Lyndon Johnson's Great Society",["Reagan's New Federalism","Nixon's Southern strategy","Eisenhower's Modern Republicanism"],"Great Society programs expanded Medicare, Medicaid and education aid.",8],
+ ["\"Government is not the solution to our problem; government is the problem.\"","Ronald Reagan's conservative message",["Franklin Roosevelt's New Deal","Lyndon Johnson's Great Society","Theodore Roosevelt's New Nationalism"],"Reagan's 1981 inaugural address expressed distrust of big government.",9],
+ ["\"Tear down this wall.\"","Reagan's call at the Berlin Wall",["Kennedy's speech on Cuba","Truman's speech on the Marshall Plan","Nixon's trip to China"],"Reagan challenged Gorbachev in 1987 at the Brandenburg Gate.",9],
+ ["\"Remember the ladies, and be more generous and favorable to them than your ancestors were.\"","Abigail Adams's letter to John Adams",["Seneca Falls Declaration of Sentiments","Betty Friedan's The Feminine Mystique","Susan B. Anthony's trial speech"],"Abigail Adams asked for women's rights in the new laws of 1776.",3],
+ ["\"Under this agreement, colonists in the West shall stay west of the mountains to avoid conflict with native nations.\"","The Proclamation of 1763",["The Northwest Ordinance","The Louisiana Purchase","The Homestead Act"],"The proclamation limited westward settlement after the French and Indian War.",3],
+ ["\"No European power shall plant new colonies in the Americas, and we shall not meddle in Europe's wars.\"","The Monroe Doctrine",["The Truman Doctrine","The Open Door Policy","The Roosevelt Corollary"],"The 1823 doctrine warned Europe away from new colonization.",4],
+ ["\"The wealthy owe a duty to use their fortunes for the good of the community, such as libraries and schools.\"","Carnegie's Gospel of Wealth",["Social Darwinism","The Populist platform","The Wagner Act"],"Carnegie urged philanthropy by the rich.",6]
+];
+function source(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  area.innerHTML = `<p style="max-width:62ch">Each round shows a short original excerpt written in the style of an exam source. Choose the event, movement or person it comes from. Eight excerpts per game.</p><div><button class="btn accent" id="sm-go">Start · ${ROUNDS} excerpts</button></div>`;
+  $("#sm-go").onclick = () => { pool = CS.shuffle(SRC.slice()); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], opts = CS.shuffle([q[1]].concat(q[2]));
+    area.innerHTML = `<div class="hud"><span>Source <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote">${q[0]}</blockquote><p class="muted tiny">This excerpt comes from or best fits:</p>
+      <div class="sm-opts">${opts.map(o => `<button class="btn ghost sm-o" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const ok = b.dataset.o === q[1]; CS.record({u: q[4]}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (x.dataset.o === q[1]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite: "+esc(q[1])+"."}</b> ${esc(q[3])}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next excerpt":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("source", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Source Match · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You read sources like a historian.":"Look for date clues, audience and purpose before choosing."}</p>
+      <div class="row-wrap"><button class="btn" id="sm-again">Play again</button><button class="btn ghost" data-go="frq">Try a DBQ</button></div>`;
+    $("#sm-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(SRC.slice()); round(); };
   }
 }
 })();
