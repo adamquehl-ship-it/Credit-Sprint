@@ -559,6 +559,16 @@ CS.petSVG = (pid, opt={}) => {
 const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${glow||"#1F2430"}"/><circle cx="${x+1.4}" cy="${y-1.4}" r="${r*.35}" fill="#fff"/>`;
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
+/* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart"};
+const artLoading = {};
+let artTimer = 0;
+CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
+  sc.onload = () => { if (window.CS_PETSTYLE) window.CS_PETSTYLE.apply(g); clearTimeout(artTimer); artTimer = setTimeout(() => { if (CS.view && CS.go && !document.querySelector(".modal-wrap")) CS.go(CS.view(), {keepScroll:true}); }, 60); };
+  document.head.appendChild(sc); };
+const artDraw = (g, p, stage, mood) => { const A = window[g]; if (A && A[p.body]) return A[p.body](p, stage, mood);
+  if (!A) CS.loadArt(g);
+  return `<ellipse cx="60" cy="74" rx="32" ry="30" fill="${p.c1}" opacity=".55"/><ellipse cx="60" cy="84" rx="20" ry="16" fill="${p.c2}" opacity=".6"/>`; };
 const CUSTOM = {
   /* Rahul: an original cartoon student. Baby: just head, shoulders and a book, sitting in the shell. Teen: tall and skinny in a suit. Adult: adds a tie, pocket square and a glowing textbook */
   rahul: (p, stage, mood) => { const sleepy = mood === "sleepy", sad = mood === "sad", skin = "#9A6338", hair = "#14110F", suit = "#1F2A44";
@@ -584,10 +594,10 @@ const CUSTOM = {
       ${book(76, 58, 22, 28, adult)}<circle cx="81" cy="76" r="4" fill="${skin}" stroke="#6B3F1E" stroke-width="1.2"/>
       <rect x="55" y="34" width="10" height="12" fill="${skin}"/>
       ${face(60, 26, 13)}</g>`; },
-  bio: (p, stage, mood) => window.CS_BIOART[p.body](p, stage, mood),
-  chem: (p, stage, mood) => window.CS_CHEMART[p.body](p, stage, mood),
-  mkt: (p, stage, mood) => window.CS_MKTART[p.body](p, stage, mood),
-  hist: (p, stage, mood) => (p.id.indexOf("w_") === 0 ? window.CS_WORLDART : window.CS_HISTART)[p.body](p, stage, mood),
+  bio: (p, stage, mood) => artDraw("CS_BIOART", p, stage, mood),
+  chem: (p, stage, mood) => artDraw("CS_CHEMART", p, stage, mood),
+  mkt: (p, stage, mood) => artDraw("CS_MKTART", p, stage, mood),
+  hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
       <ellipse cx="${x}" cy="${y}" rx="${r*1.15}" ry="${r}" fill="${p.c1}" stroke="#7F1D1D" stroke-width="1.5"/>
@@ -794,7 +804,7 @@ CS.render.pets = () => {
         <div class="stack" style="gap:6px"><span class="eyebrow">What's inside every egg</span><div class="odds">${ORDER.map(k=>`<div><i style="background:${CS.RARITY[k].col}"></i><b>${CS.RARITY[k].n}</b><span>${CS.RARITY[k].p}% · +${Math.round(CS.RARITY[k].boost*100)}% XP</span></div>`).join("")}</div></div>
       </div>
     </div>
-    <div class="spread"><div class="row-wrap" style="gap:10px"><h2>Collection</h2><div class="seg" role="group" aria-label="Pet set" style="width:auto;display:inline-flex">${Object.entries(CS.PET_SETS).map(([k,v])=>`<button data-ps="${k}" aria-pressed="${petSet===k}">${esc(v.name.replace("economics",""))} · ${v.pets.filter(p=>P.owned[p.id]).length}/${v.pets.length}</button>`).join("")}</div></div><div class="chips">${["all",...ORDER].map(k=>`<button class="chip" aria-pressed="${petFilter===k}" data-pf="${k}">${k==="all"?"All":CS.RARITY[k].n}</button>`).join("")}</div></div>
+    <div class="spread"><div class="row-wrap" style="gap:10px"><h2>Collection</h2><div class="seg" role="group" aria-label="Pet set" style="width:auto;max-width:100%;display:inline-flex;flex-wrap:wrap">${Object.entries(CS.PET_SETS).map(([k,v])=>`<button data-ps="${k}" aria-pressed="${petSet===k}">${esc(v.name.replace("economics",""))} · ${v.pets.filter(p=>P.owned[p.id]).length}/${v.pets.length}</button>`).join("")}</div></div><div class="chips">${["all",...ORDER].map(k=>`<button class="chip" aria-pressed="${petFilter===k}" data-pf="${k}">${k==="all"?"All":CS.RARITY[k].n}</button>`).join("")}</div></div>
     <div class="pet-grid">${list.map(p=>{ const o = P.owned[p.id], R = CS.RARITY[p.r];
       return `<button class="pet-card ${o?"own":""} ${P.active===p.id?"act":""}" data-pid="${p.id}" style="--col:${R.col};--glow:${R.glow}" ${o?"":"aria-disabled=\"true\""}>
         <span class="rar ${p.r==="supreme"?"sup":""}" style="color:${R.col}">${R.n}</span>${CS.petSVG(p.id, {size:92, locked:!o, stage:o?CS.petStage(p.id):1})}

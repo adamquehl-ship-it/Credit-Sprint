@@ -1,0 +1,15 @@
+{
+  "name": "Credit Sprint",
+  "short_name": "Credit Sprint",
+  "description": "Study for AP and CLEP exams with practice questions, games and pets.",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F7FB",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {"src": "/brand/credit-sprint-logo-120.png", "sizes": "120x120", "type": "image/png"},
+    {"src": "/brand/credit-sprint-logo-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "/brand/credit-sprint-logo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

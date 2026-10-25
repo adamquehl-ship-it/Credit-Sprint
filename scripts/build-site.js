@@ -10,9 +10,9 @@ const W = load("assets/data", ["questions.js","questions2.js","questions3.js","q
 const WM = load("assets/data/micro", ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"]);
 const WC = load("assets/data/chem", ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"]);
 const WB = load("assets/data/bio", ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"]);
-const WK = load("assets/data/mkt", ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","drills.js"]);
+const WK = load("assets/data/mkt", ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","drills.js"]);
 const WH = load("assets/data/apush", ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"]);
-const WW = load("assets/data/apworld", ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"]);
+const WW = load("assets/data/apworld", ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"]);
 const UNITS = W.CS_UNITS, Q = W.CS_QUESTIONS_RAW, FIFTH = W.CS_FIFTH;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const slug = s => s.toLowerCase().replace(/®/g,"").replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
@@ -87,6 +87,7 @@ const courseCard = c => `<a class="ccard" href="app.html?course=${c.k}" style="-
   <span class="ccard-stats"><span><b>${c.q}</b> questions</span><span><b>${c.f}</b> FRQs</span><span><b>${c.c}</b> flashcards</span></span>
   <span class="ccard-go">Start ${c.name.replace("economics","")} free ${ic("arrow",18)}</span></a>`;
 const GAMES = [["star","Daily Challenge"],["sword","Boss Battle"],["chart","Shift It"],["bolt","Sprint"],["link","Chain Reaction"],["tf","True or False"],["calc","Number Crunch"],["cards","Match-up"],["bank","Fed Chair · Macro"],["calc","Profit Max · Micro"],["sword","Nash Hunt · Micro"],["dna","Cross It · Biology"],["flask","Balance It · Chemistry"],["cards","Mix Master · Marketing"],["chart","Perceptual Map · Marketing"],["link","Timeline Sort · U.S. History"],["cards","Source Match · U.S. History"],["link","Timeline Sort · World History"],["cards","Source Match · World History"],["paw","Pet collecting"]];
+const landing = require("./landing.js");
 const check = ic("check",18);
 const lock = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 out("index.html", page({
@@ -104,7 +105,7 @@ out("index.html", page({
     <span class="muted small">Try it free, then make a free account to save progress. Take more than one course: your streak, XP, creds and pets carry over.</span>
   </div>
   <div class="mock-stack" aria-hidden="true">
-    <div class="mock-a"><div class="hero-card" style="--hero1:#059669;--hero2:#065F46"><span class="eyebrow">Good evening · AP® Microeconomics</span><h1 style="font-size:1.7rem">12-day streak. Keep it alive.</h1>
+    <div class="mock-a"><div class="hero-card" style="--hero1:#059669;--hero2:#065F46"><span class="eyebrow">Good evening · AP® Microeconomics</span><h2 style="font-size:1.7rem">12-day streak. Keep it alive.</h2>
       <div class="countdown"><div><b>58</b><span>days left</span></div><div><b>4</b><span>predicted score</span></div><div><b>842</b><span>answered</span></div></div>
       <div class="row-wrap"><span class="btn sm">Play Profit Max →</span></div></div></div>
     <div class="mock-b"><div class="panel"><span class="eyebrow">Unit 3 · Perfect competition</span><b>Price is above AVC but below ATC. What should the firm do in the short run?</b>
@@ -115,6 +116,7 @@ out("index.html", page({
 <section class="wrap" style="padding-bottom:56px"><div class="statrow">
   <div><b>${nQ}</b><span>practice questions</span></div><div><b>${nF}</b><span>free-response prompts</span></div><div><b>${nC}</b><span>flashcards</span></div><div><b>21</b><span>study games</span></div><div><b>203</b><span>pets to collect</span></div>
 </div></section>
+${landing(COURSES, ic)}
 <section class="sec alt"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Seven courses, twelve exams</span><h2>Twelve ways to earn college credit</h2><p>AP® and CLEP® cover the same core material in each course. Study once and you're ready for both. If May doesn't go your way, CLEP® is a second shot. Marketing is a CLEP® exam only, World History is an AP® exam only, and U.S. History pairs AP® with the two CLEP® U.S. History exams.</p></div>
   <div class="two">
@@ -683,5 +685,8 @@ fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by s
 fs.writeFileSync(path.join(ROOT,"robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
 /* stamp the same version into app.html's CSS and script links */
 const appPath = path.join(ROOT, "app.html");
+require("./landing-options.js");
+{ const tag = '<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/brand/credit-sprint-logo-512.png">';
+  for (const f of ["index.html", "app.html"]) { const fp = path.join(ROOT, f); let h = fs.readFileSync(fp, "utf8"); if (!h.includes("manifest.webmanifest")) { h = h.replace('<meta name="theme-color"', tag + '<meta name="theme-color"'); if (!h.includes("manifest.webmanifest")) h = h.replace("</head>", tag + "</head>"); fs.writeFileSync(fp, h); } } }
 fs.writeFileSync(appPath, fs.readFileSync(appPath, "utf8").replace(/\?v=[a-z0-9]+/g, "?v="+VER).replace(/window\.CS_V="[a-z0-9]*"/, 'window.CS_V="'+VER+'"'));
 console.log("Built", urls.length, "pages", "· version", VER);

@@ -40,10 +40,12 @@ function wrap(p, st, svg, limbs) {
   return `<defs>${flt}</defs>${aura}${haloShape}${ring}<g filter="url(#${id}f)"><g>${mot}${arms}${legs}${svg}</g></g>${orbit}`;
 }
 function applyTo(obj) {
+  if (obj.__styled) return; Object.defineProperty(obj, "__styled", {value: true});
   Object.keys(obj).forEach(k => { const fn = obj[k];
     obj[k] = (p, st, m) => { const q = Object.assign({}, p, {c1: vivid(p.c1, 1.35), c2: vivid(p.c2, 1.25)}); return wrap(q, st, fn(q, st, m), true); };
   });
 }
-window.CS_PETSTYLE = {vivid, wrap, H, star, spark, RANK};
-["CS_BIOART", "CS_CHEMART", "CS_MKTART"].forEach(n => { if (window[n]) applyTo(window[n]); });
+const apply = n => { if (["CS_BIOART", "CS_CHEMART", "CS_MKTART"].indexOf(n) >= 0 && window[n]) applyTo(window[n]); };
+window.CS_PETSTYLE = {vivid, wrap, H, star, spark, RANK, apply};
+["CS_BIOART", "CS_CHEMART", "CS_MKTART"].forEach(apply);
 })();
