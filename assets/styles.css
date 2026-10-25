@@ -852,3 +852,5 @@ footer a{display:inline-block;padding:7px 4px}
 @media (prefers-color-scheme:dark){.tl-ev.right,.sm-o.right{background:#052E16;color:#BBF7D0}.tl-ev.wrong,.sm-o.wrong{background:#450A0A;color:#FECACA}}
 :root[data-subject="apworld"]:not([data-accent]){--hero1:#0F766E;--hero2:#134E4A}
 :root[data-subject="apworld"]{--subject:#0F766E}
+:root[data-subject="apgov"]:not([data-accent]){--hero1:#1E3A8A;--hero2:#172554}
+:root[data-subject="apgov"]{--subject:#1E3A8A}

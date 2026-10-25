@@ -22,7 +22,11 @@ const GAMES = [
   ...(CS.COURSE==="mkt" ? [{k:"mix", n:"Mix Master", ic:"cards", d:"60 seconds. Sort each marketing move into the right P: Product, Price, Place or Promotion. A mistake costs 3 seconds.", best:()=>S().best.mix!=null?`Best: ${S().best.mix} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"position", n:"Perceptual Map", ic:"chart", d:"Read the brand description, then tap the quadrant of the perceptual map where it sits. Positioning, fast.", best:()=>S().best.position!=null?`Best: ${S().best.position}/8`:"Not played yet", isNew:true}] : []),
   ...((CS.COURSE==="apush"||CS.COURSE==="apworld") ? [{k:"timeline", n:"Timeline Sort", ic:"link", d:"Four events appear out of order. Tap them from earliest to latest. Chronological reasoning is the heart of AP® history.", best:()=>S().best.timeline!=null?`Best: ${S().best.timeline}/8`:"Not played yet", isNew:true}] : []),
-  ...((CS.COURSE==="apush"||CS.COURSE==="apworld") ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
+  ...((CS.COURSE==="apush"||CS.COURSE==="apworld"||CS.COURSE==="apgov") ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="apgov" ? [
+    {k:"court", n:"Court Case Match", ic:"cards", d:"A landmark Supreme Court case appears. Pick the ruling that matches it, from Marbury to Dobbs.", best:()=>S().best.court!=null?`Best: ${S().best.court}/8`:"Not played yet", isNew:true},
+    {k:"branch", n:"Branch Check", ic:"cards", d:"60 seconds. Sort each power into the legislative, executive or judicial branch. A mistake costs 3 seconds.", best:()=>S().best.branch!=null?`Best: ${S().best.branch} sorted`:"Not played yet", isNew:true},
+    {k:"amend", n:"Amendment Sprint", ic:"bolt", d:"60 seconds. A clue describes an amendment; name it before time runs out.", best:()=>S().best.amend!=null?`Best: ${S().best.amend} named`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
@@ -51,7 +55,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -958,10 +962,86 @@ const SRC = [
  ["\"No European power shall plant new colonies in the Americas, and we shall not meddle in Europe's wars.\"","The Monroe Doctrine",["The Truman Doctrine","The Open Door Policy","The Roosevelt Corollary"],"The 1823 doctrine warned Europe away from new colonization.",4],
  ["\"The wealthy owe a duty to use their fortunes for the good of the community, such as libraries and schools.\"","Carnegie's Gospel of Wealth",["Social Darwinism","The Populist platform","The Wagner Act"],"Carnegie urged philanthropy by the rich.",6]
 ];
+/* ---------- U.S. Government: Court Case Match, Branch Check, Amendment Sprint ---------- */
+function court(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  area.innerHTML = `<p style="max-width:62ch">A Supreme Court case appears. Pick the ruling that matches it. Eight cases per game, including all the required AP&reg; cases.</p><div><button class="btn accent" id="cc-go">Start · ${ROUNDS} cases</button></div>`;
+  $("#cc-go").onclick = () => { pool = CS.shuffle((window.CS_GOV_CASES||[]).slice()); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], others = CS.shuffle((window.CS_GOV_CASES||[]).filter(c => c[0] !== q[0])).slice(0,3), opts = CS.shuffle([q].concat(others));
+    area.innerHTML = `<div class="hud"><span>Case <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote"><b>${esc(q[0])}</b> (${q[1]})</blockquote><p class="muted tiny">What did the Court rule?</p>
+      <div class="sm-opts">${opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o[2])}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = opts[+b.dataset.o], ok = pick[0] === q[0]; CS.record({u: q[3]}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (opts[+x.dataset.o][0] === q[0]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite."}</b> ${esc(q[0])} (${q[1]}): ${esc(q[2])}${ok?"":` That ruling belongs to ${esc(pick[0])}.`}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next case":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("court", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Court Case Match · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You could argue before the Court.":"Tie each case to its clause: First Amendment, due process, equal protection or federal power."}</p>
+      <div class="row-wrap"><button class="btn" id="cc-again">Play again</button><button class="btn ghost" data-go="frq">Try a SCOTUS Comparison</button></div>`;
+    $("#cc-again").onclick = () => { pool = CS.shuffle((window.CS_GOV_CASES||[]).slice()); i = 0; right = 0; round(); };
+  }
+}
+function branch(area){
+  const NAMES = ["Legislative", "Executive", "Judicial"];
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window.CS_GOV_BRANCH || [];
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. Each power or action belongs to one branch of the national government. Tap a button, or press 1 to 3. A mistake costs 3 seconds.</p><div><button class="btn accent" id="br-go">Start</button></div>`;
+  $("#br-go").onclick = start;
+  function start(){ items = CS.shuffle(all().slice()); show(); timer = setInterval(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0];
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Sorted <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div>
+      <div class="mx-btns">${NAMES.map((n, i) => `<button class="btn big" data-b="${i}">${i+1} · ${n}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { const ok = b === it[1]; CS.record({u:it[2]||2}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: "${it[0]}" belongs to the ${NAMES[it[1]].toLowerCase()} branch.`; } };
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-3]$/.test(e.key)) choose(+e.key - 1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("branch", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Branch Check · results</span><div class="result-big">${score}</div><p class="muted">powers sorted, ${miss} missed${nb?" · new personal best":""}. ${score>=25?"You know who does what.":"Congress makes laws, the president carries them out and the courts interpret them."}</p>
+      <div class="row-wrap"><button class="btn" id="br-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="2">Review Unit 2</button></div>`;
+    $("#br-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+function amend(area){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window.CS_GOV_AMEND || [];
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. A clue describes an amendment; pick which one it is. Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="am-go">Start</button></div>`;
+  $("#am-go").onclick = start;
+  function start(){ items = CS.shuffle(all().slice()); show(); timer = setInterval(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0], opts = CS.shuffle([it].concat(CS.shuffle(all().filter(a => a[0] !== it[0])).slice(0,3)));
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Correct <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">Which amendment ${esc(it[2].replace(/\.$/,"").replace(/^([A-Z])/,(m)=>m.toLowerCase()))}?</div>
+      <div class="mx-btns">${opts.map((o, i) => `<button class="btn big" data-b="${o[0]}">${i+1} · ${esc(o[1])}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = n => { const ok = n === it[0]; CS.record({u: it[0] <= 10 ? 1 : 5}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: the ${it[1]} Amendment ${it[2].replace(/\.$/,"").replace(/^([A-Z])/,(m)=>m.toLowerCase())}.`; } };
+    const btns = $$(".mx-btns .btn", area); btns.forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key)) choose(+btns[+e.key - 1].dataset.b); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("amend", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Amendment Sprint · results</span><div class="result-big">${score}</div><p class="muted">amendments named, ${miss} missed${nb?" · new personal best":""}. ${score>=18?"You know your Constitution.":"Start with the Bill of Rights, then the Reconstruction and voting amendments."}</p>
+      <div class="row-wrap"><button class="btn" id="am-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#am-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+
+const srcFor = () => CS.COURSE==="apworld" ? (window.CS_WORLD_SRC||[]) : CS.COURSE==="apgov" ? (window.CS_GOV_SRC||[]) : SRC;
 function source(area){
   const ROUNDS = 8; let i = 0, right = 0, pool = [];
   area.innerHTML = `<p style="max-width:62ch">Each round shows a short original excerpt written in the style of an exam source. Choose the event, movement or person it comes from. Eight excerpts per game.</p><div><button class="btn accent" id="sm-go">Start · ${ROUNDS} excerpts</button></div>`;
-  $("#sm-go").onclick = () => { pool = CS.shuffle((CS.COURSE==="apworld" ? (window.CS_WORLD_SRC||[]) : SRC).slice()); i = 0; right = 0; round(); };
+  $("#sm-go").onclick = () => { pool = CS.shuffle(srcFor().slice()); i = 0; right = 0; round(); };
   function round(){
     if (i >= ROUNDS) return end();
     const q = pool[i], opts = CS.shuffle([q[1]].concat(q[2]));
@@ -977,7 +1057,7 @@ function source(area){
     area._key = null; const nb = CS.setBest("source", right); finish(right*12);
     area.innerHTML = `<span class="eyebrow">Source Match · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You read sources like a historian.":"Look for date clues, audience and purpose before choosing."}</p>
       <div class="row-wrap"><button class="btn" id="sm-again">Play again</button><button class="btn ghost" data-go="frq">Try a DBQ</button></div>`;
-    $("#sm-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(SRC.slice()); round(); };
+    $("#sm-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(srcFor().slice()); round(); };
   }
 }
 })();

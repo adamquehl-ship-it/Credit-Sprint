@@ -4,7 +4,7 @@
 "use strict";
 const CS = window.CS, S = () => CS.S(), esc = CS.esc;
 const COURSE_GAMES = {macro:[["fed","Fed Chair"],["crisis","Crisis Desk"],["shift","Shift It"]], micro:[["profit","Profit Max"],["elastic","Elasticity Sprint"],["nash","Nash Hunt"]],
-  bio:[["cross","Cross It"],["sorter","Cell Sorter"]], chem:[["balance","Balance It"],["periodic","Periodic Hunt"]], mkt:[["mix","Mix Master"],["position","Perceptual Map"]], apush:[["timeline","Timeline Sort"],["source","Source Match"]], apworld:[["timeline","Timeline Sort"],["source","Source Match"]]};
+  bio:[["cross","Cross It"],["sorter","Cell Sorter"]], chem:[["balance","Balance It"],["periodic","Periodic Hunt"]], mkt:[["mix","Mix Master"],["position","Perceptual Map"]], apush:[["timeline","Timeline Sort"],["source","Source Match"]], apworld:[["timeline","Timeline Sort"],["source","Source Match"]], apgov:[["court","Court Case Match"],["branch","Branch Check"],["amend","Amendment Sprint"]]};
 const TASK_NAME = {quiz:"Finish a unit quiz", cards:"Review your flashcards", daily:"Play the Daily Challenge", game:"Play any game"};
 
 function counters(){ const s = S(), d = CS.today(); if (!s.dqc || s.dqc.d !== d) s.dqc = {d, right:0, ans:0, run:0, best:0, units:{}, games:{}}; return s.dqc; }

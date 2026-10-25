@@ -254,14 +254,45 @@ const APWORLDP = [
  {id:"w_tree", body:"tree", n:"Tree of Many Lands", u:8, r:"mythical", p:0.35, c1:"#22C55E", c2:"#F472B6", custom:"hist", bio:"Dozens of new nations grew from the roots of old empires after 1945."},
  {id:"w_astrolabe", body:"astrolabe", n:"Astro the Timekeeper", u:0, r:"supreme", p:0.05, c1:"#FACC15", c2:"#A78BFA", custom:"hist", bio:"Keeps every era of world history in order, from 1200 to today."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}};
+const APGOVP = [
+ {id:"g_gavel", body:"gavel", n:"Gavel Gus", u:1, r:"common", p:6.5, c1:"#7C3AED", c2:"#FDE68A", custom:"gov", bio:"Judges and presiding officers use gavels to call courts and legislatures to order."},
+ {id:"g_ballot", body:"ballot", n:"Ballot Box Benny", u:5, r:"common", p:6, c1:"#2563EB", c2:"#BFDBFE", custom:"gov", bio:"Elections are run by the states, and a secret ballot protects each voter's choice."},
+ {id:"g_button", body:"button", n:"Campaign Button", u:5, r:"common", p:6, c1:"#DC2626", c2:"#FDE68A", custom:"gov", bio:"Campaign buttons show support for a candidate and help build name recognition."},
+ {id:"g_megaphone", body:"megaphone", n:"Lobby the Megaphone", u:5, r:"common", p:6, c1:"#F97316", c2:"#FEF3C7", custom:"gov", bio:"Interest groups amplify their message to persuade the public and lawmakers."},
+ {id:"g_newspaper", body:"newspaper", n:"Press Pass", u:5, r:"common", p:6, c1:"#0EA5E9", c2:"#F1F5F9", custom:"gov", bio:"The press informs voters, sets the agenda and acts as a watchdog on government."},
+ {id:"g_clipboard", body:"clipboard", n:"Poll Parker", u:4, r:"common", p:6, c1:"#14B8A6", c2:"#FEF08A", custom:"gov", bio:"Pollsters survey a random sample to measure public opinion within a margin of error."},
+ {id:"g_podium", body:"podium", n:"Podium Pete", u:5, r:"common", p:6, c1:"#4F46E5", c2:"#FDE047", custom:"gov", bio:"Candidates and presidents speak from podiums; the bully pulpit helps shape public opinion."},
+ {id:"g_scales", body:"scales", n:"Scales Sally", u:3, r:"common", p:6, c1:"#D97706", c2:"#FDE68A", custom:"gov", bio:"Scales stand for justice, as courts weigh rights against the needs of government."},
+ {id:"g_veto", body:"veto", n:"Veto the Stamp", u:2, r:"uncommon", p:4, c1:"#DC2626", c2:"#FECACA", custom:"gov", bio:"A president can veto a bill, and Congress needs two-thirds of both houses to override."},
+ {id:"g_filibuster", body:"filibuster", n:"Filibuster Fred", u:2, r:"uncommon", p:4, c1:"#8B5CF6", c2:"#EDE9FE", custom:"gov", bio:"Senators can talk to delay a vote until three-fifths vote for cloture."},
+ {id:"g_gerrymander", body:"gerrymander", n:"Gerry the Gerrymander", u:2, r:"uncommon", p:4, c1:"#16A34A", c2:"#FDE047", custom:"gov", bio:"A salamander-shaped district gave the practice its name: drawing lines for partisan gain."},
+ {id:"g_briefcase", body:"briefcase", n:"Lobbyist's Briefcase", u:5, r:"uncommon", p:4, c1:"#475569", c2:"#FCD34D", custom:"gov", bio:"Lobbyists carry information and requests to lawmakers, protected by the right to petition."},
+ {id:"g_bill", body:"bill", n:"Bill the Bill", u:2, r:"uncommon", p:4, c1:"#F59E0B", c2:"#F8FAFC", custom:"gov", bio:"Every law starts as a bill that must pass both houses and be signed or survive a veto."},
+ {id:"g_pie", body:"pie", n:"Margin Pie", u:4, r:"uncommon", p:4, c1:"#EC4899", c2:"#FBCFE8", custom:"gov", bio:"Poll results come with a margin of error, a range showing sampling uncertainty."},
+ {id:"g_card", body:"card", n:"Miranda Card", u:3, r:"uncommon", p:4, c1:"#2563EB", c2:"#E0F2FE", custom:"gov", bio:"Miranda v. Arizona requires police to warn suspects of their rights before questioning."},
+ {id:"g_mortarboard", body:"mortarboard", n:"Electoral Scholar", u:5, r:"rare", p:3, c1:"#1E3A8A", c2:"#FDE68A", custom:"gov", bio:"The 538 electors of the Electoral College choose the president; 270 wins."},
+ {id:"g_key", body:"key", n:"Habeas Key", u:3, r:"rare", p:3, c1:"#F59E0B", c2:"#FEF3C7", custom:"gov", bio:"Habeas corpus lets a court review whether a person's detention is lawful."},
+ {id:"g_seesaw", body:"seesaw", n:"Checks and Balances", u:1, r:"rare", p:3, c1:"#0EA5E9", c2:"#FDE047", custom:"gov", bio:"Each branch can check the others, so no branch can dominate."},
+ {id:"g_tablet", body:"tablet", n:"Rights Tablet", u:3, r:"rare", p:3, c1:"#C2410C", c2:"#FEF3C7", custom:"gov", bio:"The Bill of Rights protects individual liberties from government."},
+ {id:"g_columns", body:"columns", n:"Court Columns", u:2, r:"rare", p:3, c1:"#64748B", c2:"#F1F5F9", custom:"gov", bio:"The Supreme Court has the final say on the meaning of the Constitution."},
+ {id:"g_house", body:"house", n:"Executive Mansion", u:2, r:"epic", p:2, c1:"#38BDF8", c2:"#F8FAFC", custom:"gov", bio:"The president lives and works here, carrying out the laws as head of the executive branch."},
+ {id:"g_justice", body:"justice", n:"Lady Justice", u:3, r:"epic", p:2, c1:"#4338CA", c2:"#FDE68A", custom:"gov", bio:"Blindfolded and holding scales, she stands for equal protection under the law."},
+ {id:"g_sticker", body:"sticker", n:"I Voted", u:5, r:"epic", p:2, c1:"#E11D48", c2:"#FDE68A", custom:"gov", bio:"Voting is the most common form of participation, and turnout rises with age and education."},
+ {id:"g_seal", body:"seal", n:"Great Seal", u:1, r:"legendary", p:1.1, c1:"#1D4ED8", c2:"#FDE68A", custom:"gov", bio:"A national symbol on official documents, reflecting the founding ideals of the republic."},
+ {id:"g_booth", body:"booth", n:"Voting Booth", u:5, r:"legendary", p:0.9, c1:"#7C3AED", c2:"#FDE047", custom:"gov", bio:"Private booths protect the secret ballot and every eligible citizen's vote."},
+ {id:"g_oak", body:"oak", n:"Liberty Oak", u:1, r:"mythical", p:0.6, c1:"#16A34A", c2:"#BBF7D0", custom:"gov", bio:"The Liberty Tree was a symbol of colonial resistance and natural rights."},
+ {id:"g_fireworks", body:"fireworks", n:"Founders' Fireworks", u:1, r:"mythical", p:0.5, c1:"#F43F5E", c2:"#FDE047", custom:"gov", bio:"Americans mark the Declaration of Independence each Fourth of July."},
+ {id:"g_crowd", body:"crowd", n:"We the People", u:1, r:"mythical", p:0.35, c1:"#0EA5E9", c2:"#FDE68A", custom:"gov", bio:"The Constitution begins with the people, the source of government's power."},
+ {id:"g_sage", body:"sage", n:"Professor Civitas", u:0, r:"supreme", p:0.05, c1:"#4C1D95", c2:"#FACC15", custom:"gov", bio:"The wise owl who knows every branch, amendment and landmark case."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -560,7 +591,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -597,6 +628,7 @@ const CUSTOM = {
   bio: (p, stage, mood) => artDraw("CS_BIOART", p, stage, mood),
   chem: (p, stage, mood) => artDraw("CS_CHEMART", p, stage, mood),
   mkt: (p, stage, mood) => artDraw("CS_MKTART", p, stage, mood),
+  gov: (p, stage, mood) => artDraw("CS_GOVART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

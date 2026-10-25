@@ -7,8 +7,9 @@ const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
 const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","drills.js"].map(f => "assets/data/mkt/"+f);
+const APGOV = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","p16.js","p17.js","p18.js","p19.js","p20.js","p21.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/apgov/"+f);
 const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"].map(f => "assets/data/apworld/"+f);
-const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
+const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -52,6 +53,16 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of timeline recall: which AP\u00AE era does each event, person or empire belong to? Type 1 to 4.",
     drillDesc:"Place the event: name the AP\u00AE era for key events, empires and people. Fresh questions every time.",
     planGames:["Timeline Sort","Source Match","Sprint","Match-up","Chain Reaction","True or False"]},
+  apgov:{k:"apgov", name:"U.S. Government", short:"US Gov", ap:"AP\u00AE U.S. Government and Politics", clep:"CLEP\u00AE American Government", clepShort:"CLEP\u00AE American Government",
+    key:"creditsprint.apgov.v1", col:"#1E3A8A", soft:"#EFF6FF", apFmt:"55 multiple choice and 4 free-response questions in 3 hours", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Foundations of democracy, Congress, the presidency and the courts, civil liberties and civil rights, political beliefs and elections: with landmark cases and foundational documents.", icon:"landmark", data:APGOV, nUnits:5, cat:"Government",
+    graphs:false, unitWord:"Unit", clepQ:"about 100",
+    apExamText:"The real exam has 55 multiple-choice questions in 80 minutes (50% of your score), then 4 free-response questions in 100 minutes: Concept Application, Quantitative Analysis, SCOTUS Comparison and Argument Essay. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:55, min:80, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:29, name:"Mini exam"}}, clep:{full:{n:100, min:90, name:"Full-length CLEP\u00AE"}, mini:{n:25, min:23, name:"Mini exam"}}},
+    bosses:{1:"The Faction Fiend",2:"The Gridlock Golem",3:"The Censor Specter",4:"The Pollster Phantom",5:"The Lobby Leviathan"},
+    chainDesc:"Put the steps in order: how a bill becomes a law, how a case reaches the Supreme Court, how an amendment is ratified and how a president is elected.",
+    crunchDesc:"Two minutes of civics math: veto overrides, electoral votes, turnout and margins of error. Fresh numbers every time.",
+    drillDesc:"Do the civics math: override votes, majorities, electoral votes, turnout and poll ranges. Fresh numbers every time.",
+    planGames:["Court Case Match","Branch Check","Amendment Sprint","Source Match","Sprint","True or False"]},
   mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
     key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
     graphs:false, unitWord:"Unit",
@@ -64,7 +75,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

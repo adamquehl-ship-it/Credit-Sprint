@@ -19,6 +19,8 @@ CS.seeded = seed => { let h = 2166136261; for (const c of String(seed)) { h ^= c
 
 /* ---------- content ---------- */
 CS.UNITS = window.CS_UNITS;
+/* history and government unit names already begin with "Unit 1:" or "Period 1:"; the app adds its own label */
+CS.UNITS.forEach(u => { u.name = String(u.name).replace(/^(Unit|Period) \d+:\s*/, ""); });
 CS.QS = window.CS_QUESTIONS_RAW.map((r,i)=>({
   id:"q"+i, u:r[0], q:r[1],
   opts:[{t:r[2][0], w:r[2][1], ok:true}].concat(r[3].map(x=>({t:x[0], w:x[1], ok:false}))).concat((window.CS_FIFTH||{})["q"+i] ? [{t:window.CS_FIFTH["q"+i][0], w:window.CS_FIFTH["q"+i][1], ok:false}] : [])
@@ -225,6 +227,7 @@ CS.levelUp = lv => {
 const P = {
   x:'<path d="M6 6l12 12M18 6 6 18"/>',
   grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  landmark:'<path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M2 10l10-6 10 6z"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
   mega:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/>',

@@ -241,7 +241,7 @@ render.learn = (o) => {
   const u = CS.UNITS[learnUnit-1], m = CS.mastery(u.id);
   $("#learn-body").innerHTML = `
     <div class="row-wrap">${CS.C.clepOnly ? "" : `<span class="tag acc">AP® ${u.ap}</span>`}${CS.C.apOnly ? "" : `<span class="${CS.C.clepOnly ? "tag acc" : "tag"}">CLEP® ${u.clep}</span>`}<span class="tag">Your mastery ${CS.pct(m)}</span></div>
-    <h2>Unit ${u.id}: ${esc(u.name)}</h2>
+    <h2>${CS.C.unitWord||"Unit"} ${u.id}: ${esc(u.name)}</h2>
     <div class="guide">
       <div class="stack" style="gap:18px">
         <p style="font-size:1.04rem">${esc(u.summary)}</p>
@@ -729,7 +729,7 @@ render.plan = () => {
     if (it.final) return `<li class="final"><div class="when">${when}</div><div><h3>Final review${weeks===1?": all units":""}</h3><ul>
       <li>Take a full-length ${esc(examShort())} practice exam under time</li>${s.exam==="ap"?`<li>Write 3 FRQs (1 long, 2 short) in 60 minutes, then score them, including a real past exam from Official resources</li>`:""}
       <li>Clear your mistakes notebook</li><li>Clear every due flashcard daily</li><li>Beat any unit boss you haven't beaten</li></ul></div></li>`;
-    const names = it.units.map(u=>`Unit ${u.id}: ${esc(u.name)}`).join(" + ");
+    const names = it.units.map(u=>`${CS.C.unitWord||"Unit"} ${u.id}: ${esc(u.name)}`).join(" + ");
     const frq = CS.FRQS.find(f=>f.units.some(x=>it.units.some(u=>u.id===x)));
     return `<li class="${i===0?"now":""}"><div class="when">${when}${i===0?`<br><span class="tag good">This week</span>`:""}</div><div><h3>${it.second?"Second pass · ":""}${names}</h3><ul>
       <li>Read the guide and redraw the key ${CS.hasGraphs()?"graph":"diagram"} from memory</li>
