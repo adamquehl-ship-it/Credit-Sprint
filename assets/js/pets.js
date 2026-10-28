@@ -316,14 +316,45 @@ const APPSYP = [
  {id:"ps_iceberg", body:"iceberg", n:"Freud's Iceberg", u:4, r:"mythical", p:0.35, c1:"#38BDF8", c2:"#BAE6FD", custom:"psy", bio:"Freud compared the mind to an iceberg, with most of its contents beneath the surface."},
  {id:"ps_sage", body:"sage", n:"Professor Mentis", u:0, r:"supreme", p:0.05, c1:"#7C3AED", c2:"#FACC15", custom:"psy", bio:"The wise brain who knows every study, disorder and theory in psychology."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}};
+const APSTATP = [
+ {id:"st_dice", body:"dice", n:"Dice Dan", u:2, r:"common", p:6, c1:"#EF4444", c2:"#FEE2E2", custom:"stat", bio:"A fair die has six equally likely outcomes, each with probability 1/6."},
+ {id:"st_coin", body:"coin", n:"Coin Flip", u:2, r:"common", p:6, c1:"#F59E0B", c2:"#FEF3C7", custom:"stat", bio:"A fair coin has P(heads) = 0.5, and each flip is independent of the last."},
+ {id:"st_histo", body:"histo", n:"Histo Gram", u:1, r:"common", p:6, c1:"#2563EB", c2:"#BFDBFE", custom:"stat", bio:"A histogram shows the shape, center and spread of quantitative data using bars."},
+ {id:"st_box", body:"box", n:"Box Plot Bud", u:1, r:"common", p:6, c1:"#14B8A6", c2:"#CCFBF1", custom:"stat", bio:"A boxplot shows the five-number summary: min, Q1, median, Q3 and max."},
+ {id:"st_rat", body:"rat", n:"Lab Rat Lou", u:1, r:"common", p:6, c1:"#A8A29E", c2:"#FDE68A", custom:"stat", bio:"Random assignment of subjects to treatments is what lets an experiment show cause and effect."},
+ {id:"st_clip", body:"clip", n:"Survey Sam", u:1, r:"common", p:6, c1:"#0EA5E9", c2:"#E0F2FE", custom:"stat", bio:"Good surveys use random samples and careful wording to avoid bias."},
+ {id:"st_bell", body:"bell", n:"Bell Curve Bo", u:1, r:"common", p:6, c1:"#8B5CF6", c2:"#DDD6FE", custom:"stat", bio:"The normal curve is symmetric and bell-shaped, described by its mean and standard deviation."},
+ {id:"st_pie", body:"pie", n:"Pie Chart Pie", u:1, r:"common", p:6, c1:"#EC4899", c2:"#FBCFE8", custom:"stat", bio:"Pie charts show how parts make up a whole for categorical data."},
+ {id:"st_dot", body:"dot", n:"Dot Plot Dot", u:1, r:"uncommon", p:4, c1:"#22C55E", c2:"#DCFCE7", custom:"stat", bio:"A dotplot stacks one dot per observation above a number line."},
+ {id:"st_cards", body:"cards", n:"Card Shark", u:2, r:"uncommon", p:4, c1:"#6366F1", c2:"#E0E7FF", custom:"stat", bio:"Drawing cards without replacement makes events dependent: probabilities change after each draw."},
+ {id:"st_jar", body:"jar", n:"Marble Jar", u:2, r:"uncommon", p:4, c1:"#F97316", c2:"#DBEAFE", custom:"stat", bio:"A jar of colored marbles is the classic way to practice probability and sampling."},
+ {id:"st_scatter", body:"scatter", n:"Scatter Pup", u:5, r:"uncommon", p:4, c1:"#0D9488", c2:"#CCFBF1", custom:"stat", bio:"A scatterplot shows the form, direction and strength of the relationship between two quantitative variables."},
+ {id:"st_mouse", body:"mouse", n:"Placebo Mouse", u:1, r:"uncommon", p:4, c1:"#94A3B8", c2:"#FDE68A", custom:"stat", bio:"A placebo group lets researchers separate the effect of a treatment from the effect of expecting one."},
+ {id:"st_roulette", body:"roulette", n:"Roulette Wheel", u:2, r:"uncommon", p:4, c1:"#DC2626", c2:"#FDE68A", custom:"stat", bio:"A fair roulette wheel is a random process: each spin is independent of past spins."},
+ {id:"st_frog", body:"frog", n:"Sampling Frog", u:3, r:"uncommon", p:4, c1:"#16A34A", c2:"#BBF7D0", custom:"stat", bio:"Different random samples give different statistics: that sampling variability is what inference studies."},
+ {id:"st_slot", body:"slot", n:"Slot Machine Sid", u:2, r:"rare", p:3, c1:"#7C3AED", c2:"#FDE68A", custom:"stat", bio:"The law of large numbers says long-run relative frequency settles near the true probability."},
+ {id:"st_trex", body:"trex", n:"T-Rex", u:4, r:"rare", p:3, c1:"#65A30D", c2:"#D9F99D", custom:"stat", bio:"The t distribution has heavier tails than the normal and is used when σ is unknown."},
+ {id:"st_chi", body:"chi", n:"Chi-Square Chi", u:3, r:"rare", p:3, c1:"#E11D48", c2:"#FECDD3", custom:"stat", bio:"Chi-square tests compare observed counts to expected counts for categorical data."},
+ {id:"st_fox", body:"fox", n:"Best Fit Fox", u:5, r:"rare", p:3, c1:"#F97316", c2:"#FFEDD5", custom:"stat", bio:"The least-squares line minimizes the sum of the squared residuals."},
+ {id:"st_owl", body:"owl", n:"P-Value Owl", u:3, r:"rare", p:3, c1:"#7C3AED", c2:"#EDE9FE", custom:"stat", bio:"A p-value is the probability of results this extreme if the null hypothesis is true."},
+ {id:"st_galton", body:"galton", n:"Galton Board", u:2, r:"epic", p:2, c1:"#0EA5E9", c2:"#FDE68A", custom:"stat", bio:"A Galton board drops balls through pegs and builds a bell-shaped pile: a binomial distribution at work."},
+ {id:"st_cat", body:"cat", n:"Central Limit Cat", u:3, r:"epic", p:2, c1:"#F59E0B", c2:"#FEF3C7", custom:"stat", bio:"The central limit theorem says sample means become approximately normal as the sample size grows."},
+ {id:"st_crab", body:"crab", n:"Confidence Crab", u:3, r:"epic", p:2, c1:"#EF4444", c2:"#FEE2E2", custom:"stat", bio:"A confidence interval gives a range of plausible values for a parameter, built from a statistic and a margin of error."},
+ {id:"st_sigma", body:"sigma", n:"Sigma Sphinx", u:1, r:"legendary", p:1.1, c1:"#B45309", c2:"#FDE68A", custom:"stat", bio:"Standard deviation measures the typical distance of values from the mean."},
+ {id:"st_outlier", body:"outlier", n:"Outlier Star", u:1, r:"legendary", p:0.9, c1:"#6366F1", c2:"#FDE68A", custom:"stat", bio:"An outlier is a point that falls far from the overall pattern; check it before deciding what to do."},
+ {id:"st_phoenix", body:"phoenix", n:"Infinity Phoenix", u:2, r:"mythical", p:0.6, c1:"#DC2626", c2:"#FDE047", custom:"stat", bio:"As trials go to infinity, the relative frequency rises from the ashes of randomness to the true probability."},
+ {id:"st_goldbell", body:"goldbell", n:"Golden Bell", u:1, r:"mythical", p:0.5, c1:"#F59E0B", c2:"#FEF9C3", custom:"stat", bio:"The empirical rule: about 68%, 95% and 99.7% of a normal distribution lie within 1, 2 and 3 standard deviations."},
+ {id:"st_jelly", body:"jelly", n:"Random Sample Jelly", u:3, r:"mythical", p:0.35, c1:"#38BDF8", c2:"#BAE6FD", custom:"stat", bio:"In a simple random sample, every individual and every group of the same size has an equal chance of being chosen."},
+ {id:"st_prof", body:"prof", n:"Professor Sigma", u:0, r:"supreme", p:0.05, c1:"#7C3AED", c2:"#FACC15", custom:"stat", bio:"The wise statistician who has seen every distribution, test and confidence interval."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -622,7 +653,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -661,6 +692,7 @@ const CUSTOM = {
   mkt: (p, stage, mood) => artDraw("CS_MKTART", p, stage, mood),
   gov: (p, stage, mood) => artDraw("CS_GOVART", p, stage, mood),
   psy: (p, stage, mood) => artDraw("CS_PSYART", p, stage, mood),
+  stat: (p, stage, mood) => artDraw("CS_STATART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

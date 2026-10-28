@@ -7,7 +7,7 @@ const nQ = (idx.match(/<b>(\d+)<\/b><span>practice questions/) || [])[1] || "360
 const sz = (svg, n) => svg.replace(/width="\d+" height="\d+"/, `width="${n}" height="${n}"`);
 const m0 = idx.indexOf('<section class="wrap hero2" id="courses">'), m1 = idx.indexOf("<style>\n.hA{");
 const start = m0 >= 0 ? m0 : m1, end = idx.indexOf("</section>", start) + 10;
-const C = {macro:["Macroeconomics","#4F46E5","AP + CLEP"], micro:["Microeconomics","#059669","AP + CLEP"], bio:["Biology","#0891B2","AP + CLEP"], chem:["Chemistry","#7C3AED","AP + CLEP"], mkt:["Marketing","#DB2777","CLEP"], apush:["U.S. History","#B45309","AP + CLEP"], apworld:["World History","#0F766E","AP"], apgov:["U.S. Government","#1E3A8A","AP + CLEP"], appsych:["Psychology","#7C3AED","AP + CLEP"]};
+const C = {macro:["Macroeconomics","#4F46E5","AP + CLEP"], micro:["Microeconomics","#059669","AP + CLEP"], bio:["Biology","#0891B2","AP + CLEP"], chem:["Chemistry","#7C3AED","AP + CLEP"], mkt:["Marketing","#DB2777","CLEP"], apush:["U.S. History","#B45309","AP + CLEP"], apworld:["World History","#0F766E","AP"], apgov:["U.S. Government","#1E3A8A","AP + CLEP"], appsych:["Psychology","#7C3AED","AP + CLEP"], apstat:["Statistics","#0369A1","AP"]};
 const nq = (+nQ).toLocaleString();
 const heroes = {
 a: `<style>
@@ -29,7 +29,7 @@ a: `<style>
 <h1>Study like it's a game. <em>Pass like a pro.</em></h1>
 <p class="lead">Hatch pets, beat unit bosses and keep your streak alive while you prepare for the AP® and CLEP® exams that turn into real college credit.</p>
 <div class="row-wrap"><a class="btn big" href="app.html">Start free in 10 seconds</a><a class="btn ghost" href="#try">Try a question first</a></div>
-<div class="badges" style="margin-top:8px">${[["macro","Macro"],["micro","Micro"],["bio","Biology"],["chem","Chemistry"],["mkt","Marketing"],["apush","U.S. History"],["apworld","World History"],["apgov","U.S. Government"],["appsych","Psychology"]].map(([k,n])=>`<a href="app.html?course=${k}" style="text-decoration:none;color:inherit"><span>${n}</span></a>`).join("")}</div></div></section>`,
+<div class="badges" style="margin-top:8px">${[["macro","Macro"],["micro","Micro"],["bio","Biology"],["chem","Chemistry"],["mkt","Marketing"],["apush","U.S. History"],["apworld","World History"],["apgov","U.S. Government"],["appsych","Psychology"],["apstat","Statistics"]].map(([k,n])=>`<a href="app.html?course=${k}" style="text-decoration:none;color:inherit"><span>${n}</span></a>`).join("")}</div></div></section>`,
 b: `<style>
 .hB{background:linear-gradient(180deg,#EEF0FF 0%,var(--bg) 100%);padding:56px 0 40px;position:relative;overflow:hidden}
 .hB:before{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#A5B4FC88,transparent 70%)}
@@ -50,7 +50,7 @@ b: `<style>
 <p class="lead">A daily 10-minute habit, a plan built around your weakest units, and every answer explained. Study once, be ready for AP® and CLEP®.</p>
 <ul><li><i>✓</i>${nq} original practice questions with an explanation for every choice</li><li><i>✓</i>Diagnostic, study plan, flashcards, free-response practice and timed exams</li><li><i>✓</i>Games, streaks and pets that grow as you learn</li></ul>
 <div class="row-wrap"><a class="btn" style="padding:14px 24px;font-size:1rem" href="app.html">Start free</a><a class="btn" style="padding:14px 22px;background:var(--surface);color:var(--accent);border-color:var(--rule)" href="#try">Try a question</a></div>
-<div class="stat"><div><b>9</b><span>courses</span></div><div><b>16</b><span>exams</span></div><div><b>261</b><span>pets</span></div><div><b>$0</b><span>to begin</span></div></div></div>
+<div class="stat"><div><b>10</b><span>courses</span></div><div><b>17</b><span>exams</span></div><div><b>290</b><span>pets</span></div><div><b>$0</b><span>to begin</span></div></div></div>
 <div style="position:relative;padding-bottom:30px"><div class="card"><span class="stk">12-day streak</span><b style="font-size:1.05rem">Price is above AVC but below ATC. What should the firm do in the short run?</b><div class="ob ok">✓ Keep producing where P = MC</div><div class="ob">Shut down immediately</div><div class="ob">Raise output until P = ATC</div><span class="muted small">Price covers variable costs, so the loss is smaller than fixed cost.</span></div><div class="pet">${sz(pets[7].svg,128)}</div></div></div></section>`,
 c: `<style>
 .hC{padding:56px 0 40px;background:radial-gradient(80% 60% at 50% 0%,#EEF0FF,transparent)}
@@ -80,7 +80,7 @@ const DARK = `.hX{position:relative;overflow:hidden;color:#fff;padding:60px 0 68
 .hX .fl{animation:hAf 6s ease-in-out infinite}@keyframes hAf{50%{transform:translateY(-12px) rotate(3deg)}}
 .bar{height:16px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden;border:1px solid rgba(255,255,255,.22)}.bar i{display:block;height:100%;border-radius:99px}
 @media(max-width:900px){.hX .two2{grid-template-columns:1fr!important}}`;
-const courseChips = [["macro","Macro"],["micro","Micro"],["bio","Biology"],["chem","Chemistry"],["mkt","Marketing"],["apush","U.S. History"],["apworld","World History"],["apgov","U.S. Government"],["appsych","Psychology"]].map(([k,n]) => `<a class="chip2" href="app.html?course=${k}">${n}</a>`).join("");
+const courseChips = [["macro","Macro"],["micro","Micro"],["bio","Biology"],["chem","Chemistry"],["mkt","Marketing"],["apush","U.S. History"],["apworld","World History"],["apgov","U.S. Government"],["appsych","Psychology"],["apstat","Statistics"]].map(([k,n]) => `<a class="chip2" href="app.html?course=${k}">${n}</a>`).join("");
 heroes.a1 = `<style>${DARK}.hX.a1{background:radial-gradient(100% 80% at 80% 0%,#7F1D1D 0%,#1E1B4B 45%,#0B0A22 100%)}
 .hX .arena{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(6px)}
 .hX .vs{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}.hX .vs b{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;opacity:.8}

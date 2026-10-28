@@ -40,7 +40,7 @@ module.exports = function(COURSES, ic) {
 <section class="sec alt" id="pets"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Collect them all</span><h2>Hatch pets that grow as you study</h2><p>Earn a mystery egg for every 25 questions. Every pet grows from baby to teen to adult, and the rarest ones glow, sparkle and wear crowns.</p></div>
   <div class="petstrip" id="petstrip" aria-label="A sample of Credit Sprint pets"><div class="petstrip-track" id="pettrack"></div></div>
-  <p class="muted small" style="text-align:center">261 pets across nine courses. Pets you collect carry over between courses.</p>
+  <p class="muted small" style="text-align:center">290 pets across ten courses. Pets you collect carry over between courses.</p>
 </div></section>
 <section class="sec" id="calc"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Plan your credit</span><h2>How much could you save?</h2><p>Pick the courses you want to test out of. Credit rules differ by college, so check your school's policy for the exact score and credits.</p></div>
@@ -85,7 +85,7 @@ $("calch").oninput=calc;$("calcc").oninput=calc;calc();
 var ans={},steps=[["What are you studying (or thinking about)?",[["biz","Business or economics"],["sci","Science or health"],["hist","History or humanities"],["any","Not sure yet"]],"area"],["Which exam are you aiming for?",[["ap","AP in May"],["clep","CLEP anytime"],["either","Either one"]],"exam"],["How long until you test?",[["short","Under a month"],["mid","1 to 3 months"],["long","More than 3 months"]],"time"]];
 function quiz(s){var box=$("quiz");if(s<steps.length){var st=steps[s];box.innerHTML='<span class="eyebrow">Question '+(s+1)+' of 3</span><b>'+st[0]+'</b>'+st[1].map(function(o){return '<button class="opt" style="border:1px solid var(--rule);background:var(--surface);border-radius:10px;padding:10px 12px;text-align:left;font:inherit;color:var(--ink);cursor:pointer" data-v="'+o[0]+'">'+o[1]+'</button>'}).join("");
  [].forEach.call(box.querySelectorAll("button"),function(b){b.onclick=function(){ans[st[2]]=b.dataset.v;quiz(s+1)}});return}
- var pool={biz:["macro","micro","mkt"],sci:["bio","chem","appsych"],hist:["apush","apworld","apgov","appsych"],any:["macro","bio","apush","appsych"]}[ans.area].filter(function(k){var c=cn(k);return !(ans.exam==="ap"&&c.clepOnly)&&!(ans.exam==="clep"&&c.apOnly)});
+ var pool={biz:["macro","micro","mkt","apstat"],sci:["bio","chem","appsych","apstat"],hist:["apush","apworld","apgov","appsych"],any:["macro","bio","apush","appsych","apstat"]}[ans.area].filter(function(k){var c=cn(k);return !(ans.exam==="ap"&&c.clepOnly)&&!(ans.exam==="clep"&&c.apOnly)});
  if(!pool.length)pool=["macro"];
  var tip={short:"With under a month, turn on the 30-day sprint plan and do the diagnostic first.",mid:"You have time for a weekly plan: ten to fifteen minutes a day is plenty.",long:"Start with the unit guides, then add practice a little each day so it sticks."}[ans.time];
  box.innerHTML='<span class="eyebrow">Your match</span>'+pool.map(function(k){var c=cn(k);return '<a class="btn" href="app.html?course='+k+'" style="background:'+c.col+';border-color:'+c.col+'">Start '+esc(c.n)+' free</a>'}).join("")+'<span class="muted small">'+tip+'</span><button class="btn sm" id="qre" style="background:none;color:var(--accent);align-self:flex-start">Start over</button>';

@@ -8,6 +8,7 @@ const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","que
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
 const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","drills.js"].map(f => "assets/data/mkt/"+f);
 const APPSYCH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/appsych/"+f);
+const APSTAT = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","g1.js","g2.js","g3.js","g4.js","g5.js","s1.js","s3.js","s4.js","s5.js","content.js","content2.js","frqs2.js","drills.js","games.js"].map(f=>"assets/data/apstat/"+f);
 const APGOV = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","p16.js","p17.js","p18.js","p19.js","p20.js","p21.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/apgov/"+f);
 const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"].map(f => "assets/data/apworld/"+f);
 const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
@@ -74,6 +75,16 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of psychology math: z-scores, IQ, means, medians and percents. Fresh numbers every time.",
     drillDesc:"Do the statistics: z-scores, IQ, means, medians, ranges, percents and the normal curve. Fresh numbers every time.",
     planGames:["Famous Studies Match","Brain Check","Disorder Sort","Bias Spotter","Sprint","True or False"]},
+  apstat:{k:"apstat", name:"Statistics", short:"Statistics", ap:"AP\u00AE Statistics", clep:"", clepShort:"", apOnly:true,
+    key:"creditsprint.apstat.v1", col:"#0369A1", soft:"#F0F9FF", apFmt:"42 multiple choice and 4 free-response questions in 3 hours", clepFmt:"", blurb:"Exploring data and collecting data, probability and distributions, inference for proportions and means, and regression: built for the redesigned course and its first exam in May 2027.", icon:"chart", data:APSTAT, nUnits:5, cat:"Math & statistics",
+    graphs:false, unitWord:"Unit",
+    apExamText:"The real exam is digital and has 42 multiple-choice questions in 90 minutes (50% of your score), then 4 free-response questions in 90 minutes (50%), with a calculator allowed. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:42, min:90, name:"Full-length AP\u00AE multiple choice"}, mini:{n:15, min:32, name:"Mini exam"}}, clep:{full:{n:42, min:90, name:"Full-length AP\u00AE multiple choice"}, mini:{n:15, min:32, name:"Mini exam"}}},
+    bosses:{1:"The Outlier Ogre",2:"The Dice Demon",3:"The Margin Monster",4:"The T-Rex Tyrant",5:"The Residual Wraith"},
+    chainDesc:"Put the steps in order: a hypothesis test, a confidence interval, a well-designed experiment and a regression analysis.",
+    crunchDesc:"Two minutes of statistics math: z-scores, expected values, standard errors, test statistics and regression. Fresh numbers every time.",
+    drillDesc:"Do the calculations: z-scores, the empirical rule, binomial mean and SD, standard errors, t and z statistics, slopes and residuals. Fresh numbers every time.",
+    planGames:["Which Test?","Shape Match","Bias Spotter","Probability Plinko","Sprint","True or False"]},
   mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
     key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
     graphs:false, unitWord:"Unit",
@@ -86,7 +97,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

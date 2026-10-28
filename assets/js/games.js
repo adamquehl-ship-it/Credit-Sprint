@@ -28,6 +28,11 @@ const GAMES = [
     {k:"brainreg", n:"Brain Check", ic:"bolt", d:"60 seconds. A clue describes a brain region or chemical messenger; name it before time runs out.", best:()=>S().best.brainreg!=null?`Best: ${S().best.brainreg} named`:"Not played yet", isNew:true},
     {k:"dsort", n:"Disorder Sort", ic:"cards", d:"60 seconds. Sort each set of symptoms into the right family of disorders. A mistake costs 3 seconds.", best:()=>S().best.dsort!=null?`Best: ${S().best.dsort} sorted`:"Not played yet", isNew:true},
     {k:"bias", n:"Bias Spotter", ic:"cards", d:"A short scenario describes a thinking error, social effect or defense mechanism. Name it.", best:()=>S().best.bias!=null?`Best: ${S().best.bias}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="apstat" ? [
+    {k:"whichtest", n:"Which Test?", ic:"cards", d:"A study scenario appears. Pick the right procedure: one- or two-sample z or t, matched pairs, chi-square or regression.", best:()=>S().best.whichtest!=null?`Best: ${S().best.whichtest}/8`:"Not played yet", isNew:true},
+    {k:"shapes", n:"Shape Match", ic:"chart", d:"60 seconds. A clue describes a distribution or scatterplot; name its shape, center or association. A mistake costs 3 seconds.", best:()=>S().best.shapes!=null?`Best: ${S().best.shapes} matched`:"Not played yet", isNew:true},
+    {k:"sbias", n:"Bias Spotter", ic:"cards", d:"A short study description hides a flaw: undercoverage, voluntary response, confounding, no control group. Name it.", best:()=>S().best.sbias!=null?`Best: ${S().best.sbias}/8`:"Not played yet", isNew:true},
+    {k:"plinko", n:"Probability Plinko", ic:"star", d:"Solve a probability problem and drop the ball. Right answers land in the jackpot slot. Binomial, independence, conditional probability and more.", best:()=>S().best.plinko!=null?`Best: ${S().best.plinko}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="apgov" ? [
     {k:"court", n:"Court Case Match", ic:"cards", d:"A landmark Supreme Court case appears. Pick the ruling that matches it, from Marbury to Dobbs.", best:()=>S().best.court!=null?`Best: ${S().best.court}/8`:"Not played yet", isNew:true},
     {k:"branch", n:"Branch Check", ic:"cards", d:"60 seconds. Sort each power into the legislative, executive or judicial branch. A mistake costs 3 seconds.", best:()=>S().best.branch!=null?`Best: ${S().best.branch} sorted`:"Not played yet", isNew:true},
@@ -60,7 +65,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -1138,6 +1143,126 @@ function bias(area){
     area.innerHTML = `<span class="eyebrow">Bias Spotter · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"Nothing gets past you.":"Ask whether the scenario is about thinking (heuristics and biases), groups (social effects) or protecting the ego (defense mechanisms)."}</p>
       <div class="row-wrap"><button class="btn" id="bs-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
     $("#bs-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(all().slice()); round(); };
+  }
+}
+
+/* ---------- Statistics: Which Test?, Shape Match, Bias Spotter, Probability Plinko ---------- */
+function whichtest(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  const all = () => window.CS_STAT_TESTS || [];
+  area.innerHTML = `<p style="max-width:62ch">A study scenario appears. Choose the inference procedure that fits: the number of samples, whether the data are categorical or quantitative, and whether the groups are independent or paired. Eight scenarios per game.</p><div><button class="btn accent" id="wt-go">Start · ${ROUNDS} scenarios</button></div>`;
+  $("#wt-go").onclick = () => { pool = CS.shuffle(all().slice()); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], names = [...new Set(all().map(c => c[1]))].filter(n => n !== q[1]), opts = CS.shuffle([q[1]].concat(CS.shuffle(names).slice(0,3)));
+    area.innerHTML = `<div class="hud"><span>Scenario <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote">${esc(q[0])}</blockquote><p class="muted tiny">Which procedure should be used?</p>
+      <div class="sm-opts">${opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o)}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = opts[+b.dataset.o], ok = pick === q[1]; CS.record({u: q[3]}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (opts[+x.dataset.o] === q[1]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite: "+esc(q[1])+"."}</b> ${esc(q[2])}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next scenario":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("whichtest", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Which Test? · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You can pick the procedure every time.":"Ask three questions: categorical or quantitative? One sample, two samples or paired? Proportion, mean, counts or slope?"}</p>
+      <div class="row-wrap"><button class="btn" id="wt-again">Play again</button><button class="btn ghost" data-go="frq">Try an Inference FRQ</button></div>`;
+    $("#wt-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(all().slice()); round(); };
+  }
+}
+function shapes(area){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window.CS_STAT_SHAPES || [];
+  area.innerHTML = `<p style="max-width:62ch">You have 60 seconds. A clue describes a distribution or a scatterplot; pick the term that fits. Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="sh-go">Start</button></div>`;
+  $("#sh-go").onclick = start;
+  function start(){ items = CS.shuffle(all().slice()); show(); timer = setInterval(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0], same = all().filter(a => a[4] === it[4] && a[1] !== it[1]), names = [...new Set(same.map(a => a[1]))],
+      opts = CS.shuffle([it[1]].concat(CS.shuffle(names).slice(0,3)));
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Matched <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div>
+      <div class="mx-btns">${opts.map((o, k) => `<button class="btn big" data-b="${esc(o)}">${k+1} · ${esc(o)}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = n => { const ok = n === it[1]; CS.record({u: it[3]||1}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: ${it[1]}. ${it[2]}`; } };
+    const btns = $$(".mx-btns .btn", area); btns.forEach(x => x.onclick = () => choose(x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key) && btns[+e.key - 1]) choose(btns[+e.key - 1].dataset.b); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest("shapes", score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">Shape Match · results</span><div class="result-big">${score}</div><p class="muted">matched, ${miss} missed${nb?" · new personal best":""}. ${score>=16?"You read distributions like a pro.":"Describe shape (symmetric or skewed toward the tail), center, spread and unusual values; for scatterplots add direction, form and strength."}</p>
+      <div class="row-wrap"><button class="btn" id="sh-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#sh-again").onclick = () => { time = 60; score = 0; miss = 0; start(); };
+  }
+}
+function sbias(area){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  const all = () => window.CS_STAT_BIAS || [];
+  area.innerHTML = `<p style="max-width:62ch">Each round describes a sampling method or a study. Name the flaw that could mislead the results. Eight scenarios per game.</p><div><button class="btn accent" id="sb-go">Start · ${ROUNDS} scenarios</button></div>`;
+  $("#sb-go").onclick = () => { pool = CS.shuffle(all().slice()); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], names = [...new Set(all().filter(c => c[4] === q[4] && c[1] !== q[1]).map(c => c[1]))], opts = CS.shuffle([q[1]].concat(CS.shuffle(names).slice(0,3)));
+    area.innerHTML = `<div class="hud"><span>Scenario <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote">${esc(q[0])}</blockquote><p class="muted tiny">This best illustrates:</p>
+      <div class="sm-opts">${opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o)}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = opts[+b.dataset.o], ok = pick === q[1]; CS.record({u: q[3]}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (opts[+x.dataset.o] === q[1]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite: "+esc(q[1])+"."}</b> ${esc(q[2])}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next scenario":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("sbias", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Bias Spotter · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"No flawed study gets past you.":"Sampling flaws come from who is chosen (undercoverage, voluntary response, convenience); design flaws come from comparing groups (confounding, no control, no randomization)."}</p>
+      <div class="row-wrap"><button class="btn" id="sb-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="1">Review Unit 1</button></div>`;
+    $("#sb-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(all().slice()); round(); };
+  }
+}
+function plinko(area){
+  const ROUNDS = 8, ROWS = 6; let i = 0, right = 0, qs = [];
+  const pk = a => a[Math.floor(Math.random()*a.length)], ri = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+  const f3 = x => (Math.round(x*1000)/1000).toFixed(3).replace(/0+$/,"").replace(/\.$/,".0");
+  const C = (n,k) => { let r = 1; for (let t = 1; t <= k; t++) r = r*(n-k+t)/t; return Math.round(r); };
+  const nm = ["Maya","Jon","Priya","Luis","Ava","Sam","Zoe","Dev"];
+  const mk = () => { const t = ri(0,4);
+    if (t === 0) { const n = ri(3,5), p = pk([0.2,0.3,0.4,0.6,0.7,0.8]), k = ri(1,n-1), a = C(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);
+      return {u:2, q:`${pk(nm)} makes each free throw with probability ${p}, independently. In ${n} shots, what is the probability of making exactly ${k}?`, a, w:[Math.pow(p,k), C(n,k)*Math.pow(p,k), C(n,k)*Math.pow(1-p,n-k)*p, a/ C(n,k)], why:`P(X = ${k}) = C(${n},${k})(${p})^${k}(${f3(1-p)})^${n-k} = ${f3(a)}. Forgetting the C(${n},${k}) or the failures term gives the wrong answers.`}; }
+    if (t === 1) { const n = ri(2,4), p = pk([0.1,0.2,0.3]), a = 1-Math.pow(1-p,n);
+      return {u:2, q:`Each of ${n} independent trials succeeds with probability ${p}. What is the probability of at least one success?`, a, w:[Math.pow(1-p,n), n*p > 0.99 ? p : n*p, Math.pow(p,n), p], why:`Use the complement: 1 − (${f3(1-p)})^${n} = ${f3(a)}.`}; }
+    if (t === 2) { const pa = pk([0.2,0.3,0.4,0.5]), pb = pk([0.3,0.4,0.6]), a = pa+pb-pa*pb;
+      return {u:2, q:`Events A and B are independent with P(A) = ${pa} and P(B) = ${pb}. What is P(A or B)?`, a, w:[pa+pb, pa*pb, 1-pa*pb, Math.abs(pa-pb)], why:`P(A or B) = P(A) + P(B) − P(A and B) = ${pa} + ${pb} − ${f3(pa*pb)} = ${f3(a)}.`}; }
+    if (t === 3) { const n = pk([20,40,50,80,100]), p = pk([0.1,0.2,0.25,0.3,0.4,0.5]), a = n*p;
+      return {u:2, q:`X is binomial with n = ${n} and p = ${p}. What is the expected value of X?`, a, w:[n*(1-p), p, Math.sqrt(n*p*(1-p)), n+p], why:`E(X) = np = ${n} × ${p} = ${f3(a)}.`, plain:1}; }
+    const a1 = ri(10,30), b1 = ri(10,30), c1 = ri(10,30), d1 = ri(10,30), tot = a1+b1+c1+d1, a = a1/(a1+c1);
+    return {u:2, q:`A table counts ${tot} people. ${a1} are in group A and also have trait T, ${b1} in group A without T, ${c1} not in group A but with T, and ${d1} in neither. What is P(in group A | has trait T)?`, a, w:[a1/tot, a1/(a1+b1), (a1+c1)/tot, c1/(a1+c1)], why:`Given T, the sample space is the ${a1+c1} people with T, so P(A | T) = ${a1}/${a1+c1} = ${f3(a)}.`}; };
+  const build = () => { let q, guard = 0; do { q = mk(); const fmt = x => q.plain ? String(Math.round(x*100)/100) : f3(x); q.opts = [...new Set([q.a].concat(q.w).filter(x => isFinite(x) && x >= 0 && (q.plain || x <= 1)).map(fmt))]; q.right = fmt(q.a); q.opts = q.opts.filter(x => x !== q.right).slice(0,3); q.opts.push(q.right); } while (q.opts.length < 4 && ++guard < 30); q.opts = CS.shuffle(q.opts); return q; };
+  const bx = r => 150 + (r) * 24, W = 300, H = 230;
+  const board = () => { let g = ""; for (let r = 0; r < ROWS; r++) for (let c = 0; c <= r; c++) g += `<circle cx="${150 + (c - r/2)*34}" cy="${34 + r*26}" r="3.6" fill="#94A3B8"/>`;
+    let bins = ""; for (let b = 0; b <= ROWS; b++) { const x = 150 + (b - ROWS/2)*34, win = b === ROWS/2; bins += `<rect x="${x-16}" y="${H-38}" width="32" height="34" rx="5" fill="${win ? "#FACC15" : "#E2E8F0"}" stroke="${win ? "#B45309" : "#94A3B8"}" stroke-width="1.6"/><text x="${x}" y="${H-16}" text-anchor="middle" font-size="${win ? 11 : 12}" font-weight="800" fill="${win ? "#7C2D12" : "#64748B"}" font-family="Manrope, sans-serif">${win ? "WIN" : "×"}</text>`; }
+    return `<svg viewBox="0 0 ${W} ${H}" class="pl-svg" role="img" aria-label="Plinko board" style="width:100%;max-width:340px;display:block;margin:0 auto;background:var(--soft,#F8FAFC);border-radius:14px"><g>${g}</g>${bins}<g id="pl-ball" style="transform:translate(150px,10px);transition:transform .28s ease-in"><circle r="7" fill="#EF4444" stroke="#7F1D1D" stroke-width="1.6"/><circle cx="-2" cy="-2" r="2" fill="#fff" opacity=".8"/></g></svg>`; };
+  area.innerHTML = `<p style="max-width:62ch">Solve each probability problem, then drop the ball. A correct answer sends it to the gold WIN slot; a wrong one bounces to the edge. Eight problems per game.</p><div><button class="btn accent" id="pl-go">Start · ${ROUNDS} drops</button></div>`;
+  $("#pl-go").onclick = () => { qs = Array.from({length: ROUNDS}, build); i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = qs[i];
+    area.innerHTML = `<div class="hud"><span>Drop <b>${i+1}</b>/${ROUNDS}</span><span>Jackpots <b>${right}</b></span></div><div class="so-card">${esc(q.q)}</div>
+      <div class="sm-opts">${q.opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o)}</button>`).join("")}</div>${board()}<div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const ok = q.opts[+b.dataset.o] === q.right; CS.record({u: q.u}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (q.opts[+x.dataset.o] === q.right) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      const target = ok ? ROWS/2 : pk([0,1,ROWS-1,ROWS]), moves = []; let need = target; for (let r = 0; r < ROWS; r++) { const left = ROWS - r; const goR = need >= left ? true : need <= 0 ? false : Math.random() < need/left; moves.push(goR); if (goR) need--; }
+      const ball = $("#pl-ball"); let pos = 0, step = 0;
+      const tick = () => { if (!ball) return; if (step < ROWS) { pos += moves[step] ? 1 : 0; const x = 150 + (pos - (step+1)/2)*34; ball.style.transform = `translate(${x}px,${34 + step*26 + 13}px)`; step++; setTimeout(tick, 290); } else { ball.style.transform = `translate(${150 + (pos - ROWS/2)*34}px,${H-22}px)`; setTimeout(fb, 350); } };
+      const fb = () => { const el = $("#sm-fb"); if (!el) return; el.innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Jackpot.":"Not quite: "+esc(q.right)+"."}</b> ${esc(q.why)}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next drop":"See results"}</button></div>`;
+        $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter" && $("#sm-next")) $("#sm-next").click(); }; };
+      setTimeout(tick, 60); });
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("plinko", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Probability Plinko · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"Jackpot machine.":"Remember: exactly k uses C(n,k)p^k(1−p)^(n−k); at least one uses the complement; and given information shrinks the sample space."}</p>
+      <div class="row-wrap"><button class="btn" id="pl-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="2">Review Unit 2</button></div>`;
+    $("#pl-again").onclick = () => { qs = Array.from({length: ROUNDS}, build); i = 0; right = 0; round(); };
   }
 }
 
