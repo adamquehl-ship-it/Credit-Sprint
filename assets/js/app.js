@@ -765,7 +765,7 @@ function courseLine(sm){
 }
 CS.coursesBar = () => {
   const all = Object.values(window.CS_COURSES).map(c => ({c, sm:CS.courseSummary(c.k)}));
-  const list = all.filter(({c, sm}) => sm.started || c.k === CS.COURSE), more = all.length - list.length;
+  const list = all.filter(({c, sm}) => sm.answered > 0 || c.k === CS.COURSE), more = all.length - list.length;
   return `<section class="courses-bar" aria-label="My courses"><div class="spread"><h2>My courses</h2><span class="muted small">Streak, XP and pets are shared across courses</span></div>
     <div class="course-cards">${list.map(({c, sm}) => { const cur = c.k === CS.COURSE;
       return `<button class="course-card ${cur?"cur":""}" data-course="${c.k}" style="--cc:${c.col};--cs:${c.soft}">
