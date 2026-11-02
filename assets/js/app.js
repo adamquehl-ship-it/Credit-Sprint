@@ -299,8 +299,8 @@ function renderClep(){
         <div class="stack" style="gap:8px"><h3>${esc(g.title)}</h3><p>${esc(g.summary)}</p><ul>${g.points.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
           <div><button class="btn" id="clep-growth">Practice ${esc(g.title.toLowerCase())} questions</button></div></div>
         <h3>Exam-day guide</h3>
-        ${C.guide.map(sec=>`<div class="stack" style="gap:6px"><b>${esc(sec.h)}</b><ul>${sec.p.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
-        <p class="faint small">Sources: ${C.sources.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a>`).join(" · ")}. Policies change; check the official CLEP® site before you register.</p>
+        ${(C.guide||[]).map(sec=>`<div class="stack" style="gap:6px"><b>${esc(sec.h)}</b><ul>${sec.p.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+        <p class="faint small">Sources: ${(C.sources||[]).map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a>`).join(" · ")}. Policies change; check the official CLEP® site before you register.</p>
       </div>
       <div class="stack figure">${CS.figure(C.fig||"ppc")}<span class="eyebrow">${esc(C.figCap||"Growth shifts the PPC outward")}</span>
         <button class="btn ghost" data-go="plan">Build my CLEP® plan</button></div>

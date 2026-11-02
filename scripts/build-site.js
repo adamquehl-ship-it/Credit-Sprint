@@ -65,8 +65,8 @@ ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 <div class="row-wrap" style="gap:8px;flex-wrap:nowrap"><a class="btn ghost sm" href="${up}app.html?signup=1">Sign up</a><a class="btn sm" href="${up}index.html#courses">Start free</a></div></div></header>
 ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
-<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® Macroeconomics, Microeconomics, Biology and Chemistry.</span></div>
-<div><b>Study</b><a href="${up}app.html?course=macro">Macroeconomics app</a><a href="${up}app.html?course=micro">Microeconomics app</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
+<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 10 subjects.</span></div>
+<div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 10 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
 <div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a></div>
 </div><p class="disc">${DISC} © ${new Date().getFullYear()} Credit Sprint.</p></div></footer>
 </div></body></html>
@@ -769,7 +769,7 @@ ${sections.map(([h, html]) => `<h2>${esc(h)}</h2>${html}`).join("\n")}
 <aside><div class="panel flat"><span class="eyebrow">Legal</span><a href="privacy.html" style="${file==="privacy.html"?"font-weight:800;color:var(--ink)":""}">Privacy policy</a><a href="terms.html" style="${file==="terms.html"?"font-weight:800;color:var(--ink)":""}">Terms of service</a></div></aside></main>`}));
 const ul = items => `<ul>${items.map(x=>`<li>${x}</li>`).join("")}</ul>`;
 legal("privacy.html", "Privacy Policy", "How Credit Sprint collects, uses and protects information from students who use the site.",
-  `<p style="font-size:1.05rem">Credit Sprint is a study site for AP® and CLEP® economics. We collect only what we need to run it, we don't sell personal information, and we don't show ads. This policy explains what we collect and what you can do about it.</p>`,
+  `<p style="font-size:1.05rem">Credit Sprint is a study site for AP® and CLEP® exams. We collect only what we need to run it, we don't sell personal information, and we don't show ads. This policy explains what we collect and what you can do about it.</p>`,
 [
  ["What we collect", `<p><b>If you don't create an account</b>, your study progress (answers, scores, streaks, pets, settings) stays in your browser tab and is erased when you close it. We don't receive it.</p>
   <p><b>If you create an account</b>, we store:</p>${ul([

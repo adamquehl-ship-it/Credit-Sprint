@@ -858,3 +858,6 @@ footer a{display:inline-block;padding:7px 4px}
 :root[data-subject="appsych"]{--subject:#7C3AED}
 :root[data-subject="apstat"]:not([data-accent]){--hero1:#0369A1;--hero2:#082F49}
 :root[data-subject="apstat"]{--subject:#0369A1}
+
+/* sign-up window on phones: keep the course list compact so the sign-in options stay near the top */
+@media (max-width:560px){.su-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.su-stat{padding:5px 8px;font-size:.7rem;border-radius:8px}.su-stat b{font-size:.78rem}}
