@@ -26,7 +26,7 @@ CS.openFriends = async (tab = "friends") => {
   const m = $(".modal", w); let q = "", results = null, msg = "", t = null;
   m.innerHTML = `<p class="muted">Loading friends…</p>`;
   await CS.loadFriends(); draw();
-  function row(f, actions){ return `<div class="fr-row"><span class="fr-av" style="background:hsl(${(f.name.charCodeAt(0)*37)%360} 70% 88%);color:hsl(${(f.name.charCodeAt(0)*37)%360} 60% 30%)">${esc(f.name[0]||"?")}</span>
+  function row(f, actions){ return `<div class="fr-row"><span class="fr-av" ${f.username ? `data-prof="${esc(f.username)}" role="button" tabindex="0" title="See ${esc(f.name)}'s showcase"` : ""} style="background:hsl(${(f.name.charCodeAt(0)*37)%360} 70% 88%);color:hsl(${(f.name.charCodeAt(0)*37)%360} 60% 30%)">${esc(f.name[0]||"?")}</span>
     <span class="stack" style="gap:0;flex:1;min-width:0"><b class="small">${esc(f.name)}</b><span class="tiny muted">@${esc(f.username)}</span></span>${actions}</div>`; }
   function draw(){
     const F = CS.friends || {friends:[], incoming:[], outgoing:[]}, list = F.friends || [], others = list.filter(f => !f.me);
@@ -92,7 +92,7 @@ CS.leagueCard = () => {
   const myRank = list.findIndex(f => f.me) + 1, ahead = myRank > 1 ? list[myRank - 2] : null;
   return out + `<div class="panel qcard fr-card"><div class="spread"><span class="eyebrow">Friends this week</span><button class="linklike" data-friends="friends">See all</button></div>
     ${ahead ? `<span class="small" style="color:var(--good);font-weight:700">${(ahead.xp - list[myRank-1].xp + 1).toLocaleString()} XP to pass ${esc(ahead.name)}</span>` : `<span class="small" style="color:var(--good);font-weight:700">You're leading your friends!</span>`}
-    <ol class="lg">${list.slice(0, 6).map((f,i)=>`<li class="${f.me?"me":""}"><span class="rk">${i+1}</span><span class="av">${esc(f.name[0]||"?")}</span><span class="nm">${esc(f.me?"You":f.name)}</span><span class="xp">${f.xp.toLocaleString()} XP</span></li>`).join("")}</ol></div>`;
+    <ol class="lg">${list.slice(0, 6).map((f,i)=>`<li class="${f.me?"me":""}"><span class="rk">${i+1}</span><span class="av" ${f.username ? `data-prof="${esc(f.username)}" role="button" tabindex="0" title="See ${esc(f.me ? "your" : f.name + "'s")} showcase"` : ""}>${esc(f.name[0]||"?")}</span><span class="nm">${esc(f.me?"You":f.name)}</span><span class="xp">${f.xp.toLocaleString()} XP</span></li>`).join("")}</ol></div>`;
 };
 document.addEventListener("click", e => { const b = e.target.closest("[data-friends]"); if (b) { e.preventDefault(); CS.openFriends(b.dataset.friends || "friends"); } });
 

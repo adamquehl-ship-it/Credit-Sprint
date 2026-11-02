@@ -4,6 +4,8 @@
 (function(){
 "use strict";
 /* what a free account opens up, course by course (counts come from course-stats.js) */
+const suLine = () => { const st = Object.values(window.CS_COURSE_STATS || {}); const q = st.reduce((n, x) => n + (x.q || 0), 0);
+  return q ? `<p class="su-line">${I("check")}<span><b>${q.toLocaleString()} practice questions</b> across ${Object.keys(window.CS_COURSES).length} courses, saved on every device</span></p>` : ""; };
 const suStats = () => window.CS_COURSE_STATS ? `<div class="su-stats">${Object.values(window.CS_COURSES).map(c => `<span class="su-stat" style="--cc:${c.col}"><b>${CS.esc ? CS.esc(c.name) : c.name}</b><span>${window.CS_STATLINE(c.k)}</span></span>`).join("")}</div>` : "";
 const CS = window.CS, $ = CS.$, $$ = CS.$$, esc = CS.esc, I = CS.icon;
 const S = () => CS.S();
@@ -99,24 +101,47 @@ CS.syncNow = async () => { if (!CS.account) return; clearTimeout(syncT); try { a
 /* ---------- sign-in modal ---------- */
 function modal(){ const w = document.createElement("div"); w.className = "modal-wrap"; w.innerHTML = `<div class="modal acct-modal" role="dialog" aria-modal="true" aria-label="Account"></div>`;
   document.body.appendChild(w); w.addEventListener("click", e => { if (e.target === w) w.remove(); }); return w; }
+/* sign-up gate before the diagnostic: guests make a free account first (or skip). After signing in, the diagnostic starts
+   by itself, even if syncing reloads the page. */
+const NEXT = "cs.next";
+const startDiag = () => { CS._diagAuto = true; CS.go("practice", {mode:"diagnostic"}); };
+function resumeNext(){
+  let n = null; try { n = sessionStorage.getItem(NEXT); } catch(e) {}
+  if (n !== "diag" || !CS.account) return;
+  let tries = 0; const go = () => { if (document.querySelector(".modal-wrap") && ++tries < 300) return setTimeout(go, 500); try { sessionStorage.removeItem(NEXT); } catch(e) {} startDiag(); };
+  setTimeout(go, 300);
+}
+CS.beforeDiag = async (begin) => {
+  if (CS.account || !online()) return begin();
+  if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } }
+  if (!cfg.accounts) return begin();
+  try { sessionStorage.setItem(NEXT, "diag"); sessionStorage.setItem("cs.asked", "1"); } catch(e) {}
+  CS.openAccount({signup:true, gate:"diag", onSkip: () => { try { sessionStorage.removeItem(NEXT); } catch(e) {} begin(); },
+    onClose: () => { try { sessionStorage.removeItem(NEXT); } catch(e) {} }});
+};
 CS.openAccount = async (opts = {}) => {
-  const ask = !!opts.prompt, signup = ask || !!opts.signup;
+  const ask = !!opts.prompt, signup = ask || !!opts.signup, gate = opts.gate === "diag";
   if (ask) { if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } } if (!cfg.accounts || CS.account) return; }
-  const w = modal(), m = $(".modal", w);
+  /* opts.host: draw the sign-in form inside another window (the combined welcome window) instead of its own popup */
+  const host = opts.host || null, w = host ? null : modal(), m = host || $(".modal", w);
+  const close = () => { if (w) w.remove(); };
+  if (opts.onClose && w) w.addEventListener("click", e => { if (e.target === w) opts.onClose(); });
   if (!online()) { m.innerHTML = closeRow("Accounts") + `<p class="muted">Accounts work on creditsprintprep.com once the database is set up. Your progress is safe in this browser in the meantime.</p>`; wire(); return; }
   if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } }
   if (!cfg.accounts) { m.innerHTML = closeRow("Accounts") + `<p class="muted">Accounts are coming soon. Your progress is saved in this browser, and the practice league works without signing in.</p>`; wire(); return; }
-  if (CS.account) { w.remove(); return accountView(!!opts.code); }
+  if (CS.account) { close(); return host ? null : accountView(!!opts.code); }
   let tab = cfg.google ? "google" : cfg.email ? "email" : "password", step = "email", email = "", mode = signup ? "new" : "login", err = "";
   draw();
-  function closeRow(t){ return `<div class="spread"><h2>${esc(t)}</h2><button class="btn ghost sm" data-x>Close</button></div>`; }
-  function wire(){ $$("[data-x]", m).forEach(b => b.onclick = () => w.remove()); }
+  function closeRow(t){ return host ? `<h3>${esc(t)}</h3>` : `<div class="spread"><h2>${esc(t)}</h2><button class="btn ghost sm" data-x>Close</button></div>`; }
+  function wire(){ $$("[data-x]", m).forEach(b => b.onclick = () => { close(); if (opts.onClose) opts.onClose(); });
+    $$("[data-skip]", m).forEach(b => b.onclick = () => { close(); if (opts.onSkip) opts.onSkip(); }); }
   function draw(){
     const tabs = [["email","Email code",cfg.email],["google","Google",!!cfg.google],["password","Username",cfg.password]].filter(t => t[2]);
-    m.innerHTML = (signup ? closeRow("Create your free account") + `<p class="muted small">Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` + suStats() : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
+    m.innerHTML = (gate ? closeRow("Save your diagnostic results") + `<p class="muted small">Make a free account first so your results, study plan and score estimate are saved on every device. It takes about 20 seconds, then your diagnostic starts.</p>`
+      : signup ? closeRow("Create your free account") + `<p class="muted small">Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` + suLine() : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
       <div class="seg" role="tablist" style="max-width:420px">${tabs.map(([k,n]) => `<button role="tab" data-tab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>
       <div class="stack" id="acct-body" style="gap:12px"></div>${err?`<div class="feedback bad">${esc(err)}</div>`:""}
-      <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>${ask ? `<button class="btn ghost sm" data-x style="align-self:flex-start">Maybe later. Keep studying without an account</button>` : ""}`;
+      <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>${gate ? `<button class="linklike" data-skip style="align-self:flex-start">Skip for now and start the diagnostic (results stay on this device only)</button>` : ask ? `<button class="btn ghost sm" data-x style="align-self:flex-start">Maybe later. Keep studying without an account</button>` : ""}`;
     wire(); $$("[data-tab]", m).forEach(b => b.onclick = () => { tab = b.dataset.tab; err = ""; draw(); });
     const body = $("#acct-body", m);
     if (tab === "email" && step === "email") {
@@ -149,10 +174,11 @@ CS.openAccount = async (opts = {}) => {
     }
   }
   async function done(p){
-    try { const r = await p; window.CS_STORE.join(); CS.account = r.user; renderChip(); w.remove();
+    try { const r = await p; window.CS_STORE.join(); CS.account = r.user; renderChip(); close();
+      if (host) { m.innerHTML = `<div class="feedback good">${I("check")} You're signed in${r.user.name ? ", " + esc(r.user.name.replace(/\.$/, "")) : ""}. Your progress is saved.</div>`; if (opts.onSignedIn) opts.onSignedIn(r.user); }
       if (!r.user.name) askName(); else CS.toast(r.created ? "Account created. Your progress is now saved." : `Welcome back, ${r.user.name}.`);
       api("me").then(x => { CS.account = x.user; renderChip(); if (CS.afterAccount) CS.afterAccount(); }).catch(() => {});
-      setStatus("Syncing…"); await pull(false); }
+      setStatus("Syncing…"); resumeNext(); await pull(false); }
     catch(e) { err = e.data && e.data.needAge ? "Check the box to confirm you're 13 or older." : e.message; draw(); }
   }
 };
@@ -207,7 +233,7 @@ document.addEventListener("click", e => { if (e.target.closest("[data-billing]")
 
 /* ---------- boot: who's signed in? ---------- */
 renderChip();
-if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); })
+if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); resumeNext(); })
   .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401) promptSignup(/[?&]signup\b/.test(location.search)); });
 
 /* ask signed-out students to make an account once per visit, after onboarding closes */
@@ -215,6 +241,9 @@ function promptSignup(force){
   try { if (!force && sessionStorage.getItem("cs.asked")) return; } catch(e) {}
   let tries = 0;
   const go = () => { if (CS.account) return; if (document.querySelector(".modal-wrap")) { if (++tries < 600) setTimeout(go, 1000); return; }
+    /* already asked this visit (for example by the sign-up step before the diagnostic), or a diagnostic is in progress */
+    try { if (!force && sessionStorage.getItem("cs.asked")) return; } catch(e) {}
+    if (document.querySelector("#p-run .opt")) { if (++tries < 600) setTimeout(go, 5000); return; }
     try { sessionStorage.setItem("cs.asked", "1"); } catch(e) {} CS.openAccount({prompt:true}); };
   setTimeout(go, 1200);
 }

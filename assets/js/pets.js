@@ -823,18 +823,28 @@ const CUSTOM = {
 };
 
 /* ---------- reactions ---------- */
-let reactT = null;
+let reactT = null, combo = 0;
 CS.petReact = (kind, egg) => {
   const P = st(); if (!P.active && !egg) return;
   let el = $("#pet-pop"); if (!el) { el = document.createElement("div"); el.id = "pet-pop"; el.className = "pet-pop"; document.body.appendChild(el); }
   if (kind === "egg") { let el2 = $("#pet-pop"); if (!el2) { el2 = document.createElement("div"); el2.id = "pet-pop"; el2.className = "pet-pop"; document.body.appendChild(el2); }
     el2.innerHTML = `${CS.eggSVG(egg.r,0,1,44)}<span class="stack" style="gap:0"><b class="small">You earned a mystery egg!</b><span class="tiny muted">${egg.need} correct answers to hatch</span></span>`;
     el2.classList.add("on"); clearTimeout(reactT); reactT = setTimeout(()=>el2.classList.remove("on"), 2600); return; }
-  const lines = kind === "yay" ? ["Nice one!","You've got this!","Big brain move.","Keep going!","That's the one!"] : ["Shake it off!","Read the explanation, then try again.","Mistakes are how we learn.","We'll get the next one."];
+  /* combo: 3+ right in a row earns a flip */
+  combo = kind === "yay" ? combo + 1 : 0;
+  const hot = combo >= 3 && combo % 3 === 0;
+  const lines = kind === "yay" ? (hot ? [`${combo} in a row!`, "You're on fire!", "Unstoppable!"] : ["Nice one!","You've got this!","Big brain move.","Keep going!","That's the one!"])
+    : ["Shake it off!","Read the explanation, then try again.","Mistakes are how we learn.","We'll get the next one."];
   const msg = lines[Math.floor(Math.random()*lines.length)];
-  const eggLine = egg && kind === "yay" ? `<span class="tiny muted">Egg: ${egg.prog}/${egg.need}</span>` : "";
-  el.innerHTML = `${P.active ? CS.petSVG(P.active, {size:56, mood:kind==="yay"?"happy":"oops"}) : CS.eggSVG(egg.r, egg.prog, egg.need, 44)}<span class="stack" style="gap:0"><b class="small">${esc(msg)}</b>${eggLine}</span>`;
-  el.classList.add("on"); clearTimeout(reactT); reactT = setTimeout(()=>el.classList.remove("on"), 1600);
+  const eggLine = egg && kind === "yay" ? `<span class="pp-egg"><i style="width:${Math.round(egg.prog / egg.need * 100)}%"></i></span><span class="tiny muted">Egg ${egg.prog}/${egg.need}</span>` : combo >= 2 && kind === "yay" && !hot ? `<span class="tiny muted">🔥 ${combo} in a row</span>` : "";
+  /* particles fly out from the pet: sparkles when right, a sweat drop when wrong */
+  const fx = kind === "yay" ? Array.from({length: hot ? 10 : 6}, (_, i) => { const a = (i / (hot ? 10 : 6)) * Math.PI * 2 - Math.PI / 2, d = 34 + (i % 2) * 12;
+      return `<i style="--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d - 6).toFixed(0)}px;--d:${(i % 3) * 60}ms">${hot ? ["🔥","⭐","✨"][i % 3] : ["✨","⭐","💚"][i % 3]}</i>`; }).join("")
+    : `<b class="pp-sweat">💧</b>`;
+  const face = P.active ? CS.petSVG(P.active, {size:64, mood:kind==="yay"?"happy":"oops"}) : CS.eggSVG(egg.r, egg.prog, egg.need, 48);
+  el.className = "pet-pop " + kind;
+  el.innerHTML = `<span class="pp-pet ${kind} ${hot?"combo":""}">${face}<span class="pp-fx">${fx}</span></span><span class="stack" style="gap:2px"><b class="small">${esc(msg)}</b>${eggLine}</span>`;
+  void el.offsetWidth; el.classList.add("on"); clearTimeout(reactT); reactT = setTimeout(()=>el.classList.remove("on"), hot ? 2200 : 1700);
 };
 
 /* ---------- egg found + hatch animations ---------- */

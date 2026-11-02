@@ -145,7 +145,7 @@ ${landing(COURSES, ic)}
   </div>
 </div></section>
 <section class="sec alt" id="games"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect 58 original econ creatures across both courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
+  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all ten courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
   <div class="gamechips">${GAMES.map(([k,n])=>`<span class="gamechip"><span>${ic(k)}</span>${n}</span>`).join("")}</div>
 </div></section>
 <section class="sec" id="how"><div class="wrap">
@@ -829,6 +829,8 @@ fs.writeFileSync(path.join(ROOT,"robots.txt"), `User-agent: *\nAllow: /\nDisallo
 /* stamp the same version into app.html's CSS and script links */
 const appPath = path.join(ROOT, "app.html");
 require("./landing-options.js");
+/* the home page look Adam chose (Academic: warm ivory, serif headlines, credit-savings focus). See scripts/landing-pro.js. */
+{ const fp = path.join(ROOT, "index.html"); fs.writeFileSync(fp, require("./landing-pro.js").apply(fs.readFileSync(fp, "utf8"), "p3")); }
 { const tag = '<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/brand/credit-sprint-logo-512.png">';
   for (const f of ["index.html", "app.html"]) { const fp = path.join(ROOT, f); let h = fs.readFileSync(fp, "utf8"); if (!h.includes("manifest.webmanifest")) { h = h.replace('<meta name="theme-color"', tag + '<meta name="theme-color"'); if (!h.includes("manifest.webmanifest")) h = h.replace("</head>", tag + "</head>"); fs.writeFileSync(fp, h); } } }
 fs.writeFileSync(appPath, fs.readFileSync(appPath, "utf8").replace(/\?v=[a-z0-9]+/g, "?v="+VER).replace(/window\.CS_V="[a-z0-9]*"/, 'window.CS_V="'+VER+'"'));

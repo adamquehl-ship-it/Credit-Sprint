@@ -104,3 +104,13 @@ Signed-in students can upload a profile picture for leaderboards (account window
 - **Automatic screening:** every upload is checked by Claude (vision) before it's saved. Anything not school-appropriate, or showing personal information, is refused. This uses the same `ANTHROPIC_API_KEY` secret as the AI tutor. Without that key, uploads are refused, so the check is never skipped. Optional: set `MODERATION_MODEL` to change the model.
 - Students can tap someone else's picture to report it. It disappears for them right away, and 3 reports hide it for everyone until the owner uploads a new one.
 - Pictures are stored in the D1 database. The `avatars` and `avatar_reports` tables are created automatically, so there's no setup step.
+
+## Badges and profile showcase
+
+- **Badges** (`assets/js/badges.js`): medal art in bronze, silver, gold and platinum for achievements, and a shield badge for every unit boss in every course (named after the boss in `assets/js/courses.js`). Students see them under **Pets & badges → Badges**, and a pop-up celebrates each new one.
+- **Showcase** (Pets & badges → Showcase): students pick 3 pets and 3 badges. It saves with their synced progress. Friends tap a student's picture on the friends leaderboard to see it (`functions/api/showcase.js`). Only friends can view it, and only pets still owned and badges really earned are shown.
+
+## Home page and welcome window
+
+- The home page uses the "Academic" look, applied by `scripts/landing-pro.js` every time `build-site.js` runs. To preview the other looks, see the notes at the top of that file.
+- New students get the combined welcome window: setup on one side and a free account on the other (two tabs on phones). Change `CS.OB_STYLE` in `assets/js/app.js` to `"compact"` or `"steps"` for the other layouts. Guests who start the diagnostic from anywhere else are asked to make an account first, or can skip.

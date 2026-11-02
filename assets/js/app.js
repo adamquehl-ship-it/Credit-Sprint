@@ -11,9 +11,9 @@ const meter = (m, cls="") => `<div class="meter ${cls}" aria-hidden="true"><i st
 /* ---------- router + chrome ---------- */
 const NAV = [
   {k:"home", n:"Dashboard", ic:"home"}, {k:"learn", n:"Learn", ic:"book"}, {k:"practice", n:"Practice", ic:"target"},
-  {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets", ic:"paw"}, {k:"store", n:"Store", ic:"bag"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}
+  {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets & badges", ic:"paw"}, {k:"store", n:"Store", ic:"bag"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}
 ];
-const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets", store:"Store", frq:"Free response", plan:"Study plan"};
+const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets & badges", store:"Store", frq:"Free response", plan:"Study plan"};
 const VIEWS = NAV.map(n=>n.k);
 let current = "home";
 CS.view = () => current;
@@ -39,7 +39,7 @@ CS.chrome = () => {
   if (CS.petFlush) setTimeout(CS.petFlush, 300);
   const s = S(), st = CS.streak(), today = s.days[CS.today()]||0, lv = CS.level(), nm = Object.keys(s.mistakes).length, due = dueCount();
   $("#nav").innerHTML = NAV.map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n}</span>${n.k==="practice"&&nm?`<span class="count">${nm}</span>`:n.k==="cards"&&due?`<span class="count">${due}</span>`:""}</button>`).join("");
-  $("#tabbar").innerHTML = NAV.filter(n=>["home","learn","practice","games","pets"].includes(n.k)).map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n==="Dashboard"?"Home":n.n==="Flashcards"?"Cards":n.n}</span></button>`).join("");
+  $("#tabbar").innerHTML = NAV.filter(n=>["home","learn","practice","games","pets"].includes(n.k)).map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n==="Dashboard"?"Home":n.n==="Flashcards"?"Cards":n.k==="pets"?"Pets":n.n}</span></button>`).join("");
   $("#title").textContent = TITLES[current];
   $("#course-pill").innerHTML = `<span class="cpill-ico" style="background:${CS.C.col}">${I(CS.C.icon||"book")}</span><span class="cpill-txt"><small>Course</small><b>${esc(CS.C.short)}<span class="hide-sm">${S().exam==="clep"?" · CLEP®":" · AP®"}</span></b></span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>`;
   $("#chips").innerHTML = `
@@ -56,7 +56,7 @@ CS.chrome = () => {
 };
 document.addEventListener("click", e => {
   const g = e.target.closest("[data-go]");
-  if (g) { e.preventDefault(); const o = {}; ["unit","mode","game","lab"].forEach(k => { if (g.dataset[k]) o[k] = k==="unit" ? +g.dataset[k] : g.dataset[k]; }); CS.go(g.dataset.go, o); }
+  if (g) { e.preventDefault(); const o = {}; ["unit","mode","game","lab","tab"].forEach(k => { if (g.dataset[k]) o[k] = k==="unit" ? +g.dataset[k] : g.dataset[k]; }); CS.go(g.dataset.go, o); }
 });
 function setExam(x){ const s = S(); if (s.exam === x) return; s.exam = x; if (!s.dateSet) s.plan.date = CS.defaultDate(x); CS.save(); CS.go(current, {keepScroll:true}); }
 $$(".examseg button").forEach(b => b.onclick = () => setExam(b.dataset.exam));
@@ -72,32 +72,60 @@ function weakestUnit(){ return CS.UNITS.map(u=>({u, m:CS.mastery(u.id)})).sort((
 /* ---------- modals: onboarding + settings ---------- */
 function modal(html){ const w = document.createElement("div"); w.className = "modal-wrap"; w.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`; document.body.appendChild(w); return w; }
 const GOALS = [[30,"Casual","About 5 minutes a day"],[60,"Regular","About 10 minutes a day"],[100,"Serious","About 15–20 minutes a day"],[150,"Intense","30+ minutes a day"]];
+/* Welcome window. Three layouts (pick one with CS.OB_STYLE; ?ob=steps|compact|combined previews the others):
+   steps    — two short steps that each fit on one screen, sign-up shown separately before the diagnostic
+   compact  — everything on one compact screen, sign-up shown separately before the diagnostic
+   combined — setup and sign-up side by side in one window (stacked on phones) */
+CS.OB_STYLE = "combined";   // Adam chose the combined window
+function obStyle(){ const q = (location.search.match(/[?&]ob=(steps|compact|combined)\b/) || [])[1]; return q || CS.OB_STYLE; }
 function onboarding(){
-  const s = S(); let ex = s.exam, goal = s.goal, date = s.plan.date;
+  const s = S(), style = obStyle(); let ex = s.exam, goal = s.goal, date = s.plan.date, step = 0, tabM = "setup";
   const w = modal(""); const m = $(".modal", w);
+  m.classList.add("ob", "ob-" + style);
+  function courses(){ return `<div class="ob-courses">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><span class="ob-ci" style="background:${c.col}">${I(c.icon||"book")}</span><span class="ob-cn"><b>${esc(c.name)}</b><small>${c.apOnly?"AP®":c.clepOnly?"CLEP®":"AP® · CLEP®"}</small></span></button>`).join("")}</div>`; }
+  function examRow(){ return `<div class="ob-row">
+      <div class="stack" style="gap:6px;flex:1;min-width:200px"><span class="eyebrow">Exam</span><div class="seg ob-seg">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${ex==="ap"}">${esc(CS.C.ap)}</button>`}${CS.C.apOnly ? "" : `<button data-ex="clep" aria-pressed="${ex==="clep"}">${esc(CS.C.clepShort)}</button>`}</div></div>
+      <div class="stack" style="gap:6px"><label class="eyebrow" for="ob-date">Exam date</label><input type="date" id="ob-date" value="${esc(date)}"></div></div>
+      <span class="muted tiny">${ex==="ap"?"We'll assume May 1 until you set your school's AP® date.":"CLEP® can be taken any time. Pick a target date."}</span>`; }
+  function goals(){ return `<div class="stack" style="gap:6px"><span class="eyebrow">Daily goal</span><div class="ob-goals">${GOALS.map(([v,n,d])=>`<button data-goal="${v}" aria-pressed="${goal===v}"><b>${n}</b><small>${d.replace("About ","~").replace(" a day","/day")}</small></button>`).join("")}</div></div>`; }
+  const head = (t) => `<div class="ob-head">${CS.logo("mark")}<div><span class="eyebrow">Welcome to Credit Sprint</span><h2>${t}</h2></div></div>`;
+  const actions = `<div class="row-wrap ob-actions"><button class="btn lg" id="ob-diag">Start the ${Math.round(CS.UNITS.length*1.6)}-minute diagnostic</button><button class="btn ghost" id="ob-skip">Explore first</button></div>`;
   draw();
   function draw(){
-    m.innerHTML = `<div class="row-wrap">${CS.logo("mark")}<span class="eyebrow">Welcome to Credit Sprint</span></div>
-      <h2>Let's set up your sprint to college credit</h2>
-      <div class="stack"><span class="eyebrow">Which course?</span>
-        <div class="opt-grid course-opts">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><b>${esc(c.name)}</b><span class="muted small">${esc(c.blurb)}</span>${CS_STATLINE(c.k)?`<span class="ob-stat">${esc(CS_STATLINE(c.k, true))}</span>`:""}</button>`).join("")}</div>
-        <span class="muted tiny">You can add other courses any time. Your streak, XP and pets carry over.</span></div>
-      <div class="stack"><span class="eyebrow">Which exam are you taking?</span>
-        <div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${ex==="ap"}"><b>${esc(CS.C.ap)}</b><span class="muted small">${esc(CS.C.apFmt||"")}</span></button>`}
-        ${CS.C.apOnly ? "" : `<button data-ex="clep" aria-pressed="${ex==="clep"}"><b>${esc(CS.C.clepShort)}</b><span class="muted small">${esc(CS.C.clepFmt||"")}</span></button>`}</div></div>
-      <div class="stack"><label class="eyebrow" for="ob-date">Exam date</label>
-        <input type="date" id="ob-date" value="${esc(date)}" style="max-width:220px">
-        <span class="muted small">${ex==="ap"?"We'll assume May 1 until you set the date from your school's AP® schedule.":"CLEP® exams can be scheduled any time. Pick your target date."}</span></div>
-      <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n,d])=>`<button data-goal="${v}" aria-pressed="${goal===v}"><b>${n} · ${v} XP</b><span class="muted small">${d}</span></button>`).join("")}</div></div>
-      <div class="row-wrap"><button class="btn lg" id="ob-diag">Start with a ${Math.round(CS.UNITS.length*1.6)}-minute diagnostic</button><button class="btn ghost" id="ob-skip">Explore first</button></div>`;
+    if (style === "steps") {
+      m.innerHTML = step === 0
+        ? `${head("Which course are you studying?")}<span class="ob-dots"><i class="on"></i><i></i></span>${courses()}<span class="muted tiny">You can add more courses any time. Streak, XP and pets carry over.</span>
+           <div class="row-wrap"><button class="btn lg" id="ob-next">Next</button></div>`
+        : `${head("Set your exam and daily goal")}<span class="ob-dots"><i class="on"></i><i class="on"></i></span>${examRow()}${goals()}${actions}<button class="linklike" id="ob-back" style="align-self:flex-start">← Change course</button>`;
+    } else if (style === "compact") {
+      m.innerHTML = `${head("Let's set up your sprint to college credit")}<div class="stack" style="gap:6px"><span class="eyebrow">Course</span>${courses()}</div>${examRow()}${goals()}${actions}`;
+    } else {
+      const showAcct = !CS.account && online();
+      m.innerHTML = `${head("Let's set up your sprint to college credit")}
+        ${showAcct ? `<div class="seg ob-tabs"><button data-obt="setup" aria-pressed="${tabM==="setup"}">1 · Set up</button><button data-obt="acct" aria-pressed="${tabM==="acct"}">2 · Save progress</button></div>` : ""}
+        <div class="ob-cols ${showAcct?"":"one"} show-${tabM}"><div class="stack ob-left" style="gap:14px"><div class="stack" style="gap:6px"><span class="eyebrow">Course</span>${courses()}</div>${examRow()}${goals()}</div>
+        ${showAcct ? `<div class="ob-right"><span class="eyebrow">Step 2 · Save your progress</span><div id="ob-acct"></div></div>` : ""}</div>${actions}`;
+      if (showAcct) { CS.openAccount({signup:true, host: $("#ob-acct", m)});
+        $$("[data-obt]", m).forEach(b => b.onclick = () => { tabM = b.dataset.obt; $$("[data-obt]", m).forEach(x => x.setAttribute("aria-pressed", x === b)); $(".ob-cols", m).className = "ob-cols show-" + tabM; }); }
+    }
     $$("[data-ex]", m).forEach(b => b.onclick = () => { ex = b.dataset.ex; if (!s.dateSet) date = CS.defaultDate(ex); draw(); });
-    $$("[data-crs]", m).forEach(b => b.onclick = () => { if (b.dataset.crs !== CS.COURSE) { s.exam = ex; CS.switchCourse(b.dataset.crs); } });
+    $$("[data-crs]", m).forEach(b => b.onclick = () => { if (b.dataset.crs !== CS.COURSE) { s.exam = ex; if (style === "steps") s.obStep = 1; CS.switchCourse(b.dataset.crs); } else if (style === "steps") { step = 1; draw(); } });
     $$("[data-goal]", m).forEach(b => b.onclick = () => { goal = +b.dataset.goal; draw(); });
-    $("#ob-date", m).onchange = e => { if (e.target.value) { date = e.target.value; s.dateSet = date !== CS.defaultDate(ex); } };
-    const finish = (diag) => { s.exam = ex; s.goal = goal; s.plan.date = date; s.onboarded = true; CS.save(); w.remove(); diag ? CS.go("practice",{mode:"diagnostic"}) : CS.go("home"); };
-    $("#ob-diag", m).onclick = () => finish(true); $("#ob-skip", m).onclick = () => finish(false);
+    const d = $("#ob-date", m); if (d) d.onchange = e => { if (e.target.value) { date = e.target.value; s.dateSet = date !== CS.defaultDate(ex); } };
+    const nx = $("#ob-next", m); if (nx) nx.onclick = () => { step = 1; draw(); };
+    const bk = $("#ob-back", m); if (bk) bk.onclick = () => { step = 0; draw(); };
+    const finish = (diag) => { s.exam = ex; s.goal = goal; s.plan.date = date; s.onboarded = true; delete s.obStep; CS.save(); w.remove();
+      CS.go("home");
+      if (diag) { const run = () => { CS._diagAuto = true; CS.go("practice",{mode:"diagnostic"}); };
+        /* combined window already showed the sign-up form, so the diagnostic starts right away */
+        (style === "combined" || !CS.beforeDiag) ? run() : CS.beforeDiag(run); } };
+    const dg = $("#ob-diag", m); if (dg) dg.onclick = () => finish(true);
+    const sk = $("#ob-skip", m); if (sk) sk.onclick = () => finish(false);
+    m.setAttribute("tabindex", "-1"); m.focus({preventScroll: true});   // no button looks pre-selected by focus
   }
+  if (style === "steps" && s.obStep) { step = 1; draw(); }
 }
+const online = () => location.protocol.startsWith("http");
 function settings(){
   const s = S(); const w = modal(""); const m = $(".modal", w); let confirmReset = false;
   draw();
@@ -204,8 +232,12 @@ render.home = () => {
       <span class="g-ico" style="width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:${cert?"var(--mint-soft)":"var(--surface-2)"};color:${cert?"var(--good)":"var(--faint)"}">${I("cap")}</span>
       <div class="stack" style="gap:2px;flex:1;min-width:200px"><h3>Certificate of exam readiness</h3><span class="muted small">${cert?"Unlocked. Download it, share it, put it on a college application.":"Unlocks when you beat all six unit bosses or reach 70% mastery in every unit."}</span></div>
       <button class="btn ${cert?"":"ghost"}" id="cert-btn" ${cert?"":"disabled"}>${cert?"Get my certificate":`${Object.keys(s.bosses).length}/${CS.UNITS.length} bosses`}</button></div>
-    <div class="stack"><div class="spread"><h2>Badges</h2><span class="muted small">${nBadges} of ${CS.BADGES.length} unlocked</span></div>
-      <div class="badges">${CS.BADGES.map(b=>`<div class="badge ${s.badges[b.k]?"on":""}"><span class="b-ico">${I(b.ic)}</span><span class="stack" style="gap:0"><b class="small">${esc(b.n)}</b><span class="muted tiny">${esc(b.d)}</span></span></div>`).join("")}</div></div>`;
+    ${CS.badgeSVG ? (() => { const got = Object.keys(s.badges).filter(k => CS.badgeDef(k)).sort((a, b) => s.badges[b] - s.badges[a]);
+      const next = CS.BADGES.filter(b => !s.badges[b.k]).slice(0, Math.max(0, 6 - got.length));
+      return `<div class="stack"><div class="spread"><h2>Badges</h2><button class="linklike" data-go="pets" data-tab="badges">See all ${got.length ? `· ${got.length} earned` : ""} →</button></div>
+      <div class="bd-strip">${got.slice(0, 6).map(k => `<div class="bd-mini">${CS.badgeSVG(k, {size:46})}<span class="tiny">${esc(CS.badgeDef(k).n)}</span></div>`).join("")}${next.map(b => `<div class="bd-mini">${CS.badgeSVG(b.k, {size:46, locked:true})}<span class="tiny muted">${esc(b.d)}</span></div>`).join("")}</div></div>`; })()
+      : `<div class="stack"><div class="spread"><h2>Badges</h2><span class="muted small">${nBadges} of ${CS.BADGES.length} unlocked</span></div>
+      <div class="badges">${CS.BADGES.map(b=>`<div class="badge ${s.badges[b.k]?"on":""}"><span class="b-ico">${I(b.ic)}</span><span class="stack" style="gap:0"><b class="small">${esc(b.n)}</b><span class="muted tiny">${esc(b.d)}</span></span></div>`).join("")}</div></div>`}`;
   const cb = $("#cert-btn"); if (cb && cert) cb.onclick = certificate;
 };
 
@@ -498,7 +530,10 @@ function diagnostic(body){
       <p style="max-width:62ch">Two questions from each unit, no hints until the end. Your results set your mastery levels, your study plan and your score estimate.</p>
       ${last?`<p class="muted">Last taken ${esc(new Date(last.at).toLocaleDateString())}: <b>${last.score}/${last.n||DN}</b>.</p>`:""}
       <div><button class="btn lg" id="d-start">${last?"Retake diagnostic":"Start diagnostic"}</button></div>`;
-    $("#d-start").onclick = () => { D = {i:0, picks:[], qs: CS.UNITS.flatMap(u=>CS.shuffle(CS.QS.filter(q=>q.u===u.id)).slice(0,2)).map(CS.prepQ)}; diagnostic(body); };
+    const begin = () => { D = {i:0, picks:[], qs: CS.UNITS.flatMap(u=>CS.shuffle(CS.QS.filter(q=>q.u===u.id)).slice(0,2)).map(CS.prepQ)}; diagnostic(body); };
+    /* guests are asked to make a free account first so their results and study plan are saved */
+    $("#d-start").onclick = () => CS.beforeDiag ? CS.beforeDiag(begin) : begin();
+    if (CS._diagAuto) { CS._diagAuto = false; begin(); }
     return;
   }
   if (D.i < D.qs.length) {

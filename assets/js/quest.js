@@ -120,8 +120,8 @@ CS.seasonCard = () => {
   const lo = tierNow ? CS.TIERS[tierNow-1] : 0, hi = nextI < 0 ? CS.TIERS[CS.TIERS.length-1] : CS.TIERS[nextI];
   const cell = (lane, r, i) => { const got = c[lane].includes(i), reach = xp >= CS.TIERS[i], lock = lane === "pass" && !open;
     const st = got ? "got" : lock ? "lock" : reach ? "ready" : "", inst = r.split(":")[2];
-    return `<button class="sp-cell ${lane} ${st}" data-claim="${lane}:${i}" ${got || (!reach && !lock) ? "disabled" : ""} title="${lock?"Unlock with Pass Plan":reach?(got?"Claimed":"Claim"):`Reach ${CS.TIERS[i].toLocaleString()} season XP`}">
-      <span class="ri">${lock?"🔒":icon(r)}</span><span class="rl">${label(r)}</span>${inst?`<span class="sp-inst" title="Hatches the moment you claim it">⚡</span>`:""}${st==="ready"?`<span class="claim">Claim</span>`:got?`<span class="ok">✓</span>`:""}</button>`; };
+    return `<button class="sp-cell ${lane} ${st} ${reach?"reached":""}" data-claim="${lane}:${i}" ${got || (!reach && !lock) ? "disabled" : ""} title="${lock?"Unlock with Pass Plan":reach?(got?"Claimed":"Claim"):`Reach ${CS.TIERS[i].toLocaleString()} season XP`}">
+      <span class="ri">${icon(r)}${lock?`<i class="ri-lock">🔒</i>`:got?`<i class="ri-ok">✓</i>`:""}</span><span class="rl">${label(r)}${inst?` <span class="sp-inst" title="Hatches the moment you claim it">⚡</span>`:""}</span>${st==="ready"?`<span class="claim">Claim</span>`:""}</button>`; };
   const elapsed = Math.max(1, 15 - si.left), perDay = xp / elapsed, proj = Math.min(NT, CS.TIERS.filter(t => perDay * 14 >= t).length);
   const pace = xp > 0 && elapsed >= 2 ? `<span class="tiny muted">At your pace (about ${Math.round(perDay)} XP a day) you'll reach tier ${proj} by the end of the season.</span>` : "";
   const n = CS.seasonClaimable(), focus = Math.max(0, Math.min(NT - 1, tierNow - 1));
@@ -131,15 +131,19 @@ CS.seasonCard = () => {
       <div class="meter mint"><i style="width:${Math.min(100, (xp - lo) / Math.max(1, hi - lo) * 100)}%"></i></div></div>
     ${pace}
     <div class="spread"><span class="tiny muted">⚡ Pass-lane eggs hatch the moment you claim them.</span>${n?`<button class="btn sm" data-claimall>Claim all (${n})</button>`:""}</div>
-    <div class="sp-scroll" data-focus="${focus}"><div class="sp-grid"><span class="sp-h"></span><span class="lane sp-h">Free</span><span class="lane pass sp-h">Pass${beta?` <em>free in beta</em>`:""}</span>
-      ${CS.TIERS.map((t, i) => `<span class="sp-n ${xp >= t ? "on" : ""}" data-tier="${i}">${i+1}</span>${cell("free", FREE[i], i)}${cell("pass", PASS[i], i)}`).join("")}</div></div>
+    <div class="sp-scroll pr-scroll" data-focus="${focus}">
+      <div class="pr-head"><span class="lane">Free</span><span></span><span class="lane pass">Pass${beta?` <em>free in beta</em>`:""}</span></div>
+      <ol class="pr-road">${CS.TIERS.map((t, i) => { const on = xp >= t, cur = i === tierNow, big = (i + 1) % 5 === 0;
+        return `<li class="pr-row ${on?"on":""} ${cur?"cur":""} ${big?"big":""}">${cell("free", FREE[i], i)}
+          <span class="pr-stop"><span class="sp-n ${on?"on":""}" data-tier="${i}">${big?"★":""}${i+1}</span>${cur?`<span class="pr-you">${(t - xp).toLocaleString()} XP to go</span>`:""}</span>
+          ${cell("pass", PASS[i], i)}</li>`; }).join("")}</ol></div>
     <div class="shop"><span class="small"><b>💎 ${(s.gems||0).toLocaleString()}</b> gems</span>
       <button class="btn ghost sm" data-go="store">${I("bag")} Spend gems in the Store</button></div>
     <span class="tiny muted">Every 2 weeks a new season starts with a new map theme and fresh rewards. All XP from every course counts.</span>
   </div>`;
 };
 /* scroll the long reward list to your current tier */
-CS.focusPass = () => { const sc = document.querySelector(".sp-scroll"); if (!sc) return; const el = sc.querySelector(`[data-tier="${sc.dataset.focus}"]`); if (el) sc.scrollTop = Math.max(0, el.offsetTop - sc.offsetTop - 40); };
+CS.focusPass = () => { const sc = document.querySelector(".sp-scroll"); if (!sc) return; const el = sc.querySelector(`[data-tier="${sc.dataset.focus}"]`); if (el) sc.scrollTop = Math.max(0, sc.scrollTop + el.getBoundingClientRect().top - sc.getBoundingClientRect().top - 90); };
 
 /* ---------- weekly league ---------- */
 CS.LEAGUES = [{n:"Bronze", c:"#B45309"}, {n:"Silver", c:"#64748B"}, {n:"Gold", c:"#CA8A04"}, {n:"Emerald", c:"#059669"}, {n:"Sapphire", c:"#2563EB"}, {n:"Diamond", c:"#7C3AED"}];

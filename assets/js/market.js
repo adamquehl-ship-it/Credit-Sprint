@@ -78,7 +78,7 @@ const setOf = id => Object.values(CS.PET_SETS).find(s => s.pets.some(p => p.id =
 const PRICE = {common:40, uncommon:90, rare:220, epic:550, legendary:1400, mythical:3500, supreme:12000};
 function addPet(id){ const o = P().owned[id]; if (o) { o.copies = Math.max(1, o.copies || 1) + 1; } else P().owned[id] = {growth:0, at:CS.today(), copies:1}; if (!P().active) P().active = id; }
 function removePet(id){ const o = P().owned[id]; if (!o) return; const n = Math.max(1, o.copies || 1) - 1; if (n > 0) o.copies = n; else { delete P().owned[id]; if (P().active === id) P().active = Object.keys(P().owned)[0] || null; } }
-const tabs = () => `<div class="seg pet-tabs" role="tablist" aria-label="Pets">${[["collection","Collection"],["merge","Merge"],["market","Market"]].map(([k,n])=>`<button role="tab" data-ptab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>`;
+const tabs = () => `<div class="seg pet-tabs" role="tablist" aria-label="Pets and badges">${[["collection","Pets"],["merge","Merge"],["market","Market"],["badges","Badges"],["showcase","Showcase"]].map(([k,n])=>`<button role="tab" data-ptab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>`;
 const baseRender = CS.render.pets;
 CS.render.pets = (o = {}) => {
   if (o.tab) tab = o.tab;
@@ -87,7 +87,7 @@ CS.render.pets = (o = {}) => {
   if (tab === "collection") { baseRender(o); v.insertAdjacentHTML("afterbegin", `<div class="spread pet-tabbar">${tabs()}<span class="cred-pill">${CS.credIcon(18)}<b>${fmt(CS.creds())}</b> creds</span></div>`); }
   else {
     v.innerHTML = `<div class="spread pet-tabbar">${tabs()}<span class="cred-pill">${CS.credIcon(18)}<b>${fmt(CS.creds())}</b> creds</span></div><div id="pet-sub"></div>`;
-    tab === "merge" ? renderMerge($("#pet-sub")) : renderMarket($("#pet-sub"));
+    tab === "merge" ? renderMerge($("#pet-sub")) : tab === "badges" ? CS.renderBadges($("#pet-sub")) : tab === "showcase" ? CS.renderShowcase($("#pet-sub")) : renderMarket($("#pet-sub"));
   }
   $$("#v-pets [data-ptab]").forEach(b => b.onclick = () => { tab = b.dataset.ptab; CS.render.pets({keepScroll:true}); });
 };
