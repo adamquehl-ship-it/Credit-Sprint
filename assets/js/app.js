@@ -702,7 +702,7 @@ render.plan = () => {
       <p class="muted" id="plan-note"></p>
       <div class="seg" style="max-width:360px" role="group" aria-label="Plan type"><button data-pv="weeks" aria-pressed="${!s.cramOn}">Weekly plan</button><button data-pv="cram" aria-pressed="${!!s.cramOn}">${CS.hasAccess()?"":I("lock")}30-day cram plan</button></div></div>
     <ol class="weeks" id="plan-weeks"></ol>`;
-  $$("[data-pv]", v).forEach(b => b.onclick = () => { if (b.dataset.pv === "cram" && !CS.hasAccess()) return CS.openUpgrade("sprint"); s.cramOn = b.dataset.pv === "cram"; CS.save(); render.plan(); });
+  $$("[data-pv]", v).forEach(b => b.onclick = () => { if (b.dataset.pv === "cram" && !CS.hasAccess()) return CS.openUpgrade("exam"); s.cramOn = b.dataset.pv === "cram"; CS.save(); render.plan(); });
   if (s.cramOn && !CS.hasAccess()) s.cramOn = false;
   $("#plan-exam").value = s.exam; $("#plan-goal").value = s.goal;
   $("#plan-exam").onchange = e => setExam(e.target.value);

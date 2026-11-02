@@ -1,4 +1,4 @@
-/* Credit Sprint plans: Free, Exam Pass, Final Sprint, Monthly (1 subject) and Monthly (all subjects).
+/* Credit Sprint plans: Free; Exam Pass (1 class, 3 classes or all classes); Final Sprint; Monthly (1 class, 3 classes or all classes).
    Paid access is per course and comes from the server (/api/me → access), recorded by the Stripe webhook.
    Checkout: /api/checkout (see lib/billing.js and the README for the Stripe setup). */
 (function(){
@@ -12,20 +12,30 @@ CS.FREE_ROUNDS = 3;                        // quiz rounds per day, per course
 CS.FREE_FRQS = 2;                          // free-response prompts open on Free
 CS.FREE_GAMES = ["daily", "tf", "match"];  // games open on Free
 
-const EARLY = new Date().getUTCMonth() >= 6;   // early-bird Exam Pass price July–December (matches the server)
+const EARLY = new Date().getUTCMonth() >= 6;   // early-bird pass prices July–December (matches the server)
+/* cls = how many classes the student picks (0 = every class). Prices must match the Stripe prices in Cloudflare. */
 CS.PLANS = [
-  {k:"exam", n:"Exam Pass", price: EARLY ? "$19.99" : "$29.99", was: EARLY ? "$29.99" : "", per:"one time", tag:"Most popular", course:true,
+  {k:"exam", cls:1, group:"once", n:"Exam Pass", price: EARLY ? "$19.99" : "$29.99", was: EARLY ? "$29.99" : "", per:"one time", tag:"Most popular",
     line:"One class, every feature, all the way to exam day.",
     d:"Pay once and unlock everything for one class until your exam: unlimited quizzes, full timed practice exams, every game and boss battle, the mistakes notebook, every FRQ and the 30-day cram plan. No subscription, nothing to cancel. Lasts through your AP® exam, and at least 6 months for CLEP®."},
-  {k:"sprint", n:"Final Sprint", price:"$15", per:"one time", course:true,
+  {k:"exam3", cls:3, group:"once", n:"3-Class Exam Pass", price: EARLY ? "$25" : "$40", was: EARLY ? "$40" : "", per:"one time", tag:"Best value",
+    line:"Three classes, every feature, through exam day.",
+    d:"Pick any 3 classes and unlock everything in all of them until your exams. One payment, nothing to cancel. Lasts through your AP® exams, and at least 6 months for CLEP®."},
+  {k:"examall", cls:0, group:"once", n:"All-Class Exam Pass", price: EARLY ? "$35" : "$50", was: EARLY ? "$50" : "", per:"one time",
+    line:"Every class, every feature, through exam day.",
+    d:"Unlock every course on Credit Sprint, including new subjects we add, until your exams. One payment, nothing to cancel. Lasts through the May AP® exams, and at least 6 months for CLEP®."},
+  {k:"sprint", off:true, cls:1, group:"once", n:"Final Sprint", price:"$15", per:"one time",
     line:"Everything for one class for 30 days.",
     d:"Exam in a few weeks? Unlock every feature for one class for 30 days: full practice exams, the 30-day cram plan, the mistakes notebook and unlimited drills. Built for the final push."},
-  {k:"sub1", n:"Monthly · 1 subject", price:"$7.99", per:"/ month", course:true,
+  {k:"sub1", cls:1, group:"month", n:"Monthly · 1 class", price:"$7.99", per:"/ month",
     line:"Full access to one class, month to month.",
-    d:"Every feature for one class, billed monthly. Great for CLEP® students working at their own pace, or for trying everything before your exam. Cancel anytime from your account."},
-  {k:"suball", n:"Monthly · All subjects", price:"$14.99", per:"/ month", tag:"Best for 2+ classes", course:false,
+    d:"Every feature for one class, billed monthly. Great for CLEP® students working at their own pace. Cancel anytime from your account."},
+  {k:"sub3", cls:3, group:"month", n:"Monthly · 3 classes", price:"$14.99", per:"/ month",
+    line:"Full access to any 3 classes, month to month.",
+    d:"Pick any 3 classes and get every feature in all of them, billed monthly. Cancel anytime from your account."},
+  {k:"suball", cls:0, group:"month", n:"Monthly · All classes", price:"$19.99", per:"/ month",
     line:"Every class, every feature, including new subjects.",
-    d:"Unlock every course on Credit Sprint, including every new subject we add. The best deal if you're taking more than one AP® class or stacking CLEP® credits. Cancel anytime from your account."}
+    d:"Unlock every course on Credit Sprint, including every new subject we add, billed monthly. Cancel anytime from your account."}
 ];
 CS.FREE_INCLUDES = ["Every unit study guide and explainer", "Diagnostic test and weekly study plan", `${CS.FREE_ROUNDS} quizzes a day`, "Mini practice exams", "Daily Challenge, True or False and Match-up", "Flashcards, pets, streaks and weekly leagues", `First ${CS.FREE_FRQS} free-response questions`];
 CS.PRO_PERKS = [
@@ -97,36 +107,55 @@ function modal(html){ const w = document.createElement("div"); w.className = "mo
 async function api(path, body){ const r = await fetch("/api/" + path, {method:"POST", credentials:"same-origin", headers:{"content-type":"application/json"}, body:JSON.stringify(body || {})});
   let j = {}; try { j = await r.json(); } catch(e) {} if (!r.ok) { const e = new Error(j.error || "Something went wrong. Try again."); e.status = r.status; throw e; } return j; }
 CS.openBilling = async () => { try { const r = await api("billing"); location.href = r.url; } catch(e) { CS.toast(e.message); } };
+/* which plans can be bought (from /api/config: plans whose Stripe price is set). null = not loaded yet, show all */
+let livePlans = null;
+const loadPlans = () => fetch("/api/config", {credentials:"same-origin"}).then(r => r.ok ? r.json() : null).then(c => { if (c && Array.isArray(c.plans) && c.plans.length) livePlans = c.plans; }).catch(() => {});
+/* plans marked off:true (Final Sprint, for now) are hidden everywhere */
+const shownPlans = () => CS.PLANS.filter(p => !p.off && (!livePlans || livePlans.includes(p.k)));
+const allCourses = () => Object.values(window.CS_COURSES);
+const cname = k => (window.CS_COURSES[k] || {}).name || k;
 CS.openUpgrade = (pick) => {
-  let sel = CS.PLANS.some(p => p.k === pick) ? pick : "exam", course = CS.C.k, msg = "", busy = false;
+  let sel = CS.PLANS.some(p => p.k === pick && !p.off) ? pick : "exam", one = CS.C.k, three = [CS.C.k], msg = "", busy = false;
   const w = modal(""), m = $(".modal", w);
   draw();
+  if (!livePlans) loadPlans().then(() => { if (!document.body.contains(w)) return; if (!shownPlans().some(p => p.k === sel) && shownPlans()[0]) sel = shownPlans()[0].k; draw(); });
+  function picked(P){ return P.cls === 0 ? ["all"] : P.cls === 3 ? three : [one]; }
   function draw(){
-    const P = CS.PLANS.find(p => p.k === sel), have = P.course ? CS.planFor(course) : CS.planFor("__all__");
+    const P = CS.PLANS.find(p => p.k === sel), list = picked(P), ready = P.cls === 0 || list.length === P.cls;
+    const have = P.cls === 0 ? CS.planFor("__all__") : (ready && list.every(k => CS.planFor(k)) ? CS.planFor(list[0]) : null);
+    const card = p => `<button class="up-plan" aria-pressed="${sel===p.k}" data-pl="${p.k}">${p.tag?`<span class="tag good">${esc(p.tag)}</span>`:""}<b>${esc(p.n)}</b>
+            <span class="up-amt">${p.was?`<s>${p.was}</s> `:""}${p.price}<small> ${esc(p.per)}</small></span><span class="tiny muted">${esc(p.line)}</span></button>`;
+    const group = (g, label) => { const ps = shownPlans().filter(p => p.group === g); return ps.length ? `<span class="eyebrow">${label}</span><div class="up-plans4">${ps.map(card).join("")}</div>` : ""; };
+    const picker = P.cls === 1 ? `<div class="stack" style="gap:6px"><span class="eyebrow">Which class?</span><div class="up-classes">${allCourses().map(c=>`<button data-crs1="${c.k}" aria-pressed="${one===c.k}">${esc(c.name)}</button>`).join("")}</div></div>`
+      : P.cls === 3 ? `<div class="stack" style="gap:6px"><span class="eyebrow">Pick 3 classes · ${three.length} of 3 picked</span><div class="up-classes">${allCourses().map(c=>`<button data-crs3="${c.k}" aria-pressed="${three.includes(c.k)}" ${!three.includes(c.k)&&three.length>=3?"disabled":""}>${esc(c.name)}</button>`).join("")}</div></div>`
+      : `<p class="small muted">Includes all ${allCourses().length} classes, plus every new subject we add.</p>`;
+    const cta = busy ? "Opening secure checkout…" : !CS.account ? "Create a free account to continue" : !ready ? `Pick ${3 - list.length} more class${3 - list.length === 1 ? "" : "es"}` : `Continue to checkout · ${P.price}${P.group==="month"?" / month":""}`;
     m.innerHTML = `<div class="spread"><div><span class="eyebrow">Plans</span><h2>Unlock every feature</h2></div><button class="btn ghost sm" id="up-x">Close</button></div>
       <div class="up-grid">
         <div class="up-free"><b>Free</b><span class="up-amt">$0</span><ul>${CS.FREE_INCLUDES.map(t=>`<li>${I("check")}${esc(t)}</li>`).join("")}</ul>
           <span class="eyebrow" style="margin-top:6px">Locked on Free</span><ul class="miss">${CS.PRO_PERKS.map(([ic,t])=>`<li>${I("lock")}${esc(t)}</li>`).join("")}</ul></div>
         <div class="stack" style="gap:10px">
-          <div class="up-plans4">${CS.PLANS.map(p=>`<button class="up-plan" aria-pressed="${sel===p.k}" data-pl="${p.k}">${p.tag?`<span class="tag good">${esc(p.tag)}</span>`:""}<b>${esc(p.n)}</b>
-            <span class="up-amt">${p.was?`<s>${p.was}</s> `:""}${p.price}<small> ${esc(p.per)}</small></span><span class="tiny muted">${esc(p.line)}</span></button>`).join("")}</div>
-          <p class="small up-desc">${esc(P.d)}${P.k==="exam"&&P.was?` <b>Early-bird price through December 31.</b>`:""}</p>
-          ${P.course ? `<div class="stack" style="gap:6px"><span class="eyebrow">Which class?</span><div class="seg" style="max-width:380px">${Object.values(window.CS_COURSES).map(c=>`<button data-crs2="${c.k}" aria-pressed="${course===c.k}">${esc(c.name)}</button>`).join("")}</div></div>` : ""}
-          ${have ? `<div class="feedback good">You already have ${esc(CS.planName(have))}${have.sub ? "" : " until " + fmt(have.until)}${P.course ? " for this class" : ""}.</div>` : ""}
-          <button class="btn lg" id="up-go" ${busy||have?"disabled":""}>${busy ? "Opening secure checkout…" : CS.account ? `Continue to checkout · ${P.price}${P.k.startsWith("sub")?" / month":""}` : "Create a free account to continue"}</button>
+          ${group("once", "Pay once · lasts through exam day")}
+          ${group("month", "Monthly · cancel anytime")}
+          <p class="small up-desc">${esc(P.d)}${P.was?` <b>Early-bird price through December 31.</b>`:""}</p>
+          ${picker}
+          ${have ? `<div class="feedback good">You already have ${esc(CS.planName(have))}${have.sub ? "" : " until " + fmt(have.until)}${P.cls === 0 ? "" : P.cls === 3 ? " for these classes" : " for this class"}.</div>` : ""}
+          <button class="btn lg" id="up-go" ${busy||have||(CS.account&&!ready)?"disabled":""}>${cta}</button>
           <p class="tiny muted">${msg || "Secure checkout by Stripe. Apple Pay, Google Pay and cards accepted. 7-day refund if you're not happy."}</p>
           <div class="row-wrap" style="gap:12px">${CS.account && CS.account.billing ? `<button class="linklike" id="up-bill">Manage billing and subscriptions</button>` : ""}<button class="linklike" id="up-code">Have an access code?</button></div>
         </div></div>`;
     $$("[data-pl]", m).forEach(b => b.onclick = () => { sel = b.dataset.pl; msg = ""; draw(); });
-    $$("[data-crs2]", m).forEach(b => b.onclick = () => { course = b.dataset.crs2; msg = ""; draw(); });
+    $$("[data-crs1]", m).forEach(b => b.onclick = () => { one = b.dataset.crs1; msg = ""; draw(); });
+    $$("[data-crs3]", m).forEach(b => b.onclick = () => { const k = b.dataset.crs3; three = three.includes(k) ? three.filter(x => x !== k) : three.length < 3 ? [...three, k] : three; msg = ""; draw(); });
     $("#up-x", m).onclick = () => w.remove();
     const bill = $("#up-bill", m); if (bill) bill.onclick = CS.openBilling;
     $("#up-code", m).onclick = () => { w.remove(); if (!CS.account) { CS.toast("Sign in first, then enter your code."); if (CS.openAccount) CS.openAccount(); return; } if (CS.openAccount) CS.openAccount({code:true}); };
     $("#up-go", m).onclick = async () => {
       if (!CS.account) { w.remove(); CS.toast("Make a free account first. Your purchase is saved to it."); if (CS.openAccount) CS.openAccount({signup:true}); return; }
+      if (!ready) return;
       busy = true; msg = ""; draw();
-      try { const r = await api("checkout", {plan:sel, course}); location.href = r.url; }
-      catch(e) { busy = false; msg = e.status === 503 ? "Checkout opens very soon. Check back in a few days." : e.message; draw(); }
+      try { const r = await api("checkout", {plan:sel, course: list.join(",")}); location.href = r.url; }
+      catch(e) { busy = false; msg = e.status === 503 && !/plan/.test(e.message) ? "Checkout opens very soon. Check back in a few days." : e.message; draw(); }
     };
   }
 };

@@ -2,9 +2,10 @@
    events: checkout.session.completed, checkout.session.async_payment_succeeded, customer.subscription.created, customer.subscription.updated,
    customer.subscription.deleted, charge.refunded. Every message is checked against STRIPE_WEBHOOK_SECRET. */
 import {json} from "../../lib/auth.js";
-import {ensureBilling, verifyStripe, passUntil, PLANS, COURSES} from "../../lib/billing.js";
-const DAY = 864e5, GRACE = 3 * DAY;
-const okCourse = (plan, course) => PLANS[plan] && (PLANS[plan].perCourse ? COURSES.includes(course) : course === "all");
+import {ensureBilling, verifyStripe, passUntil, parseCourses, refFor} from "../../lib/billing.js";
+/* Monthly plans only last for the month that's been paid. GRACE is a 1-day cushion so a renewal that's paid on time never
+   locks anyone out while Stripe's renewal message is on its way. */
+const DAY = 864e5, GRACE = 1 * DAY;
 export async function onRequestPost({request, env}) {
   if (!env.DB) return json({error: "No database."}, 503);
   const raw = await request.text();
@@ -13,23 +14,29 @@ export async function onRequestPost({request, env}) {
   await ensureBilling(env.DB);
   if (await env.DB.prepare("SELECT 1 FROM stripe_events WHERE id = ?").bind(ev.id).first()) return json({ok: true, duplicate: true});
   const o = (ev.data && ev.data.object) || {}, m = o.metadata || {}, now = Date.now(), DB = env.DB, q = [];
-  const put = (ref, user, plan, course, until) => q.push(DB.prepare("INSERT INTO entitlements (ref, user_id, plan, course, until, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(ref) DO UPDATE SET until = excluded.until").bind(ref, user, plan, course, until, now));
+  /* one row per class: multi-class purchases are stored as "<stripe id>:<class>" */
+  const put = (base, user, plan, course, until) => { const list = parseCourses(plan, course); if (!list) return false;
+    for (const c of list) q.push(DB.prepare("INSERT INTO entitlements (ref, user_id, plan, course, until, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(ref) DO UPDATE SET until = excluded.until").bind(refFor(base, c, list), user, plan, c, until, now));
+    return true; };
+  const setUntil = (base, until) => q.push(DB.prepare("UPDATE entitlements SET until = ? WHERE ref = ? OR substr(ref, 1, ?) = ?").bind(until, base, base.length + 1, base + ":"));
   /* async_payment_succeeded: bank debits and other delayed methods finish later; access turns on when the money arrives */
   if (ev.type === "checkout.session.completed" || ev.type === "checkout.session.async_payment_succeeded") {
     const user = o.client_reference_id || m.user;
     if (user && o.customer) q.push(DB.prepare("INSERT INTO customers (user_id, customer_id) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET customer_id = excluded.customer_id").bind(user, o.customer));
-    if (user && okCourse(m.plan, m.course)) {
+    if (user) {
       if (o.mode === "payment" && o.payment_status === "paid") put(o.payment_intent || o.id, user, m.plan, m.course, passUntil(m.plan, (o.created || now / 1000) * 1000));
-      if (o.mode === "subscription" && o.subscription) put(o.subscription, user, m.plan, m.course, now + 33 * DAY);   // refined by subscription events
+      if (o.mode === "subscription" && o.subscription) put(o.subscription, user, m.plan, m.course, now + 31 * DAY + GRACE);   // one month; refined by subscription events
     }
   } else if (ev.type.startsWith("customer.subscription.")) {
-    const end = o.current_period_end || (o.items && o.items.data && o.items.data[0] && o.items.data[0].current_period_end);
-    const live = ["active", "trialing", "past_due"].includes(o.status) && ev.type !== "customer.subscription.deleted";
-    const until = live && end ? end * 1000 + GRACE : now;
-    if (m.user && okCourse(m.plan, m.course)) put(o.id, m.user, m.plan, m.course, until);
-    else q.push(DB.prepare("UPDATE entitlements SET until = ? WHERE ref = ?").bind(until, o.id));
+    const item = (o.items && o.items.data && o.items.data[0]) || {};
+    const end = o.current_period_end || item.current_period_end, startP = o.current_period_start || item.current_period_start;
+    const live = ["active", "trialing"].includes(o.status) && ev.type !== "customer.subscription.deleted";
+    /* paid up: through the end of the paid month. Renewal failed (past_due/unpaid): only until the unpaid month began,
+       so nobody gets a new month without paying. It unlocks again as soon as the renewal is paid. Canceled: now. */
+    const until = live && end ? end * 1000 + GRACE : o.status === "past_due" && startP ? Math.min(now, startP * 1000 + GRACE) : now;
+    if (!(m.user && put(o.id, m.user, m.plan, m.course, until))) setUntil(o.id, until);
   } else if (ev.type === "charge.refunded" && o.refunded && o.payment_intent) {
-    q.push(DB.prepare("UPDATE entitlements SET until = ? WHERE ref = ?").bind(now, o.payment_intent));
+    setUntil(o.payment_intent, now);
   }
   q.push(DB.prepare("INSERT OR IGNORE INTO stripe_events (id, at) VALUES (?, ?)").bind(ev.id, now));
   await DB.batch(q);

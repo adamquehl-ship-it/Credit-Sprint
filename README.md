@@ -38,19 +38,19 @@ Rough cost: a tutor reply on Haiku is a fraction of a cent; an FRQ score on Sonn
 
 ## Plans and payments (Stripe)
 
-Plans: **Free**, **Exam Pass** ($29 one time, or the $19 early-bird price July–December, for one class through exam day), **Final Sprint** ($15 one time, one class for 30 days), **Monthly · 1 subject** ($7.99/mo) and **Monthly · All subjects** ($14.99/mo). Plan names, prices, descriptions and Free limits live in `assets/js/upgrade.js`. Server logic lives in `lib/billing.js`.
+Plans: **Free**; one-time **Exam Pass** ($29.99, early bird $19.99), **3-Class Exam Pass** ($40, early bird $25) and **All-Class Exam Pass** ($50, early bird $35), all lasting through exam day; **Final Sprint** ($15 one time, one class for 30 days; switched off for now, see `off: true` in `lib/billing.js` and `assets/js/upgrade.js`); and monthly **1 class** ($7.99), **3 classes** ($14.99) and **All classes** ($19.99). Early-bird prices are charged July–December. Plan names, prices, descriptions and Free limits live in `assets/js/upgrade.js`. Server logic lives in `lib/billing.js`.
 
-Access is stored per class in the D1 database by the Stripe webhook. The browser never decides whether someone paid. Students need a free account to buy.
+Access is stored per class in the D1 database by the Stripe webhook. The browser never decides whether someone paid. Students need a free account to buy. A plan whose price variable isn't set in Cloudflare is hidden from the plans window.
 
-1. Stripe → Product catalog: create the five prices (Exam Pass $29.99, Exam Pass early bird $19.99, Final Sprint $15 one time; $7.99 and $14.99 monthly recurring). Copy each Price ID (`price_…`).
+1. Stripe → Product catalog: create the ten prices (one time: Exam Pass $29.99 and $19.99, 3-Class Exam Pass $40 and $25, All-Class Exam Pass $50 and $35, Final Sprint $15 only when you turn it back on; monthly: $7.99, $14.99 and $19.99). Copy each Price ID (`price_…`).
 2. Stripe → Developers → Webhooks → Add endpoint `https://creditsprintprep.com/api/stripe-webhook` with the events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` and `charge.refunded`. Copy the signing secret.
-3. Stripe → Settings → Billing → Customer portal: turn it on (allow canceling and updating payment methods).
+3. Stripe → Settings → Billing → Customer portal: turn it on. Allow canceling (at end of billing period) and updating payment methods. Keep plan switching OFF.
 4. Cloudflare Pages → Settings → Variables and secrets (Production), then redeploy:
    - Secrets: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-   - Variables: `PRICE_EXAM`, `PRICE_EXAM_EARLY`, `PRICE_SPRINT`, `PRICE_SUB_ONE`, `PRICE_SUB_ALL`
+   - Variables: `PRICE_EXAM`, `PRICE_EXAM_EARLY`, `PRICE_EXAM3`, `PRICE_EXAM3_EARLY`, `PRICE_EXAM_ALL`, `PRICE_EXAM_ALL_EARLY`, `PRICE_SPRINT`, `PRICE_SUB_ONE`, `PRICE_SUB_THREE`, `PRICE_SUB_ALL`
 5. Test with card 4242 4242 4242 4242 in Stripe test mode, then repeat steps 1–4 with live-mode keys and prices.
 
-Until all of these are set, the checkout button says checkout opens soon. To refund someone, refund the payment in Stripe; the webhook removes their access automatically. Set `CS.PAYWALL = false` in `upgrade.js` to unlock everything for everyone.
+Until the Stripe keys and at least one price are set, the checkout button says checkout opens soon. To refund someone, refund the payment in Stripe; the webhook removes their access automatically. Set `CS.PAYWALL = false` in `upgrade.js` to unlock everything for everyone.
 
 ## Access codes (free Pro for you, testers or teachers)
 
