@@ -571,10 +571,10 @@ ${sample.map((x,k)=>qBlock(x,k+1)).join("")}
 });
 /* guides hub */
 out("guides/index.html", page({depth:1, canon:"/guides/index.html",
-  title:"Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History and U.S. Government Study Guides for AP® and CLEP® | Credit Sprint",
-  desc:"Free unit-by-unit macroeconomics, microeconomics, biology, chemistry and marketing study guides with key ideas, formulas, exam traps and practice questions.",
+  title:"Free AP® and CLEP® Study Guides for 10 Subjects | Credit Sprint",
+  desc:"Free unit-by-unit study guides for Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology and Statistics, with key ideas, exam traps and practice questions.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Study guides</p>
-<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for macroeconomics, microeconomics, biology, chemistry and marketing.</p>
+<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for all 10 Credit Sprint subjects.</p>
 <h2>Statistics</h2>
 <div class="linkgrid">${sGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>${esc(u.name)}</b><span>AP® ${u.ap}</span></a>`).join("")}</div>
 <h2>Psychology</h2>
@@ -747,10 +747,10 @@ ${probs.map((c,i)=>`<div class="q"><b>Item ${i+1}.</b><p>${esc(c.q)}</p><details
 <aside><div class="panel"><h3>Unlimited statistics practice</h3><p class="muted small">Fresh numbers every time, plus the Number Crunch game.</p><a class="btn" href="../app.html?course=apstat">Practice in the app</a></div></aside></main>`}));
 });
 out("practice/index.html", page({depth:1, canon:"/practice/index.html",
-  title:"Economics, Biology, Chemistry and Marketing Practice Problems with Worked Solutions | Credit Sprint",
+  title:"Free AP® and CLEP® Practice Problems with Worked Solutions | Credit Sprint",
   desc:"Free worked practice problems for Hardy-Weinberg, chi-square, water potential, elasticity, costs, profit, multipliers, money creation, inflation, real GDP and more.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Practice problems</p>
-<h1>Practice problems</h1><p class="muted" style="max-width:60ch">Worked calculation problems for every formula on the AP® and CLEP® macro, micro, biology, chemistry and marketing exams.</p>
+<h1>Practice problems</h1><p class="muted" style="max-width:60ch">Worked problems with step-by-step answers for every Credit Sprint subject, from economics and science formulas to history and government skills.</p>
 <h2>Statistics</h2><div class="linkgrid">${spLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Statistics · 6 worked problems</span></a>`).join("")}</div>
 <h2>Psychology</h2><div class="linkgrid">${ypLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Psychology · 6 worked problems</span></a>`).join("")}</div>
 <h2>U.S. Government</h2><div class="linkgrid">${gpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>U.S. Government · 6 worked problems</span></a>`).join("")}</div>

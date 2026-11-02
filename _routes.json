@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/api/*", "/lib/*", "/db/*", "/scripts/*", "/design/*", "/functions/*", "/README", "/README.md", "/preview", "/preview.html", "/landing-*", "/.gitignore", "/.gitattributes"],
+  "exclude": []
+}
