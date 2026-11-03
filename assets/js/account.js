@@ -113,6 +113,7 @@ function resumeNext(){
 }
 CS.beforeDiag = async (begin) => {
   if (CS.account || !online()) return begin();
+  if (!CS.accountSettled && CS.maybeSignedIn && CS.maybeSignedIn()) { await CS.accountReady; if (CS.account) return begin(); }
   if (!cfg) { try { cfg = await api("config"); } catch(e) { cfg = {accounts:false}; } }
   if (!cfg.accounts) return begin();
   try { sessionStorage.setItem(NEXT, "diag"); sessionStorage.setItem("cs.asked", "1"); } catch(e) {}
@@ -233,8 +234,14 @@ document.addEventListener("click", e => { if (e.target.closest("[data-billing]")
 
 /* ---------- boot: who's signed in? ---------- */
 renderChip();
+/* who's signed in is known once this settles. Until then, a browser that was signed in last time is treated as signed in,
+   so a new course's welcome window doesn't flash the sign-up form at someone who already has an account. */
+let accountKnown; CS.accountReady = new Promise(ok => { accountKnown = ok; });
+CS.maybeSignedIn = () => !!CS.account || (!CS.accountSettled && (() => { try { return localStorage.getItem("creditsprint.member") === "1"; } catch(e) { return false; } })());
+const settle = () => { CS.accountSettled = true; accountKnown(CS.account); document.dispatchEvent(new CustomEvent("cs:account")); };
+if (!online()) settle();
 if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); resumeNext(); })
-  .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401) promptSignup(/[?&]signup\b/.test(location.search)); });
+  .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401) promptSignup(/[?&]signup\b/.test(location.search)); }).finally(settle);
 
 /* ask signed-out students to make an account once per visit, after onboarding closes */
 function promptSignup(force){
