@@ -91,6 +91,9 @@ function onboarding(){
   const head = (t) => `<div class="ob-head">${CS.logo("mark")}<div><span class="eyebrow">Welcome to Credit Sprint</span><h2>${t}</h2></div></div>`;
   const actions = `<div class="row-wrap ob-actions"><button class="btn lg" id="ob-diag">Start the ${Math.round(CS.UNITS.length*1.6)}-minute diagnostic</button><button class="btn ghost" id="ob-skip">Explore first</button></div>`;
   draw();
+  /* the sign-in check finished while this window is open: drop (or add) the sign-up side to match */
+  const onAcct = () => { if (!document.body.contains(w)) return document.removeEventListener("cs:account", onAcct); if (style === "combined") { if (CS.account) tabM = "setup"; draw(); } };
+  document.addEventListener("cs:account", onAcct);
   function draw(){
     if (style === "steps") {
       m.innerHTML = step === 0
@@ -100,7 +103,7 @@ function onboarding(){
     } else if (style === "compact") {
       m.innerHTML = `${head("Let's set up your sprint to college credit")}<div class="stack" style="gap:6px"><span class="eyebrow">Course</span>${courses()}</div>${examRow()}${goals()}${actions}`;
     } else {
-      const showAcct = !CS.account && online();
+      const showAcct = !(CS.maybeSignedIn ? CS.maybeSignedIn() : CS.account) && online();
       m.innerHTML = `${head("Let's set up your sprint to college credit")}
         ${showAcct ? `<div class="seg ob-tabs"><button data-obt="setup" aria-pressed="${tabM==="setup"}">1 · Set up</button><button data-obt="acct" aria-pressed="${tabM==="acct"}">2 · Save progress</button></div>` : ""}
         <div class="ob-cols ${showAcct?"":"one"} show-${tabM}"><div class="stack ob-left" style="gap:14px"><div class="stack" style="gap:6px"><span class="eyebrow">Course</span>${courses()}</div>${examRow()}${goals()}</div>
@@ -378,8 +381,8 @@ function weightedMixed(n){
 }
 const EXAMS = CS.C.exams || { ap:{full:{n:60, min:70, name:"Full AP® Section I"}, mini:{n:20, min:23, name:"Mini exam"}}, clep:{full:{n:80, min:90, name:"Full-length CLEP®"}, mini:{n:20, min:23, name:"Mini exam"}} };
 const MODES = [
-  {k:"unit", ic:"book", e:"By unit", n:"Unit quiz", d:"10 questions with an explanation for every choice."},
-  {k:"mixed", ic:"spark", e:"Adaptive", n:"Smart review", d:"15 questions, weighted toward your weakest units."},
+  {k:"unit", ic:"book", e:"By unit", n:"Unit quiz", d:CS.hasPassages ? "About 10 questions in full passage sets, with an explanation for every choice." : "10 questions with an explanation for every choice."},
+  {k:"mixed", ic:"spark", e:"Adaptive", n:"Smart review", d:(CS.hasPassages ? "About 15" : "15") + " questions, weighted toward your weakest units."},
   {k:"mistakes", ic:"target", e:"Notebook", n:"Mistakes", d:"Every miss lands here until you get it right twice.", pro:true},
   {k:"exam", ic:"pen", e:"Timed", n:"Practice exam", d:"Full length, real timing, scored like the exam."},
   {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:CS.C.drillDesc || (CS.COURSE==="micro" ? "Elasticity, costs, profit, surplus: fresh numbers every time." : "Multipliers, CPI, money creation: fresh numbers every time."), pro:true},

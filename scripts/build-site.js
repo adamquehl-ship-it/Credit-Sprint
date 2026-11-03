@@ -67,7 +67,7 @@ ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 <div class="row-wrap" style="gap:8px;flex-wrap:nowrap"><a class="btn ghost sm" href="${up}app.html?signup=1">Sign up</a><a class="btn sm" href="${up}index.html#courses">Start free</a></div></div></header>
 ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
-<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 10 subjects.</span></div>
+<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 12 subjects.</span></div>
 <div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 12 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
 <div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a></div>
 </div><p class="disc">${DISC} © ${new Date().getFullYear()} Credit Sprint.</p></div></footer>
@@ -102,8 +102,8 @@ const landing = require("./landing.js");
 const check = ic("check",18);
 const lock = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 out("index.html", page({
-  title:"Credit Sprint · Study for AP® & CLEP® Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology and Statistics", canon:"/",
-  desc:`Earn college credit in macroeconomics, microeconomics, biology, chemistry, marketing, U.S. history, government, psychology and statistics. ${nQ} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
+  title:"Credit Sprint · AP® & CLEP® Prep: Econ, Science, History, English, Psych & Stats", canon:"/",
+  desc:`Earn college credit in economics, biology, chemistry, U.S. and world history, government, psychology, statistics, English literature, English language and marketing. ${Number(nQ).toLocaleString("en-US")} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
   ld:{"@context":"https://schema.org","@type":"WebSite","name":"Credit Sprint","url":SITE},
   body:`<main>
 <section class="wrap hero2" id="courses">
