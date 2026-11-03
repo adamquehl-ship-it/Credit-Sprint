@@ -337,7 +337,7 @@ function renderClep(){
       <div class="stack figure">${CS.figure(C.fig||"ppc")}<span class="eyebrow">${esc(C.figCap||"Growth shifts the PPC outward")}</span>
         <button class="btn ghost" data-go="plan">Build my CLEP® plan</button></div>
     </div>`;
-  $("#clep-growth").onclick = () => { const qs = CS.QS.filter(q=>g.match.test(q.q+" "+q.opts.find(o=>o.ok).t)); run = {qs: CS.shuffle(qs).slice(0,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"mixed"}; pMode = "mixed"; CS.go("practice", {keepRun:true}); };
+  $("#clep-growth").onclick = () => { const qs = CS.QS.filter(q=>g.match.test(q.q+" "+q.opts.find(o=>o.ok).t)); run = {qs: CS.takeQs(qs,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"mixed"}; pMode = "mixed"; CS.go("practice", {keepRun:true}); };
 }
 function renderRes(){
   $("#learn-body").innerHTML = `<div><span class="eyebrow">Official resources</span><h2>Practice with real exam material</h2></div>
@@ -351,6 +351,15 @@ function sampleExam(n){
   const wk = S().exam === "ap" ? "wAP" : "wCLEP", tot = CS.UNITS.reduce((s,u)=>s+u[wk],0);
   const pools = Object.fromEntries(CS.UNITS.map(u=>[u.id, CS.shuffle(CS.QS.filter(q=>q.u===u.id))]));
   let picks = [];
+  if (CS.hasPassages) { /* reading exams are built from passage sets (like the real exam), unit by unit, then everything in set order */
+    const withP = CS.QS.filter(q=>q.p), base = withP.length >= n*1.5 ? withP : CS.QS;
+    CS.UNITS.forEach(u => { const k = Math.round(n*u[wk]/tot); if (k > 0) picks = picks.concat(CS.takeQs(base.filter(q=>q.u===u.id), k)); });
+    const have = new Set(picks.map(q=>q.id)); if (picks.length < n) picks = picks.concat(CS.takeQs(base.filter(q=>!have.has(q.id)), n - picks.length));
+    picks = CS.setOrder(CS.shuffle(picks));
+    /* trim to the exam's length: drop stand-alone questions first, then the tail of the last set */
+    for (let i = picks.length - 1; i >= 0 && picks.length > n; i--) if (!picks[i].p) picks.splice(i, 1);
+    return picks.slice(0, n).map(CS.prepQ);
+  }
   CS.UNITS.forEach(u => { const k = Math.min(pools[u.id].length, Math.round(n*u[wk]/tot)); picks = picks.concat(pools[u.id].splice(0,k)); });
   const rest = CS.shuffle(Object.values(pools).flat()); while (picks.length < n && rest.length) picks.push(rest.pop());
   return CS.shuffle(picks.slice(0,n)).map(CS.prepQ);
@@ -362,7 +371,8 @@ function weightedMixed(n){
     const tot = wts.reduce((s,x)=>s+x.w,0); let r = Math.random()*tot, pick = wts[0].u;
     for (const x of wts) { r -= x.w; if (r <= 0) { pick = x.u; break; } }
     const pool = CS.QS.filter(q => q.u === pick.id && !used.has(q.id)); if (!pool.length) continue;
-    const q = pool[Math.floor(Math.random()*pool.length)]; used.add(q.id); out.push(CS.prepQ(q));
+    const q = pool[Math.floor(Math.random()*pool.length)];
+    const set = q.p ? CS.QS.filter(x => x.p === q.p && !used.has(x.id)) : [q]; set.forEach(x => { used.add(x.id); out.push(CS.prepQ(x)); });
   }
   return out;
 }
@@ -377,6 +387,7 @@ const MODES = [
   {k:"draw", ic:"pen", e:"Hands-on", n:"Draw the graph", d:"Drag the curves yourself, like the FRQ section asks you to.", pro:true}
 ];
 if (!CS.hasGraphs()) for (let i = MODES.length - 1; i >= 0; i--) if (["graphs","draw"].includes(MODES[i].k)) MODES.splice(i, 1);
+if (!(CS.DRILLS && CS.DRILLS.length)) for (let i = MODES.length - 1; i >= 0; i--) if (MODES[i].k === "drills") MODES.splice(i, 1);
 render.practice = (o) => {
   if (o.mode) { pMode = o.mode; run = null; drill = null; drawRun = null; }
   if (o.keepRun) { /* run prepared by caller */ }
@@ -397,7 +408,7 @@ render.practice = (o) => {
   if (pMode === "unit") {
     body.innerHTML = `<div class="chips">${CS.UNITS.map(u=>`<button class="chip" aria-pressed="${u.id===pUnit}" data-u="${u.id}">Unit ${u.id} · ${esc(u.short)} · ${CS.pct(CS.mastery(u.id))}</button>`).join("")}</div><div class="panel" id="p-run"></div>`;
     $$("#p-body [data-u]").forEach(b => b.onclick = () => { pUnit = +b.dataset.u; run = null; render.practice({keepScroll:true}); });
-    if (!run) { if (!CS.takeRound()) return limit($("#p-run")); run = {qs: CS.shuffle(CS.QS.filter(q=>q.u===pUnit)).slice(0,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"unit", unit:pUnit}; }
+    if (!run) { if (!CS.takeRound()) return limit($("#p-run")); run = {qs: CS.takeQs(CS.QS.filter(q=>q.u===pUnit),10).map(CS.prepQ), i:0, score:0, picked:null, kind:"unit", unit:pUnit}; }
     return quiz($("#p-run"));
   }
   if (pMode === "mixed") { body.innerHTML = `<div class="panel" id="p-run"></div>`; if (!run) { if (!CS.takeRound()) return limit($("#p-run")); run = {qs: weightedMixed(15), i:0, score:0, picked:null, kind:"mixed"}; } return quiz($("#p-run")); }
@@ -410,12 +421,12 @@ render.practice = (o) => {
     const all = Object.keys(S().mistakes), due = CS.mistakesDue();
     const ids = due.length ? due : (run && run.all ? all : []);
     if (!due.length && all.length && !run) { body.innerHTML = `<div class="panel"><h3>Nothing due right now.</h3><p class="muted">You have ${all.length} saved mistake${all.length===1?"":"s"}. Each one comes back 1, 3 and 7 days after you miss it, and clears after three correct answers in a row. That spacing is what makes it stick.</p><div class="row-wrap"><button class="btn sm" id="m3">Review all ${all.length} anyway</button><button class="btn ghost sm" id="m2b">Do a smart review</button></div></div>`;
-      $("#m3").onclick = () => { run = {qs: CS.shuffle(all).slice(0,15).map(id=>CS.prepQ(CS.QBYID[id])), i:0, score:0, picked:null, kind:"mistakes", all:true}; render.practice({keepScroll:true}); };
+      $("#m3").onclick = () => { run = {qs: CS.setOrder(CS.shuffle(all).slice(0,15).map(id=>CS.QBYID[id]).filter(Boolean)).map(CS.prepQ), i:0, score:0, picked:null, kind:"mistakes", all:true}; render.practice({keepScroll:true}); };
       $("#m2b").onclick = () => { pMode = "mixed"; run = null; render.practice({keepScroll:true}); }; return; }
     if (!ids.length && !run) { body.innerHTML = `<div class="panel"><h3>Your notebook is empty.</h3><p class="muted">Any question you miss is saved here and comes back after 1, 3 and 7 days until you get it right three times.</p><div><button class="btn sm" id="m2">Do a smart review</button></div></div>`;
       $("#m2").onclick = () => { pMode = "mixed"; run = null; render.practice({keepScroll:true}); }; return; }
     body.innerHTML = `<div class="panel" id="p-run"></div>`;
-    if (!run) run = {qs: CS.shuffle(ids).slice(0,15).map(id=>CS.prepQ(CS.QBYID[id])), i:0, score:0, picked:null, kind:"mistakes"};
+    if (!run) run = {qs: CS.setOrder(CS.shuffle(ids).slice(0,15).map(id=>CS.QBYID[id]).filter(Boolean)).map(CS.prepQ), i:0, score:0, picked:null, kind:"mistakes"};
     return quiz($("#p-run"));
   }
   if (pMode === "drills") return drills(body);
@@ -449,12 +460,12 @@ function quiz(p){
   p.innerHTML = `<div class="spread"><span class="eyebrow">Unit ${q.u} · ${esc(CS.UNITS[q.u-1].short)}</span><span class="eyebrow">${r.i+1} / ${qs.length} · ${r.score} correct${r.combo>=3?` · ${r.combo} in a row`:""}</span></div>
     <div class="progress"><i style="width:${(r.i+(done?1:0))/qs.length*100}%"></i></div>
     ${q.mk?`<div class="lab" style="max-width:380px">${CS.market(q.mk).svg}</div>`:""}
-    <p class="qtext">${esc(q.q)}</p>
+    ${CS.qText(q)}
     <div class="opts">${q.opts.map((o,j)=>{ const cls = done ? (o.ok?"right":(j===r.picked?"wrong":"")) : "";
       return `<button class="opt ${cls}" data-j="${j}" ${done?"disabled":""}><span class="k">${L[j]}</span><span>${esc(o.t)}</span>${done&&(o.ok||j===r.picked)?`<span class="why">${esc(o.w)}</span>`:""}</button>`; }).join("")}</div>
     ${done?`${q.id[0]==="q"?`<details class="small"><summary class="muted">Why the other choices are wrong</summary><ul style="margin:8px 0 0;padding-left:1.2em">${q.opts.filter((o,j)=>!o.ok&&j!==r.picked).map(o=>`<li><b>${esc(o.t)}:</b> ${esc(o.w)}</li>`).join("")}</ul></details>`:""}
       ${CS.whyChips ? CS.whyChips(q, r.picked != null && !q.opts[r.picked].ok) : ""}
-      <div class="row-wrap"><button class="btn" id="q-next">${r.i+1<qs.length?"Next question":"See results"} <span class="kbd" style="color:inherit;border-color:currentColor">Enter</span></button>${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI tutor · coming soon</button>` : `<button class="btn ghost" id="q-tutor">${I("spark")}Explain it differently</button>`}</div><div id="q-tutor-box"></div>`:`<p class="faint small">Press <span class="kbd">1</span>–<span class="kbd">5</span> to answer.</p>`}`;
+      <div class="row-wrap"><button class="btn" id="q-next">${r.i+1<qs.length?"Next question":"See results"} <span class="kbd" style="color:inherit;border-color:currentColor">Enter</span></button>${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI tutor · coming soon</button>` : `<button class="btn ghost" id="q-tutor">${I("spark")}Explain it differently</button>`}</div><div id="q-tutor-box"></div>`:`<p class="faint small kbd-hint">Press <span class="kbd">1</span>–<span class="kbd">5</span> to answer.</p>`}`;
   if (!done) $$(".opt", p).forEach(b => b.onclick = () => pick(+b.dataset.j));
   else { $("#q-next").onclick = next; $("#q-next").focus({preventScroll:true}); if ($("#q-tutor")) $("#q-tutor").onclick = () => CS.tutor($("#q-tutor-box"), {q:q.q, options:q.opts.map(o=>o.t), correct:q.opts.find(o=>o.ok).t, picked:q.opts[r.picked].t, why:q.opts.find(o=>o.ok).w}); }
   function pick(j){ r.picked = j; const ok = q.opts[j].ok; if (ok) { r.score++; r.combo = (r.combo||0)+1; } else r.combo = 0; CS.record(q, ok); CS.refresh(); quiz(p); }
@@ -530,7 +541,7 @@ function diagnostic(body){
       <p style="max-width:62ch">Two questions from each unit, no hints until the end. Your results set your mastery levels, your study plan and your score estimate.</p>
       ${last?`<p class="muted">Last taken ${esc(new Date(last.at).toLocaleDateString())}: <b>${last.score}/${last.n||DN}</b>.</p>`:""}
       <div><button class="btn lg" id="d-start">${last?"Retake diagnostic":"Start diagnostic"}</button></div>`;
-    const begin = () => { D = {i:0, picks:[], qs: CS.UNITS.flatMap(u=>CS.shuffle(CS.QS.filter(q=>q.u===u.id)).slice(0,2)).map(CS.prepQ)}; diagnostic(body); };
+    const begin = () => { D = {i:0, picks:[], qs: CS.UNITS.flatMap(u=>CS.takeQs(CS.QS.filter(q=>q.u===u.id),2)).map(CS.prepQ)}; diagnostic(body); };
     /* guests are asked to make a free account first so their results and study plan are saved */
     $("#d-start").onclick = () => CS.beforeDiag ? CS.beforeDiag(begin) : begin();
     if (CS._diagAuto) { CS._diagAuto = false; begin(); }
@@ -539,7 +550,7 @@ function diagnostic(body){
   if (D.i < D.qs.length) {
     const q = D.qs[D.i];
     p.innerHTML = `<div class="spread diag-run"><span class="eyebrow">Question ${D.i+1} of ${D.qs.length} · Unit ${q.u}</span></div>
-      <div class="progress"><i style="width:${D.i/D.qs.length*100}%"></i></div><p class="qtext">${esc(q.q)}</p>
+      <div class="progress"><i style="width:${D.i/D.qs.length*100}%"></i></div>${CS.qText(q)}
       <div class="opts">${q.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div>`;
     $$(".opt", p).forEach(b => b.onclick = () => { D.picks.push(+b.dataset.j); D.i++; diagnostic(body); });
     return;
@@ -552,7 +563,7 @@ function diagnostic(body){
       <div class="row-wrap"><button class="btn" data-go="plan">See my study plan</button><button class="btn ghost" id="d-again">Retake</button></div></div>
     <div class="rows">${CS.UNITS.map(u=>{ const c=(by[u.id]||[]).filter(Boolean).length; return `<div class="row"><span>${u.id}. ${esc(u.name)}</span>${meter(c/2)}<span><b>${c}/2</b></span></div>`; }).join("")}</div>
     ${missed.length?`<h3>Review what you missed</h3>`+missed.map(({q,pick})=>{ const c = q.opts.find(o=>o.ok); return `<div class="stack" style="gap:6px;border-top:1px solid var(--rule);padding-top:12px">
-      <span class="eyebrow">Unit ${q.u}</span><p>${esc(q.q)}</p><p style="color:var(--bad)">You chose: ${esc(q.opts[pick].t)}. ${esc(q.opts[pick].w)}</p>
+      <span class="eyebrow">Unit ${q.u}</span>${q.p?CS.passageHTML(q.p,{compact:true}):""}<p>${esc(q.q)}</p><p style="color:var(--bad)">You chose: ${esc(q.opts[pick].t)}. ${esc(q.opts[pick].w)}</p>
       <p style="color:var(--good)">Answer: ${esc(c.t)}. ${esc(c.w)}</p></div>`; }).join(""):`<p>Perfect score. Try a practice exam next.</p>`}`;
   $("#d-again").onclick = () => { D = null; diagnostic(body); };
 }
@@ -573,7 +584,7 @@ function renderExam(){
     <div class="guide" style="grid-template-columns:minmax(0,1fr) 260px">
       <div class="panel">
         <div class="spread"><span class="eyebrow">Question ${exam.i+1} of ${n}</span><button class="chip" id="ex-flag" aria-pressed="${!!exam.flags[exam.i]}">${exam.flags[exam.i]?"Flagged":"Flag for review"}</button></div>
-        <p class="qtext">${esc(q.q)}</p>
+        ${CS.qText(q)}
         <div class="opts">${q.opts.map((o,j)=>`<button class="opt ${exam.ans[exam.i]===j?"sel":""}" data-j="${j}"><span class="k">${L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div>
         <div class="row-wrap"><button class="btn ghost sm" id="ex-prev" ${exam.i===0?"disabled":""}>← Previous</button><button class="btn sm" id="ex-next" ${exam.i===n-1?"disabled":""}>Next →</button></div>
       </div>
@@ -606,7 +617,7 @@ function submitExam(){
   $("#ex-review").onclick = () => { const el = $("#ex-rev"); el.hidden = false;
     el.innerHTML = done.qs.map((q,i)=>{ const a = done.ans[i], c = q.opts.find(o=>o.ok), ok = a!=null && q.opts[a].ok;
       return `<div class="panel" style="gap:8px"><div class="spread"><span class="eyebrow">Question ${i+1} · Unit ${q.u}</span><span class="tag ${ok?"good":"bad"}">${ok?"Correct":a==null?"Blank":"Missed"}</span></div>
-      <p>${esc(q.q)}</p>${!ok&&a!=null?`<p style="color:var(--bad)">You chose: ${esc(q.opts[a].t)}. ${esc(q.opts[a].w)}</p>`:""}<p style="color:var(--good)">Answer: ${esc(c.t)}. ${esc(c.w)}</p></div>`; }).join("");
+      ${q.p?CS.passageHTML(q.p,{compact:true}):""}<p>${esc(q.q)}</p>${!ok&&a!=null?`<p style="color:var(--bad)">You chose: ${esc(q.opts[a].t)}. ${esc(q.opts[a].w)}</p>`:""}<p style="color:var(--good)">Answer: ${esc(c.t)}. ${esc(c.w)}</p></div>`; }).join("");
     el.scrollIntoView({behavior:"smooth"}); };
 }
 
@@ -669,37 +680,44 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------- FRQ ---------- */
-let frqId = null;
+let frqId = null, frqClock = null, frqTick = 0;
 render.frq = () => {
   const v = $("#v-frq"), f = CS.FRQS.find(x=>x.id===frqId) || CS.FRQS[0]; frqId = f.id;
   const st = S().frq[f.id] || (S().frq[f.id] = {draft:"", show:false, checks:f.rubric.map(()=>false)});
   if (st.checks.length !== f.rubric.length) st.checks = f.rubric.map(()=>false);
   const got = st.checks.filter(Boolean).length, G = (window.CS_FRQ_GRAPHS||{})[f.id];
   const frqLocked = x => !CS.hasAccess() && CS.FRQS.indexOf(x) >= CS.FREE_FRQS;
-  v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${S().exam==="ap"?"AP® Section II · 1 long + 2 short · 60 minutes":"Builds deep understanding"}</span><h1>Free response</h1>
+  v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${S().exam==="ap"?(CS.C.frqHead||"AP® Section II · 1 long + 2 short · 60 minutes"):"Builds deep understanding"}</span><h1>Free response</h1>
       <p class="muted">${CS.FRQS.length} original prompts with point-by-point rubrics. ${S().exam==="clep"?"The CLEP® exam has no free-response section, but writing explanations is the fastest way to find gaps.":"For real past exam questions, see Learn → Official resources."}</p></div></div>
     <div class="split"><nav class="sidelist">${CS.FRQS.map((x,i)=>{ const s2 = S().frq[x.id]; const n = s2&&s2.scored?s2.checks.filter(Boolean).length:null;
         return `<button aria-current="${x.id===frqId}" data-f="${x.id}"><span class="num">${frqLocked(x)?I("lock"):i+1}</span><span>${esc(x.title)}<br><span class="faint tiny">${x.kind}${n!=null?` · ${n}/${x.rubric.length}`:""}</span></span></button>`; }).join("")}</nav>
       <article class="panel">
         <div class="row-wrap">${f.units.map(u=>`<span class="tag">Unit ${u}</span>`).join("")}<span class="tag acc">${f.kind} · ${f.rubric.length} points · ~${f.minutes} min</span></div>
-        <h2>${esc(f.title)}</h2><p>${esc(f.prompt)}</p>
-        <ol class="parts" type="a">${f.parts.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
+        <h2>${esc(f.title)}</h2>${String(f.prompt).split(/\n\s*\n/).map(x=>`<p>${esc(x)}</p>`).join("")}
+        ${f.passage ? CS.passageHTML(f.passage) : ""}
+        ${f.sources ? `<div class="srcs"><div class="srcs-tabs" role="tablist">${f.sources.map((x,i)=>`<button role="tab" class="srcs-tab" data-src="${i}" aria-selected="${i===0}">Source ${String.fromCharCode(65+i)}</button>`).join("")}</div>${f.sources.map((x,i)=>`<div class="srcs-pane" data-pane="${i}" ${i?"hidden":""}><p class="srcs-cite"><b>Source ${String.fromCharCode(65+i)}</b> · ${esc(x.t)}</p>${String(x.x).split(/\n\s*\n/).map(y=>`<p>${esc(y)}</p>`).join("")}</div>`).join("")}</div>` : ""}
+        ${f.essay ? `<div class="sample"><span class="eyebrow">How to plan it</span><ol style="margin:6px 0 0;padding-left:1.2em">${f.parts.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>` : `<ol class="parts" type="a">${f.parts.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`}
         ${G?`<div class="stack" style="gap:8px"><span class="eyebrow">Graph task</span><p><b>${esc(G.task)}</b></p><div id="frq-graph" style="max-width:520px"></div></div>`:""}
-        <label for="frq-draft" class="eyebrow">Your written answer</label>
-        <textarea id="frq-draft" placeholder="(a) ...&#10;(b) ...&#10;Sketch graphs on paper, then describe them here.">${esc(st.draft)}</textarea>
-        <div class="row-wrap">${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI feedback · coming soon</button>` : `<button class="btn" id="frq-ai">${I("spark")}Get AI feedback</button>`}<button class="btn ghost" id="frq-quick" title="Free. Matches each rubric point against what you wrote.">Quick check (free)</button><button class="btn ${CS.SOON.ai ? "" : "ghost"}" id="frq-toggle">${st.show?"Hide rubric":"Score it myself"}</button></div>
+        ${f.essay ? `<div class="spread"><label for="frq-draft" class="eyebrow">Your essay</label><span class="row-wrap" style="gap:10px"><span class="tiny muted" id="frq-wc">${(st.draft.match(/\S+/g)||[]).length} words</span><button class="btn ghost sm" id="frq-timer">${I("clock")}<span id="frq-tleft">Start ${f.minutes}:00 timer</span></button></span></div>` : `<label for="frq-draft" class="eyebrow">Your written answer</label>`}
+        <textarea id="frq-draft" class="${f.essay?"essay":""}" placeholder="${f.essay?"Open with your thesis: one or two sentences that answer the prompt with a clear line of reasoning. Then build body paragraphs: evidence first, then explain how it supports your claim.":"(a) ...&#10;(b) ...&#10;Sketch graphs on paper, then describe them here."}">${esc(st.draft)}</textarea>
+        <div class="row-wrap">${CS.SOON.ai ? `<button class="btn ghost" disabled title="Coming soon">${I("spark")}AI feedback · coming soon</button>` : `<button class="btn" id="frq-ai">${I("spark")}Get AI feedback</button>`}${f.essay?"":`<button class="btn ghost" id="frq-quick" title="Free. Matches each rubric point against what you wrote.">Quick check (free)</button>`}<button class="btn ${CS.SOON.ai ? "" : "ghost"}" id="frq-toggle">${st.show?"Hide rubric":"Score it myself"}</button></div>
         <div id="frq-ai-out"></div>
         <div ${st.show?"":"hidden"} class="stack" style="gap:14px">
           <div class="spread"><h3>Rubric: check each point you earned</h3><b id="frq-score">${got} / ${f.rubric.length}</b></div>
           <div class="rubric">${f.rubric.map((r,i)=>`<label for="rb-${f.id}-${i}"><input type="checkbox" id="rb-${f.id}-${i}" data-i="${i}" ${st.checks[i]?"checked":""}><span>${esc(r)}</span></label>`).join("")}</div>
-          <div class="sample"><span class="eyebrow">Sample full-credit answer</span><p style="margin-top:6px">${esc(f.sample)}</p></div>
+          <div class="sample"><span class="eyebrow">${f.essay?"Sample high-scoring essay":"Sample full-credit answer"}</span>${String(f.sample).split(/\n\s*\n/).map((x,i)=>`<p style="margin-top:${i?10:6}px">${esc(x)}</p>`).join("")}</div>
         </div>
       </article></div>`;
   $$("#v-frq [data-f]").forEach(b => b.onclick = () => { frqId = b.dataset.f; render.frq(); });
   if (frqLocked(f)) { $("#v-frq article.panel").outerHTML = CS.lockPanel(`"${f.title}" is a paid FRQ`, `Free includes the first ${CS.FREE_FRQS} free-response questions. Unlock all ${CS.FRQS.length}, each with a point-by-point rubric and a sample full-credit answer.`); return; }
-  $("#frq-draft").oninput = e => { st.draft = e.target.value; CS.save(); };
+  $("#frq-draft").oninput = e => { st.draft = e.target.value; CS.save(); const wc = $("#frq-wc"); if (wc) wc.textContent = `${(st.draft.match(/\S+/g)||[]).length} words`; };
+  $$("#v-frq .srcs-tab").forEach(b => b.onclick = () => { $$("#v-frq .srcs-tab").forEach(x => x.setAttribute("aria-selected", x === b)); $$("#v-frq .srcs-pane").forEach(x => x.hidden = x.dataset.pane !== b.dataset.src); });
+  if ($("#frq-timer")) { const tb = $("#frq-timer"), show = () => { const t = $("#frq-tleft"); if (!t) return; if (!frqClock || frqClock.id !== f.id) { t.textContent = `Start ${f.minutes}:00 timer`; return; }
+      const left = Math.max(0, Math.round((frqClock.end - Date.now())/1000)); t.textContent = left ? `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")} left · stop` : "Time's up"; if (!left) { clearInterval(frqClock.t); } };
+    clearInterval(frqTick); frqTick = setInterval(() => { if (!$("#frq-tleft")) return clearInterval(frqTick); show(); }, 1000); show();
+    tb.onclick = () => { if (frqClock && frqClock.id === f.id) { frqClock = null; } else frqClock = {id:f.id, end: Date.now() + f.minutes*60000}; show(); }; }
   $("#frq-toggle").onclick = () => { st.show = !st.show; if (st.show && !st.scored) { st.scored = true; CS.addXP(30); } CS.refresh(); render.frq(); };
-  $("#frq-quick").onclick = () => {
+  if ($("#frq-quick")) $("#frq-quick").onclick = () => {
     const out = $("#frq-ai-out"), ans = $("#frq-draft").value.trim();
     if (ans.length < 20) { out.innerHTML = `<div class="feedback bad">Write an answer to each part first, then run the quick check.</div>`; return; }
     const res = CS.autoCheck(f, ans); let auto = 0, hit = 0;

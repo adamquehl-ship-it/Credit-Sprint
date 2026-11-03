@@ -37,10 +37,20 @@ const GAMES = [
     {k:"court", n:"Court Case Match", ic:"cards", d:"A landmark Supreme Court case appears. Pick the ruling that matches it, from Marbury to Dobbs.", best:()=>S().best.court!=null?`Best: ${S().best.court}/8`:"Not played yet", isNew:true},
     {k:"branch", n:"Branch Check", ic:"cards", d:"60 seconds. Sort each power into the legislative, executive or judicial branch. A mistake costs 3 seconds.", best:()=>S().best.branch!=null?`Best: ${S().best.branch} sorted`:"Not played yet", isNew:true},
     {k:"amend", n:"Amendment Sprint", ic:"bolt", d:"60 seconds. A clue describes an amendment; name it before time runs out.", best:()=>S().best.amend!=null?`Best: ${S().best.amend} named`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="aplit" ? [
+    {k:"device", n:"Device Spotter", ic:"quill", d:"A line of poetry or prose appears. Name the literary device it uses: metaphor, apostrophe, enjambment, irony and more.", best:()=>S().best.device!=null?`Best: ${S().best.device}/8`:"Not played yet", isNew:true},
+    {k:"form", n:"Name That Form", ic:"cards", d:"A clue describes a poem's form, a genre or a structure. Name it: sonnet, villanelle, ode, tragedy, frame story and more.", best:()=>S().best.form!=null?`Best: ${S().best.form}/8`:"Not played yet", isNew:true},
+    {k:"pov", n:"Point of View Sort", ic:"bolt", d:"60 seconds. Sort each opening line by its narrator: first person, second person, third limited or third omniscient. A mistake costs 3 seconds.", best:()=>S().best.pov!=null?`Best: ${S().best.pov} sorted`:"Not played yet", isNew:true},
+    {k:"tone", n:"Tone Check", ic:"spark", d:"60 seconds. Read a short passage and pick the word that best names its tone. Precise tone words earn essay points.", best:()=>S().best.tone!=null?`Best: ${S().best.tone} named`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="aplang" ? [
+    {k:"appeal", n:"Appeal Sort", ic:"bolt", d:"60 seconds. Sort each line from a speech or essay by its main appeal: ethos, pathos, logos or kairos. A mistake costs 3 seconds.", best:()=>S().best.appeal!=null?`Best: ${S().best.appeal} sorted`:"Not played yet", isNew:true},
+    {k:"fallacy", n:"Fallacy Finder", ic:"target", d:"A short argument hides a flaw in its reasoning. Name it: straw man, false dilemma, slippery slope, ad hominem and more.", best:()=>S().best.fallacy!=null?`Best: ${S().best.fallacy}/8`:"Not played yet", isNew:true},
+    {k:"claimev", n:"Claim or Evidence?", ic:"cards", d:"60 seconds. Sort each sentence from an argument: claim, evidence, commentary or counterargument. The skill behind every body paragraph.", best:()=>S().best.claimev!=null?`Best: ${S().best.claimev} sorted`:"Not played yet", isNew:true},
+    {k:"rhet", n:"Rhetoric Spotter", ic:"speech", d:"A sentence from a speech or essay appears. Name the rhetorical choice: anaphora, antithesis, concession, rhetorical question and more.", best:()=>S().best.rhet!=null?`Best: ${S().best.rhet}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
   {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
-  {k:"crunch", n:"Number Crunch", ic:"calc", d:CS.C.crunchDesc || (CS.COURSE==="micro"?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number."), best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true},
+  ...(CS.DRILLS && CS.DRILLS.length ? [{k:"crunch", n:"Number Crunch", ic:"calc", d:CS.C.crunchDesc || (CS.COURSE==="micro"?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number."), best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="macro" ? [{k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"}] : []),
   ...(CS.COURSE==="micro" ? [
     {k:"profit", n:"Profit Max", ic:"calc", d:"You run the firm. Read the cost table, find where MR = MC, and pick the output that maximizes profit (or shut down).", best:()=>S().best.profit!=null?`Best: ${S().best.profit}/6`:"Not played yet"},
@@ -65,7 +75,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, device, form, pov, tone, appeal, fallacy, claimev, rhet})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -87,7 +97,7 @@ function daily(area){
     if (i >= qs.length) { const score = grid.filter(Boolean).length; S().daily[key] = {score, grid}; CS.addXP(50 + score*5); CS.markTask("daily"); finish(0); return results(S().daily[key]); }
     const q = qs[i];
     area.innerHTML = `<div class="spread"><span class="eyebrow">Question ${i+1} of 5 · Unit ${q.u}</span><div class="grid5">${[0,1,2,3,4].map(k=>`<i class="${k<grid.length?(grid[k]?"r":"w"):""}"></i>`).join("")}</div></div>
-      <p class="qtext">${esc(q.q)}</p><div class="opts">${q.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div><div id="dc-fb"></div>`;
+      ${CS.qText(q)}<div class="opts">${q.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div><div id="dc-fb"></div>`;
     const pick = j => { const ok = q.opts[j].ok; CS.record(q, ok, false);
       $$(".opt", area).forEach((b,k)=>{ b.disabled = true; if (q.opts[k].ok) { b.classList.add("right"); b.insertAdjacentHTML("beforeend",`<span class="why">${esc(q.opts[k].w)}</span>`); } else if (k===j) b.classList.add("wrong"); });
       $("#dc-fb").innerHTML = `<button class="btn" id="dc-next">${i<4?"Next":"See result"}</button>`; $("#dc-next").onclick = () => play(i+1, grid.concat(ok)); $("#dc-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#dc-next").click(); }; };
@@ -112,31 +122,32 @@ function boss(area){
   fight(bossUnit);
   function choose(){
     area.innerHTML = `<p style="max-width:62ch">Each unit has a boss with 100 HP. Correct answers deal 10 damage, and three in a row deal a critical 20. You have three hearts. Beat the boss to earn its badge and 150 XP.</p>
-      <div class="units">${CS.UNITS.map(u=>`<button class="task" data-u="${u.id}"><span class="g-ico" style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:${S().bosses[u.id]?"var(--good-bg)":"var(--accent-soft)"};color:${S().bosses[u.id]?"var(--good)":"var(--accent)"}">${I(S().bosses[u.id]?"check":"sword")}</span><span class="stack" style="gap:2px"><h3>${esc(BOSSES[u.id])}</h3><span class="muted small">Unit ${u.id} · ${esc(u.short)}${S().bosses[u.id]?" · defeated":""}</span></span></button>`).join("")}</div>`;
+      <div class="units">${CS.UNITS.map(u=>`<button class="task" data-u="${u.id}">${CS.hasBossArt && CS.hasBossArt(CS.COURSE, u.id) ? `<span class="boss-mini ${S().bosses[u.id]?"done":""}">${CS.bossArt(CS.COURSE, u.id, "idle", {label: BOSSES[u.id]})}${S().bosses[u.id]?`<i>${I("check")}</i>`:""}</span>` : `<span class="g-ico" style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:${S().bosses[u.id]?"var(--good-bg)":"var(--accent-soft)"};color:${S().bosses[u.id]?"var(--good)":"var(--accent)"}">${I(S().bosses[u.id]?"check":"sword")}</span>`}<span class="stack" style="gap:2px"><h3>${esc(BOSSES[u.id])}</h3><span class="muted small">Unit ${u.id} · ${esc(u.short)}${S().bosses[u.id]?" · defeated":""}</span></span></button>`).join("")}</div>`;
     $$("[data-u]", area).forEach(b => b.onclick = () => { bossUnit = +b.dataset.u; fight(bossUnit); });
   }
   function fight(u){
-    const unit = CS.UNITS[u-1], qs = CS.shuffle(CS.QS.filter(q=>q.u===u)).map(CS.prepQ);
+    const unit = CS.UNITS[u-1], qs = CS.setOrder(CS.shuffle(CS.QS.filter(q=>q.u===u))).map(CS.prepQ);
     let hp = 100, hearts = 3, i = 0, combo = 0;
     const face = (mood) => `<svg viewBox="0 0 84 84" aria-hidden="true"><rect x="6" y="10" width="72" height="66" rx="20" fill="var(--accent)"/><path d="M14 14 L24 2 L30 14 M54 14 L60 2 L70 14" fill="var(--accent-2)"/><circle cx="30" cy="38" r="7" fill="#fff"/><circle cx="54" cy="38" r="7" fill="#fff"/><circle cx="${mood==="hurt"?28:31}" cy="39" r="3" fill="#111827"/><circle cx="${mood==="hurt"?52:55}" cy="39" r="3" fill="#111827"/><path d="${mood==="hurt"?"M28 60 Q42 52 56 60":"M28 56 Q42 64 56 56"}" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M22 28 L36 32 M62 28 L48 32" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg>`;
+    const art = st => CS.hasBossArt && CS.hasBossArt(CS.COURSE, u) ? CS.bossArt(CS.COURSE, u, st, {label: BOSSES[u]}) : face(st === "hurt" || st === "crit" || st === "defeat" ? "hurt" : "idle");
     draw("idle");
     function draw(mood, fb){
       if (hp <= 0) return win(); if (hearts <= 0 || i >= qs.length) return lose();
       const q = qs[i];
-      area.innerHTML = `<div class="boss">${face(mood)}<div class="stack" style="gap:6px"><div class="spread"><b>${esc(BOSSES[u])}</b><span class="hearts">${[0,1,2].map(k=>`<span class="${k<hearts?"":"lost"}">${I("heart")}</span>`).join("")}</span></div><div class="hp"><i style="width:${hp}%"></i></div><span class="muted tiny">${hp} HP left · Unit ${u}: ${esc(unit.short)}${combo>=2?` · combo ${combo}`:""}</span></div></div>
-        ${fb||""}<p class="qtext">${esc(q.q)}</p><div class="opts">${q.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div>`;
+      area.innerHTML = `<div class="boss">${art(mood)}<div class="stack" style="gap:6px"><div class="spread"><b>${esc(BOSSES[u])}</b><span class="hearts">${[0,1,2].map(k=>`<span class="${k<hearts?"":"lost"}">${I("heart")}</span>`).join("")}</span></div><div class="hp"><i style="width:${hp}%"></i></div><span class="muted tiny">${hp} HP left · Unit ${u}: ${esc(unit.short)}${combo>=2?` · combo ${combo}`:""}</span></div></div>
+        ${fb||""}${CS.qText(q)}<div class="opts">${q.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div>`;
       const pick = j => { const ok = q.opts[j].ok; CS.record(q, ok); i++;
-        if (ok) { combo++; const dmg = combo>=3 ? 20 : 10; hp = Math.max(0, hp-dmg); draw("hurt", `<div class="feedback good"><b>${dmg===20?"Critical hit! −20 HP.":"Hit! −10 HP."}</b> ${esc(q.opts[j].w)}</div>`); }
-        else { combo = 0; hearts--; const c = q.opts.find(o=>o.ok); draw("idle", `<div class="feedback bad"><b>Ouch, you lost a heart.</b> Answer: ${esc(c.t)}. ${esc(c.w)}</div>`); } };
+        if (ok) { combo++; const dmg = combo>=3 ? 20 : 10; hp = Math.max(0, hp-dmg); draw(dmg===20 ? "crit" : "hurt", `<div class="feedback good"><b>${dmg===20?"Critical hit! −20 HP.":"Hit! −10 HP."}</b> ${esc(q.opts[j].w)}</div>`); }
+        else { combo = 0; hearts--; const c = q.opts.find(o=>o.ok); draw("attack", `<div class="feedback bad"><b>Ouch, you lost a heart.</b> Answer: ${esc(c.t)}. ${esc(c.w)}</div>`); } };
       $$(".opt", area).forEach(b => b.onclick = () => pick(+b.dataset.j));
       area._key = e => { if (["1","2","3","4","5"].includes(e.key)) pick(+e.key-1); };
     }
     function win(){ area._key = null; const first = !S().bosses[u]; S().bosses[u] = Date.now(); finish(first?150:60);
-      area.innerHTML = `<div class="boss">${face("hurt")}<div><span class="eyebrow">Victory</span><h2>You defeated ${esc(BOSSES[u])}</h2></div></div><p class="muted">${first?"+150 XP and a boss badge.":"+60 XP for the rematch."} ${hearts} heart${hearts===1?"":"s"} left.</p>
+      area.innerHTML = `<div class="boss">${art("defeat")}<div><span class="eyebrow">Victory</span><h2>You defeated ${esc(BOSSES[u])}</h2></div></div><p class="muted">${first?"+150 XP and a boss badge.":"+60 XP for the rematch."} ${hearts} heart${hearts===1?"":"s"} left.</p>
         <div class="row-wrap"><button class="btn" id="b-next">Fight another boss</button><button class="btn ghost" data-go="home">Dashboard</button></div>`;
       $("#b-next").onclick = () => { bossUnit = null; choose(); }; }
     function lose(){ area._key = null; finish(15);
-      area.innerHTML = `<div class="boss">${face("idle")}<div><span class="eyebrow">Defeated</span><h2>${esc(BOSSES[u])} wins this round</h2></div></div><p class="muted">The boss had ${hp} HP left. Your misses are in the mistakes notebook. Review the Unit ${u} guide and try again.</p>
+      area.innerHTML = `<div class="boss">${art("win")}<div><span class="eyebrow">Defeated</span><h2>${esc(BOSSES[u])} wins this round</h2></div></div><p class="muted">The boss had ${hp} HP left. Your misses are in the mistakes notebook. Review the Unit ${u} guide and try again.</p>
         <div class="row-wrap"><button class="btn" id="b-retry">Rematch</button><button class="btn ghost" data-go="learn" data-unit="${u}">Review Unit ${u}</button></div>`;
       $("#b-retry").onclick = () => fight(u); }
   }
@@ -146,7 +157,7 @@ function boss(area){
 function chain(area){
   const ROUNDS = 3, set = CS.shuffle(CS.CHAINS).slice(0, ROUNDS);
   let r = 0, perfect = 0, totalMiss = 0;
-  area.innerHTML = `<p style="max-width:62ch">Each round gives you the steps of ${CS.C.cat==="History"?"a chain of events":["Government","Social science"].includes(CS.C.cat)?"a process":"a chain reaction"}, scrambled. Tap them in the right order. Every wrong tap is a strike.</p><div><button class="btn lg" id="c-go">Start · ${ROUNDS} chains</button></div>`;
+  area.innerHTML = `<p style="max-width:62ch">Each round gives you the steps of ${CS.C.cat==="History"?"a chain of events":["Government","Social science","English"].includes(CS.C.cat)?"a process":"a chain reaction"}, scrambled. Tap them in the right order. Every wrong tap is a strike.</p><div><button class="btn lg" id="c-go">Start · ${ROUNDS} chains</button></div>`;
   $("#c-go").onclick = () => round();
   function round(){
     if (r >= ROUNDS) return end();
@@ -293,7 +304,7 @@ function sprint(area){
     <div class="row-wrap"><button class="btn accent" id="r-go">Start sprint</button><span class="muted small">Keys 1–5 answer.</span></div>`;
   $("#r-go").onclick = go;
   function go(){
-    const pool = CS.shuffle(CS.QS).map(CS.prepQ); let qi = 0, score = 0, streak = 0, right = 0, total = 0, end = Date.now() + SECS*1000, over = false;
+    const pool = CS.shuffle(CS.QS.filter(q => !q.p)).map(CS.prepQ); let qi = 0, score = 0, streak = 0, right = 0, total = 0, end = Date.now() + SECS*1000, over = false;
     const mult = () => Math.min(4, 1 + Math.floor(streak/3));
     show();
     every(() => { const left = (end - Date.now())/1000; const t = $("#r-time"), bar = $("#r-bar"); if (t) t.textContent = Math.max(0, Math.ceil(left)); if (bar) bar.style.width = Math.max(0,left/SECS*100)+"%"; if (left <= 0) stop(); }, 100);
@@ -301,7 +312,7 @@ function sprint(area){
       if (over) return; const q = pool[qi % pool.length];
       area.innerHTML = `<div class="hud"><span>Time <b id="r-time">${Math.ceil((end-Date.now())/1000)}</b>s</span><span>Score <b>${score}</b></span><span>Multiplier <b>×${mult()}</b></span><span>Streak <b>${streak}</b></span></div>
         <div class="timebar"><i id="r-bar" style="width:${(end-Date.now())/SECS/10}%"></i></div>
-        <p class="qtext">${esc(q.q)}</p>
+        ${CS.qText(q)}
         <div class="opts">${q.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o.t)}</span></button>`).join("")}</div>`;
       $$(".opt", area).forEach(b => b.onclick = () => pick(+b.dataset.j));
       area._key = e => { if (["1","2","3","4","5"].includes(e.key)) pick(+e.key-1); };
@@ -1145,6 +1156,97 @@ function bias(area){
     $("#bs-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(all().slice()); round(); };
   }
 }
+
+
+/* ---------- English: three reusable game shapes, filled from each course's games.js data ----------
+   spotGame: 8 rounds, a quote or scenario, pick its label (options from the same family).
+   sortGame: 60 seconds, tap the right bucket; a miss costs 3 seconds.
+   pickGame: 60 seconds, a short passage, pick the right word from four. */
+function spotGame(area, c){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  const all = () => window[c.data] || [];
+  const go = () => { pool = CS.shuffle(all().slice()); i = 0; right = 0; round(); };
+  area.innerHTML = `<p style="max-width:62ch">${c.intro}</p><div><button class="btn accent" id="sp-go">Start · ${ROUNDS} rounds</button></div>`;
+  $("#sp-go").onclick = go;
+  function round(){
+    if (i >= ROUNDS) return end();
+    const q = pool[i], labels = [...new Set(all().filter(x => x[1] !== q[1] && (x[4] == null || x[4] === q[4])).map(x => x[1]))];
+    const opts = CS.shuffle([q[1]].concat(CS.shuffle(labels).slice(0, 3)));
+    area.innerHTML = `<div class="hud"><span>Round <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div><blockquote class="sm-quote">${esc(q[0])}</blockquote><p class="muted tiny">${c.ask}</p>
+      <div class="sm-opts">${opts.map((o,k) => `<button class="btn ghost sm-o" data-o="${k}">${esc(o)}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = opts[+b.dataset.o], ok = pick === q[1]; CS.record({u: q[3] || 1}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (opts[+x.dataset.o] === q[1]) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite: "+esc(q[1])+"."}</b> ${esc(q[2])}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+    area._key = e => { if (/^[1-4]$/.test(e.key)) { const b = $$(".sm-o", area)[+e.key-1]; if (b) b.click(); } };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest(c.k, right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">${esc(c.n)} · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?c.win:c.tip}</p>
+      <div class="row-wrap"><button class="btn" id="sp-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#sp-again").onclick = go;
+  }
+}
+function sortGame(area, c){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window[c.data] || [];
+  area.innerHTML = `<p style="max-width:62ch">${c.intro} Tap a button, or press 1 to ${c.names.length}. A mistake costs 3 seconds.</p><div><button class="btn accent" id="so-go">Start</button></div>`;
+  $("#so-go").onclick = start;
+  function start(){ time = 60; score = 0; miss = 0; items = CS.shuffle(all().slice()); show(); clearInterval(timer); timer = every(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0];
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Sorted <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div>
+      <div class="mx-btns">${c.names.map((n, i) => `<button class="btn big" data-b="${i}">${i+1} · ${esc(n)}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { if (time <= 0) return; const ok = b === it[1]; CS.record({u: it[3] || c.u || 1}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: that one is ${c.names[it[1]].toLowerCase()}. ${it[2]}`; } };
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { const n = +e.key; if (n >= 1 && n <= c.names.length) choose(n - 1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest(c.k, score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">${esc(c.n)} · results</span><div class="result-big">${score}</div><p class="muted">sorted, ${miss} missed${nb?" · new personal best":""}. ${score>=16?c.win:c.tip}</p>
+      <div class="row-wrap"><button class="btn" id="so-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#so-again").onclick = start;
+  }
+}
+function pickGame(area, c){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window[c.data] || [];
+  area.innerHTML = `<p style="max-width:62ch">${c.intro} Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="pk-go">Start</button></div>`;
+  $("#pk-go").onclick = start;
+  function start(){ time = 60; score = 0; miss = 0; items = CS.shuffle(all().slice()); show(); clearInterval(timer); timer = every(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0], others = [...new Set(all().filter(x => x[1] !== it[1] && !(it[4] || []).includes(x[1])).map(x => x[1]))];
+    const opts = CS.shuffle([it[1]].concat(CS.shuffle(others).slice(0, 3)));
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Correct <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div><p class="muted tiny">${c.ask}</p>
+      <div class="mx-btns">${opts.map((o, i) => `<button class="btn big" data-b="${i}">${i+1} · ${esc(o)}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { if (time <= 0) return; const ok = opts[b] === it[1]; CS.record({u: it[3] || 1}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: ${it[1]}. ${it[2]}`; } };
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key)) choose(+e.key - 1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest(c.k, score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">${esc(c.n)} · results</span><div class="result-big">${score}</div><p class="muted">correct, ${miss} missed${nb?" · new personal best":""}. ${score>=14?c.win:c.tip}</p>
+      <div class="row-wrap"><button class="btn" id="pk-again">Play again</button><button class="btn ghost" data-go="cards">Review flashcards</button></div>`;
+    $("#pk-again").onclick = start;
+  }
+}
+const device = a => spotGame(a, {k:"device", n:"Device Spotter", data:"CS_LIT_DEVICES", intro:"A line of poetry or prose appears. Name the literary device it uses. Eight lines per game.", ask:"Which device does this line use?", win:"Sharp eye. Now explain what each device does for the meaning; that's what earns essay points.", tip:"Learn the device, then ask what it does: a metaphor compares, an apostrophe addresses, enjambment carries a thought past the line break."});
+const form = a => spotGame(a, {k:"form", n:"Name That Form", data:"CS_LIT_FORMS", intro:"A clue describes a poetic form, a genre or a story structure. Name it. Eight clues per game.", ask:"What is being described?", win:"You know your forms. Remember the exam asks how a form shapes meaning, not just its name.", tip:"Start with the counts: 14 lines is a sonnet, 19 lines with two refrains is a villanelle, 3 unrhymed lines is a haiku."});
+const pov = a => sortGame(a, {k:"pov", n:"Point of View Sort", data:"CS_LIT_POV", u:2, names:["First person","Second person","Third limited","Third omniscient"], intro:"You have 60 seconds. Each line comes from a story. Decide who is telling it and how much the narrator knows.", win:"You can hear a narrator's voice fast.", tip:"Look for I and we (first), you (second), then ask whether the narrator knows one mind (limited) or many (omniscient)."});
+const tone = a => pickGame(a, {k:"tone", n:"Tone Check", data:"CS_LIT_TONE", intro:"You have 60 seconds. Read each short passage and pick the word that best names its tone.", ask:"The tone is best described as:", win:"Your tone words are precise. Use them in your thesis.", tip:"Tone is the speaker's attitude. Look at word choice first: which words carry feeling, and is that feeling warm, bitter, amused or grave?"});
+const appeal = a => sortGame(a, {k:"appeal", n:"Appeal Sort", data:"CS_LANG_APPEAL", u:1, names:["Ethos","Pathos","Logos","Kairos"], intro:"You have 60 seconds. Each line comes from a speech, letter or essay. Sort it by the appeal it leans on most.", win:"You can read an appeal at a glance. In an essay, go further: say why the writer chose it for this audience.", tip:"Ethos builds trust in the speaker, pathos stirs feeling, logos reasons with facts and logic, and kairos seizes the moment."});
+const fallacy = a => spotGame(a, {k:"fallacy", n:"Fallacy Finder", data:"CS_LANG_FALLACY", intro:"Each round shows a short argument with a flaw in its reasoning. Name the fallacy. Eight arguments per game.", ask:"This argument commits:", win:"Nothing slips past you. Spotting weak reasoning is how you answer counterarguments.", tip:"Ask what the argument skips: a real choice (false dilemma), the real opponent (straw man), or the steps between cause and effect (slippery slope)."});
+const claimev = a => sortGame(a, {k:"claimev", n:"Claim or Evidence?", data:"CS_LANG_CE", u:2, names:["Claim","Evidence","Commentary","Counterargument"], intro:"You have 60 seconds. Each sentence comes from an argument. Decide what job it does in the paragraph.", win:"You know how a paragraph is built. Most points on the essays come from commentary.", tip:"A claim is arguable, evidence is a fact, example or quotation, commentary explains how the evidence proves the claim, and a counterargument gives the other side."});
+const rhet = a => spotGame(a, {k:"rhet", n:"Rhetoric Spotter", data:"CS_LANG_RHET", intro:"A sentence from a speech or essay appears. Name the rhetorical choice the writer makes. Eight sentences per game.", ask:"Which rhetorical choice is this?", win:"Strong ear for rhetoric. In an analysis, always add what the choice does for the purpose.", tip:"Look at the sentence's shape: repeated openings (anaphora), balanced opposites (antithesis), a question with no answer expected (rhetorical question)."});
 
 /* ---------- Statistics: Which Test?, Shape Match, Bias Spotter, Probability Plinko ---------- */
 function whichtest(area){

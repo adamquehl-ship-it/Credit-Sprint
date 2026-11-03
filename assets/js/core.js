@@ -22,9 +22,55 @@ CS.UNITS = window.CS_UNITS;
 /* history and government unit names already begin with "Unit 1:" or "Period 1:"; the app adds its own label */
 CS.UNITS.forEach(u => { u.name = String(u.name).replace(/^(Unit|Period) \d+:\s*/, ""); });
 CS.QS = window.CS_QUESTIONS_RAW.map((r,i)=>({
-  id:"q"+i, u:r[0], q:r[1],
+  id:"q"+i, u:r[0], q:r[1], p:(r[4] && r[4].p) || null,
   opts:[{t:r[2][0], w:r[2][1], ok:true}].concat(r[3].map(x=>({t:x[0], w:x[1], ok:false}))).concat((window.CS_FIFTH||{})["q"+i] ? [{t:window.CS_FIFTH["q"+i][0], w:window.CS_FIFTH["q"+i][1], ok:false}] : [])
 }));
+/* ---------- reading passages (English courses) ----------
+   A passage is shared by a set of questions: CS_PASSAGES[id] = {t title, by author, y year, k kind, x text}.
+   Poems and drama are numbered by line; prose by paragraph. Question decks keep each set together, in order. */
+CS.PASSAGES = window.CS_PASSAGES || {};
+CS.hasPassages = Object.keys(CS.PASSAGES).length > 0;
+CS.QS.forEach(q => { if (q.p && !CS.PASSAGES[q.p]) q.p = null; });
+const PSG_KIND = {poem:"Poem", prose:"Prose fiction", drama:"Drama", nonfiction:"Nonfiction", draft:"Student draft", source:"Source"};
+CS.passageBody = (ps) => {
+  const e = CS.esc, k = ps.k || "prose";
+  if (k === "poem" || k === "drama") {
+    let n = 0;
+    return `<div class="psg-lines">${String(ps.x).split("\n").map(l => { if (!l.trim()) return `<div class="psg-gap"></div>`; n++;
+      return `<div class="psg-l"><span class="psg-n">${n % 5 === 0 ? n : ""}</span><span class="psg-t">${e(l)}</span></div>`; }).join("")}</div>`;
+  }
+  return `<div class="psg-paras">${String(ps.x).split(/\n\s*\n/).map((para, i) => `<p><span class="psg-pn">${i+1}</span>${e(para.trim()).replace(/\n/g, "<br>")}</p>`).join("")}</div>`;
+};
+/* the passage panel shown above a question. Remembers if the student folded it away for this passage. */
+let psgFolded = {};
+CS.passageHTML = (id, o = {}) => {
+  const ps = CS.PASSAGES[id]; if (!ps) return "";
+  const e = CS.esc, open = o.compact ? false : !psgFolded[id];
+  const meta = [ps.by, ps.y].filter(Boolean).join(", ");
+  return `<details class="psg ${o.compact ? "compact" : ""}" data-psg="${e(id)}" ${open ? "open" : ""}><summary><span class="psg-kind">${PSG_KIND[ps.k] || "Passage"}</span><b>${e(ps.t)}</b>${meta ? `<span class="psg-by">${e(meta)}</span>` : ""}<span class="psg-tog"></span></summary>
+    ${ps.note ? `<p class="psg-note">${e(ps.note)}</p>` : ""}<div class="psg-body" tabindex="0" aria-label="Passage text">${CS.passageBody(ps)}</div></details>`;
+};
+document.addEventListener("toggle", ev => { const d = ev.target; if (d && d.matches && d.matches("details.psg:not(.compact)")) psgFolded[d.dataset.psg] = !d.open; }, true);
+/* question text, with its passage when it has one */
+CS.qText = (q, o = {}) => (q.p ? CS.passageHTML(q.p, o) : "") + `<p class="qtext">${CS.esc(q.q)}</p>`;
+/* keep passage sets together: questions that share a passage sit next to each other, in the order they were written */
+CS.setOrder = list => {
+  if (!CS.hasPassages) return list;
+  const idx = q => +String(q.id).slice(1), out = [], seen = new Set();
+  list.forEach(q => { if (!q.p) { out.push(q); return; } if (seen.has(q.p)) return; seen.add(q.p);
+    out.push(...list.filter(x => x.p === q.p).sort((a, b) => idx(a) - idx(b))); });
+  return out;
+};
+/* pick about n questions from a pool, taking whole passage sets where they fit (a set can run past n by a few) */
+CS.takeQs = (pool, n) => {
+  if (!CS.hasPassages) return CS.shuffle(pool).slice(0, n);
+  const groups = {}, singles = [];
+  pool.forEach(q => { if (q.p) (groups[q.p] = groups[q.p] || []).push(q); else singles.push([q]); });
+  const units = CS.shuffle(Object.values(groups).concat(singles)), out = [];
+  for (const g of units) { if (out.length >= n) break; if (out.length && out.length + g.length > n + 3) continue; out.push(...g); }
+  if (out.length < n) for (const g of units) { if (out.length >= n) break; for (const q of g) { if (out.length >= n) break; if (!out.includes(q)) out.push(q); } }
+  return CS.setOrder(out.length > n + 3 ? out.slice(0, n) : out);
+};
 CS.QBYID = Object.fromEntries(CS.QS.map(q=>[q.id,q]));
 CS.CARDS = window.CS_CARDS_RAW.map((c,i)=>({id:"c"+i, u:c[0], front:c[1], back:c[2]}));
 CS.FRQS = window.CS_FRQS;
@@ -126,6 +172,7 @@ CS.applyTheme = () => {
 /* ---------- answers + mastery (last 20 per unit) ---------- */
 CS.record = (q, ok, xp=true) => {
   if (q.u) { const a = S.answers[q.u] || (S.answers[q.u] = []); a.push(ok?1:0); if (a.length > 20) a.shift(); }
+  if (q.p) S.psgAns = (S.psgAns || 0) + 1;
   if (q.id && q.id[0] === "q") {
     if (!ok) S.mistakes[q.id] = {n:0, due:Date.now() + CS.DAY};
     else if (q.id in S.mistakes) { const m = S.mistakes[q.id]; m.n++; if (m.n >= 3) delete S.mistakes[q.id]; else m.due = Date.now() + [1,3,7][m.n]*CS.DAY; }
@@ -225,6 +272,9 @@ CS.levelUp = lv => {
 
 /* ---------- icons (24px stroke) ---------- */
 const P = {
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  quill:'<path d="M20 4C11 5 6 10 4.5 19.5"/><path d="M20 4c-.5 6-4 10.5-11.5 12"/><path d="M8.5 12.5c3-.2 6-1.8 8-5"/>',
+  speech:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
   x:'<path d="M6 6l12 12M18 6 6 18"/>',
   grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   landmark:'<path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M2 10l10-6 10 6z"/>',

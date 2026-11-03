@@ -12,6 +12,8 @@ const APSTAT = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","
 const APGOV = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","p16.js","p17.js","p18.js","p19.js","p20.js","p21.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/apgov/"+f);
 const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","src.js"].map(f => "assets/data/apworld/"+f);
 const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
+const APLIT = ["cards.js","cards2.js","terms.js","x1.js","f1.js","f2.js","f3.js","f4.js","v1.js","v2.js","v3.js","v4.js","d1.js","a1.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"].map(f=>"assets/data/aplit/"+f);
+const APLANG = ["cards.js","cards2.js","terms.js","x1.js","x2.js","r1.js","r2.js","r3.js","r4.js","w1.js","w2.js","w3.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"].map(f=>"assets/data/aplang/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     bosses:{1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"}, key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -85,6 +87,22 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of statistics math: z-scores, expected values, standard errors, test statistics and regression. Fresh numbers every time.",
     drillDesc:"Do the calculations: z-scores, the empirical rule, binomial mean and SD, standard errors, t and z statistics, slopes and residuals. Fresh numbers every time.",
     planGames:["Which Test?","Shape Match","Bias Spotter","Probability Plinko","Sprint","True or False"]},
+  aplit:{k:"aplit", name:"English Literature", short:"Lit", ap:"AP\u00AE English Literature", clep:"CLEP\u00AE Analyzing and Interpreting Literature", clepShort:"CLEP\u00AE Analyzing Literature",
+    key:"creditsprint.aplit.v1", col:"#BE123C", soft:"#FFF1F2", apFmt:"55 multiple choice and 3 essays in 3 hours", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"Short fiction, poetry, novels and drama: character, narrator, structure, imagery, form and the literary argument essay, with reading passages and essay practice.", icon:"quill", data:APLIT, nUnits:6, cat:"English",
+    graphs:false, unitWord:"Unit", reading:true, frqHead:"AP\u00AE Section II \u00B7 3 essays \u00B7 2 hours",
+    apExamText:"The real exam is digital: 55 multiple-choice questions on 5 passages (prose fiction, drama and poetry) in 60 minutes (45% of your score), then 3 essays in 2 hours (55%): a poetry analysis, a prose fiction analysis and a literary argument. Practice the essays in the Free response tab.",
+    exams:{ap:{full:{n:55, min:60, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:22, name:"Mini exam"}}, clep:{full:{n:80, min:90, name:"Full-length CLEP\u00AE"}, mini:{n:25, min:28, name:"Mini exam"}}},
+    bosses:{1:"The Shapeshifter",2:"The Unreliable Narrator",3:"The Masked Speaker",4:"The Sonnet Sphinx",5:"The Tragic Flaw",6:"The Blank Page"},
+    chainDesc:"Put the steps in order: plot structure, a sonnet's turn, a tragedy's arc and how to build a literary argument essay.",
+    planGames:["Device Spotter","Name That Form","Point of View Sort","Tone Check","Sprint","True or False"]},
+  aplang:{k:"aplang", name:"English Language", short:"Lang", ap:"AP\u00AE English Language", clep:"CLEP\u00AE College Composition", clepShort:"CLEP\u00AE College Composition",
+    key:"creditsprint.aplang.v1", col:"#B45309", soft:"#FFFBEB", apFmt:"45 multiple choice and 3 essays in 3 hours 15 minutes", clepFmt:"About 50 multiple choice and 2 essays in 2 hours", blurb:"Rhetoric and argument: the rhetorical situation, claims and evidence, reasoning, style, revising drafts and the synthesis, rhetorical analysis and argument essays.", icon:"speech", data:APLANG, nUnits:6, cat:"English",
+    graphs:false, unitWord:"Unit", reading:true, frqHead:"AP\u00AE Section II \u00B7 3 essays \u00B7 2 hours 15 minutes",
+    apExamText:"The real exam is digital: 45 multiple-choice questions in 60 minutes (45% of your score), about half on reading nonfiction and half on revising drafts, then 3 essays in 2 hours 15 minutes (55%): synthesis, rhetorical analysis and argument. Practice the essays in the Free response tab.",
+    exams:{ap:{full:{n:45, min:60, name:"Full-length AP\u00AE multiple choice"}, mini:{n:18, min:24, name:"Mini exam"}}, clep:{full:{n:50, min:50, name:"Full-length CLEP\u00AE multiple choice"}, mini:{n:20, min:20, name:"Mini exam"}}},
+    bosses:{1:"The Context Chameleon",2:"The Straw Man",3:"The Non Sequitur",4:"The Tone Shifter",5:"The Red Pen",6:"The Blank Page"},
+    chainDesc:"Put the steps in order: planning a synthesis essay, building a paragraph, a rhetorical analysis and revising a draft.",
+    planGames:["Appeal Sort","Fallacy Finder","Claim or Evidence?","Rhetoric Spotter","Sprint","True or False"]},
   mkt:{k:"mkt", name:"Marketing", short:"Marketing", ap:"CLEP® Principles of Marketing", clep:"CLEP® Principles of Marketing", clepShort:"CLEP® Principles of Marketing", clepOnly:true,
     key:"creditsprint.mkt.v1", col:"#DB2777", soft:"#FDF2F8", apFmt:"", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Marketing concept, strategy, research, consumer behavior, segmentation, the 4 Ps, e-commerce and ethics.", icon:"mega", data:MKT, nUnits:10, cat:"Business",
     graphs:false, unitWord:"Unit",
@@ -97,7 +115,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

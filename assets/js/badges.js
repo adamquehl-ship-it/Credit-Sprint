@@ -20,12 +20,15 @@ CS.BADGES.push(
   {k:"lv10", n:"Rising star", d:"Reach level 10", ic:"bolt", t:() => CS.level().lv >= 10},
   {k:"lv25", n:"Scholar", d:"Reach level 25", ic:"cap", t:() => CS.level().lv >= 25},
   {k:"courses3", n:"Triple threat", d:"Study 3 different courses", ic:"book", t:() => startedCourses() >= 3},
-  {k:"courses10", n:"Completionist", d:"Study all 10 courses", ic:"grid", t:() => startedCourses() >= COURSES().length},
-  {k:"boss10", n:"Boss hunter", d:"Beat 10 unit bosses", ic:"sword", t:() => bossCount() >= 10}
+  {k:"courses10", n:"Completionist", d:`Study all ${COURSES().length} courses`, ic:"grid", t:() => startedCourses() >= COURSES().length},
+  {k:"boss10", n:"Boss hunter", d:"Beat 10 unit bosses", ic:"sword", t:() => bossCount() >= 10},
+  {k:"reader", n:"Close reader", d:"Answer 100 questions on reading passages", ic:"book", t:() => (S().psgAns || 0) >= 100},
+  {k:"essay5", n:"Essayist", d:"Write and score 5 practice essays", ic:"pen", t:() => (CS.FRQS || []).filter(f => f.essay && S().frq[f.id] && S().frq[f.id].scored && (S().frq[f.id].draft || "").length > 200).length >= 5},
+  {k:"essay6", n:"Perfect six", d:"Score 6 out of 6 on a practice essay", ic:"star", t:() => (CS.FRQS || []).some(f => f.essay && S().frq[f.id] && S().frq[f.id].scored && (S().frq[f.id].draft || "").length > 200 && S().frq[f.id].checks.filter(Boolean).length === 6)}
 );
 const TIER = {diag:"bronze", s3:"bronze", q100:"bronze", cards:"bronze", daily:"bronze", boss:"bronze", hatch1:"bronze",
-  s7:"silver", sprint:"silver", shift:"silver", fed:"silver", chain:"silver", crunch:"silver", pets10:"silver", lv10:"silver", courses3:"silver",
-  s30:"gold", bossall:"gold", mock:"gold", gold:"gold", all:"gold", petleg:"gold", q1000:"gold", lv25:"gold", boss10:"gold",
+  s7:"silver", reader:"silver", essay5:"silver", sprint:"silver", shift:"silver", fed:"silver", chain:"silver", crunch:"silver", pets10:"silver", lv10:"silver", courses3:"silver",
+  s30:"gold", essay6:"gold", bossall:"gold", mock:"gold", gold:"gold", all:"gold", petleg:"gold", q1000:"gold", lv25:"gold", boss10:"gold",
   petmyth:"plat", petsup:"plat", petall:"plat", courses10:"plat", s100:"plat"};
 const TIER_N = {bronze:"Bronze", silver:"Silver", gold:"Gold", plat:"Platinum"};
 const PAL = {bronze:["#FCD9B6","#D08A4E","#8A4B1F","#B91C1C"], silver:["#F8FAFC","#B4C0CF","#4B5B70","#2563EB"],

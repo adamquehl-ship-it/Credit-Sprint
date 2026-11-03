@@ -10,7 +10,7 @@ const fs = require("fs"), path = require("path");
 
 const C = [["macro","Macroeconomics","#4F46E5","AP® · CLEP®"],["micro","Microeconomics","#059669","AP® · CLEP®"],["bio","Biology","#0891B2","AP® · CLEP®"],
   ["chem","Chemistry","#EA580C","AP® · CLEP®"],["apush","U.S. History","#B91C1C","AP® · CLEP®"],["apworld","World History","#0F766E","AP®"],
-  ["apgov","U.S. Government","#1E3A8A","AP® · CLEP®"],["appsych","Psychology","#7C3AED","AP® · CLEP®"],["apstat","Statistics","#0369A1","AP®"],["mkt","Marketing","#DB2777","CLEP®"]];
+  ["apgov","U.S. Government","#1E3A8A","AP® · CLEP®"],["appsych","Psychology","#7C3AED","AP® · CLEP®"],["apstat","Statistics","#0369A1","AP®"],["aplit","English Literature","#BE123C","AP® · CLEP®"],["aplang","English Language","#B45309","AP® · CLEP®"],["mkt","Marketing","#DB2777","CLEP®"]];
 
 /* find a top-level <section …> by a test on its opening tag or its text, return [start, end] */
 function sectionAt(html, test) {
@@ -45,21 +45,21 @@ function apply(html, look) {
   };
   const shot = look === "p2" ? "assets/img/app-dashboard-dark.jpg" : "assets/img/app-dashboard-light.jpg";
   const chips = C.map(([k, n, c]) => `<a class="pro-chip" href="app.html?course=${k}" style="--cc:${c}"><i></i>${n}</a>`).join("");
-  const proof = `<div class="pro-proof"><div><b>${nQ}</b><span>practice questions</span></div><div><b>${nF}</b><span>free-response prompts</span></div><div><b>${nC}</b><span>flashcards</span></div><div><b>10</b><span>AP® and CLEP® courses</span></div><div><b>$0</b><span>to start</span></div></div>`;
+  const proof = `<div class="pro-proof"><div><b>${nQ}</b><span>practice questions</span></div><div><b>${nF}</b><span>free-response prompts</span></div><div><b>${nC}</b><span>flashcards</span></div><div><b>${C.length}</b><span>AP® and CLEP® courses</span></div><div><b>$0</b><span>to start</span></div></div>`;
   const ctas = (light) => `<div class="pro-ctas"><a class="btn lg pro-main" href="app.html">Start free</a><a class="btn lg ghost ${light ? "" : "pro-ghost"}" href="#try">Try a question</a></div>`;
   const ticks = `<ul class="pro-ticks"><li>No credit card</li><li>Every answer explained</li><li>Built around your exam date</li></ul>`;
   const frame = (src, alt) => `<figure class="pro-shot"><div class="pro-bar"><i></i><i></i><i></i><span>creditsprintprep.com</span></div><img src="${src}" alt="${alt}" width="1400" height="788" loading="eager"></figure>`;
 
   const heroes = {
     p1: `<section class="pro-hero p1"><div class="wrap pro-split">
-        <div class="pro-copy"><span class="pro-eyebrow">AP® and CLEP® prep for 10 subjects</span>
+        <div class="pro-copy"><span class="pro-eyebrow">AP® and CLEP® prep for 12 subjects</span>
           <h1>Earn college credit with ten minutes a day.</h1>
           <p class="pro-lead">Practice questions with every answer explained, a diagnostic that finds your weak units, and a study plan built around your exam date.</p>
           ${ctas(true)}${ticks}</div>
         ${frame(shot, "The Credit Sprint dashboard: a unit map and the season pass")}</div>
         <div class="wrap"><div class="pro-chips"><span>Courses</span>${chips}</div></div></section>`,
     p2: `<section class="pro-hero p2"><div class="wrap pro-center">
-        <span class="pro-eyebrow">AP® and CLEP® prep for 10 subjects</span>
+        <span class="pro-eyebrow">AP® and CLEP® prep for 12 subjects</span>
         <h1>The study app that makes AP® and CLEP® prep <em>feel like a game.</em></h1>
         <p class="pro-lead">Unit maps, a season pass and weekly leagues keep you coming back. Every question is written for the real exam, with every answer explained.</p>
         ${ctas(false)}${ticks}
@@ -68,7 +68,7 @@ function apply(html, look) {
     p3: `<section class="pro-hero p3"><div class="wrap pro-split">
         <div class="pro-copy"><span class="pro-eyebrow">Independent AP® and CLEP® preparation</span>
           <h1>Turn the exams you're already taking into college credit.</h1>
-          <p class="pro-lead">A passing AP® or CLEP® score can replace a semester-long college course. Credit Sprint gives you a clear plan, original practice for ten subjects and honest feedback on where you stand.</p>
+          <p class="pro-lead">A passing AP® or CLEP® score can replace a semester-long college course. Credit Sprint gives you a clear plan, original practice for twelve subjects and honest feedback on where you stand.</p>
           ${ctas(true)}${ticks}</div>
         <div class="pro-card">
           <span class="pro-eyebrow">How credit adds up</span>
@@ -77,7 +77,7 @@ function apply(html, look) {
           <a class="pro-link" href="#calc">Estimate what you could save →</a>
           <img src="${shot}" alt="The Credit Sprint dashboard" width="1400" height="788" loading="eager">
         </div></div>
-        <div class="wrap"><div class="pro-chips"><span>Ten courses</span>${chips}</div></div></section>`
+        <div class="wrap"><div class="pro-chips"><span>Twelve courses</span>${chips}</div></div></section>`
   };
   const product = look === "p2" ? "" : `<section class="sec pro-product"><div class="wrap">
       <div class="sec-head"><span class="eyebrow">Inside the app</span><h2>Practice that keeps you coming back</h2><p class="muted">A unit map that shows where you are, a two-week season pass with rewards, weekly leagues and pets that react to every answer.</p></div>
@@ -87,7 +87,7 @@ function apply(html, look) {
     </div></section>`;
   /* compact course grid replaces the long per-course detail cards */
   const courses = `<section class="sec alt" id="all-courses"><div class="wrap">
-      <div class="sec-head"><span class="eyebrow">Courses</span><h2>Ten courses. One account.</h2><p class="muted">Study one class or stack several. Your streak, XP and pets carry across every course.</p></div>
+      <div class="sec-head"><span class="eyebrow">Courses</span><h2>Twelve courses. One account.</h2><p class="muted">Study one class or stack several. Your streak, XP and pets carry across every course.</p></div>
       <div class="pro-courses">${C.map(([k, n, c, ex]) => `<a href="app.html?course=${k}" style="--cc:${c}"><b>${n}</b><span>${ex}</span><em>Start free →</em></a>`).join("")}</div>
       <p class="small muted" style="margin-top:12px">Unit-by-unit <a href="guides/index.html">study guides</a> and <a href="practice/index.html">worked practice problems</a> are free for everyone.</p>
     </div></section>`;

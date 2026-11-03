@@ -347,14 +347,76 @@ const APSTATP = [
  {id:"st_jelly", body:"jelly", n:"Random Sample Jelly", u:3, r:"mythical", p:0.35, c1:"#38BDF8", c2:"#BAE6FD", custom:"stat", bio:"In a simple random sample, every individual and every group of the same size has an equal chance of being chosen."},
  {id:"st_prof", body:"prof", n:"Professor Sigma", u:0, r:"supreme", p:0.05, c1:"#7C3AED", c2:"#FACC15", custom:"stat", bio:"The wise statistician who has seen every distribution, test and confidence interval."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}};
+const APLITP = [
+ {id:"li_quill", body:"quill", n:"Quincy Quill", u:6, r:"common", p:6.5, c1:"#7C3AED", c2:"#EDE9FE", custom:"lit", bio:"Every essay starts with a pen and a claim worth defending."},
+ {id:"li_inkwell", body:"inkwell", n:"Inky", u:6, r:"common", p:6, c1:"#1E3A8A", c2:"#BFDBFE", custom:"lit", bio:"Writers once dipped their pens in ink for every line, so they chose words carefully."},
+ {id:"li_bookworm", body:"bookworm", n:"Bookworm Bea", u:1, r:"common", p:6, c1:"#84CC16", c2:"#ECFCCB", custom:"lit", bio:"Close readers notice small details, and small details reveal character."},
+ {id:"li_candle", body:"candle", n:"Midnight Candle", u:3, r:"common", p:6, c1:"#F59E0B", c2:"#FEF3C7", custom:"lit", bio:"A candle is a classic symbol of a short, bright life."},
+ {id:"li_teacup", body:"teacup", n:"Teatime Tom", u:1, r:"common", p:6, c1:"#0EA5E9", c2:"#E0F2FE", custom:"lit", bio:"Drawing-room scenes in novels reveal character through polite conversation and what goes unsaid."},
+ {id:"li_owl", body:"owl", n:"Reading Owl", u:3, r:"common", p:6, c1:"#92400E", c2:"#FDE68A", custom:"lit", bio:"Read a poem twice: once for sense, once for the shift."},
+ {id:"li_scroll", body:"scroll", n:"Sonnet Scroll", u:4, r:"common", p:6, c1:"#B45309", c2:"#FEF3C7", custom:"lit", bio:"Fourteen lines, a rhyme scheme and a turn: the sonnet in a nutshell."},
+ {id:"li_lantern", body:"lantern", n:"Lantern Lou", u:2, r:"common", p:6, c1:"#BE123C", c2:"#FFE4E6", custom:"lit", bio:"A narrator lights up some parts of a story and leaves others in shadow."},
+ {id:"li_raven", body:"raven", n:"Nevermore", u:3, r:"uncommon", p:4, c1:"#1F2937", c2:"#6366F1", custom:"lit", bio:"Poe's raven repeats one word until it becomes a refrain of grief."},
+ {id:"li_rose", body:"rose", n:"Rosalind Rose", u:4, r:"uncommon", p:4, c1:"#E11D48", c2:"#FDA4AF", custom:"lit", bio:"Roses are among poetry's oldest symbols of love and of beauty that fades."},
+ {id:"li_masks", body:"masks", n:"Comedy & Tragedy", u:5, r:"uncommon", p:4, c1:"#7C3AED", c2:"#FDE68A", custom:"lit", bio:"Comedies move toward harmony; tragedies toward catastrophe."},
+ {id:"li_typewriter", body:"typewriter", n:"Typewriter Ty", u:6, r:"uncommon", p:4, c1:"#334155", c2:"#E2E8F0", custom:"lit", bio:"Clack, clack, ding: drafting is how good arguments are built."},
+ {id:"li_hourglass", body:"hourglass", n:"Carpe Diem", u:3, r:"uncommon", p:4, c1:"#B45309", c2:"#FCD34D", custom:"lit", bio:"Many poems urge seizing the day because time runs out."},
+ {id:"li_compass", body:"compass", n:"Narrator's Compass", u:2, r:"uncommon", p:4, c1:"#0F766E", c2:"#CCFBF1", custom:"lit", bio:"Point of view decides which direction a story faces."},
+ {id:"li_key", body:"key", n:"Plot Key", u:2, r:"uncommon", p:4, c1:"#CA8A04", c2:"#FEF9C3", custom:"lit", bio:"The climax is the key turn that unlocks how a story ends."},
+ {id:"li_skull", body:"skull", n:"Yorick", u:5, r:"rare", p:3, c1:"#64748B", c2:"#F8FAFC", custom:"lit", bio:"'Alas, poor Yorick!' Hamlet holds a jester's skull and thinks about death."},
+ {id:"li_whale", body:"whale", n:"The White Whale", u:5, r:"rare", p:3, c1:"#E2E8F0", c2:"#94A3B8", custom:"lit", bio:"In Moby-Dick, Captain Ahab's hunt for the white whale becomes an obsession."},
+ {id:"li_lighthouse", body:"lighthouse", n:"Lighthouse Lena", u:1, r:"rare", p:3, c1:"#DC2626", c2:"#FEE2E2", custom:"lit", bio:"Settings like lighthouses and islands often isolate characters and test them."},
+ {id:"li_daffodil", body:"daffodil", n:"Dancing Daffodil", u:3, r:"rare", p:3, c1:"#F97316", c2:"#FDE047", custom:"lit", bio:"Wordsworth's speaker sees a crowd of golden daffodils and remembers them for years."},
+ {id:"li_nightingale", body:"nightingale", n:"Nightingale", u:4, r:"rare", p:3, c1:"#A16207", c2:"#FEF3C7", custom:"lit", bio:"Keats addressed an ode to a nightingale whose song seemed immortal."},
+ {id:"li_dragon", body:"dragon", n:"Hoard Dragon", u:5, r:"epic", p:2, c1:"#16A34A", c2:"#BBF7D0", custom:"lit", bio:"Beowulf's last battle is against a dragon guarding a hoard of treasure."},
+ {id:"li_ghost", body:"ghost", n:"The Ghost King", u:5, r:"epic", p:2, c1:"#6366F1", c2:"#E0E7FF", custom:"lit", bio:"A ghost's command to avenge him drives the plot of Hamlet."},
+ {id:"li_greenlight", body:"greenlight", n:"Green Light", u:1, r:"epic", p:2, c1:"#22C55E", c2:"#DCFCE7", custom:"lit", bio:"Gatsby reaches toward a green light across the bay: a symbol of a dream just out of reach."},
+ {id:"li_pegasus", body:"pegasus", n:"Pegasus", u:4, r:"legendary", p:1.1, c1:"#F8FAFC", c2:"#A5B4FC", custom:"lit", bio:"In myth, the winged horse Pegasus is linked to the Muses and poetic inspiration."},
+ {id:"li_sphinx", body:"sphinx", n:"Riddle Sphinx", u:4, r:"legendary", p:0.9, c1:"#D97706", c2:"#FDE68A", custom:"lit", bio:"The Sphinx's riddle in Oedipus Rex turns on a metaphor for the stages of a life."},
+ {id:"li_muse", body:"muse", n:"The Muse", u:3, r:"mythical", p:0.6, c1:"#7C2D12", c2:"#F5D0FE", custom:"lit", bio:"Ancient poets began epics by calling on the Muse for inspiration."},
+ {id:"li_libtree", body:"libtree", n:"Tree of Tales", u:6, r:"mythical", p:0.5, c1:"#15803D", c2:"#BBF7D0", custom:"lit", bio:"Every story grows from older stories: allusion is literature's family tree."},
+ {id:"li_starheart", body:"starheart", n:"Star-Crossed", u:5, r:"mythical", p:0.35, c1:"#DB2777", c2:"#7C3AED", custom:"lit", bio:"Romeo and Juliet are called 'star-crossed lovers', doomed by fate from the prologue."},
+ {id:"li_folio", body:"folio", n:"Professor Folio", u:0, r:"supreme", p:0.05, c1:"#BE123C", c2:"#FFF7ED", custom:"lit", bio:"The wise old book who has read every poem, play and novel ever written."}
+];
+const APLANGP = [
+ {id:"la_megaphone", body:"megaphone", n:"Megaphone Mo", u:1, r:"common", p:6.5, c1:"#EA580C", c2:"#FED7AA", custom:"lang", bio:"A speaker amplifies a message, but the audience decides whether it lands."},
+ {id:"la_podium", body:"podium", n:"Podium Pete", u:1, r:"common", p:6, c1:"#1E3A8A", c2:"#BFDBFE", custom:"lang", bio:"Every speech has an occasion: the moment that puts the speaker at the podium."},
+ {id:"la_pen", body:"pen", n:"Persuasive Pen", u:6, r:"common", p:6, c1:"#111827", c2:"#FBBF24", custom:"lang", bio:"Three essays, 2 hours 15 minutes, and a lot of ink."},
+ {id:"la_newspaper", body:"newspaper", n:"Op-Ed Ollie", u:1, r:"common", p:6, c1:"#B91C1C", c2:"#FEE2E2", custom:"lang", bio:"An op-ed argues an opinion to a broad public audience."},
+ {id:"la_scale", body:"scale", n:"Balance Scale", u:2, r:"common", p:6, c1:"#B45309", c2:"#FEF3C7", custom:"lang", bio:"Fair arguments weigh evidence on both sides before reaching a verdict."},
+ {id:"la_mailbox", body:"mailbox", n:"Open Letter", u:1, r:"common", p:6, c1:"#2563EB", c2:"#DBEAFE", custom:"lang", bio:"An open letter names one audience but is written for everyone."},
+ {id:"la_magnifier", body:"magnifier", n:"Evidence Lens", u:2, r:"common", p:6, c1:"#0F766E", c2:"#CCFBF1", custom:"lang", bio:"Good evidence is relevant, sufficient and credible. Look closely."},
+ {id:"la_gear", body:"gear", n:"Logos Gear", u:3, r:"common", p:6, c1:"#64748B", c2:"#E2E8F0", custom:"lang", bio:"Reasoning works like gears: each claim has to turn the next."},
+ {id:"la_parrot", body:"parrot", n:"Anaphora Parrot", u:4, r:"uncommon", p:4, c1:"#16A34A", c2:"#BBF7D0", custom:"lang", bio:"We will repeat, we will repeat, we will repeat: that's anaphora."},
+ {id:"la_chameleon", body:"chameleon", n:"Tone Chameleon", u:4, r:"uncommon", p:4, c1:"#10B981", c2:"#A78BFA", custom:"lang", bio:"A writer's tone can shift to suit the audience and the moment."},
+ {id:"la_fox", body:"fox", n:"Clever Fox", u:3, r:"uncommon", p:4, c1:"#EA580C", c2:"#FFEDD5", custom:"lang", bio:"Spot the trick: fallacies make weak arguments sound clever."},
+ {id:"la_bridge", body:"bridge", n:"Transition Bridge", u:3, r:"uncommon", p:4, c1:"#DC2626", c2:"#FEE2E2", custom:"lang", bio:"However, therefore, for instance: transitions bridge one idea to the next."},
+ {id:"la_ladder", body:"ladder", n:"Reasoning Ladder", u:3, r:"uncommon", p:4, c1:"#92400E", c2:"#FEF3C7", custom:"lang", bio:"A line of reasoning climbs one claim at a time."},
+ {id:"la_eraser", body:"eraser", n:"Revision Eraser", u:5, r:"uncommon", p:4, c1:"#EC4899", c2:"#FCE7F3", custom:"lang", bio:"Good writing is rewriting: cut what doesn't serve the purpose."},
+ {id:"la_heart", body:"heart", n:"Pathos Heart", u:1, r:"uncommon", p:4, c1:"#E11D48", c2:"#FFE4E6", custom:"lang", bio:"Pathos moves an audience through emotions and shared values."},
+ {id:"la_peacock", body:"peacock", n:"Ethos Peacock", u:1, r:"rare", p:3, c1:"#0D9488", c2:"#FDE047", custom:"lang", bio:"Ethos shows off credibility, but the best ethos is earned, not flaunted."},
+ {id:"la_logowl", body:"logowl", n:"Logos Owl", u:2, r:"rare", p:3, c1:"#475569", c2:"#E2E8F0", custom:"lang", bio:"Data, statistics and careful reasoning: the owl brings receipts."},
+ {id:"la_eagle", body:"eagle", n:"Liberty Eagle", u:1, r:"rare", p:3, c1:"#78350F", c2:"#FEF3C7", custom:"lang", bio:"Many famous American speeches appeal to liberty as a shared value."},
+ {id:"la_quotes", body:"quotes", n:"Quote Bubble", u:2, r:"rare", p:3, c1:"#7C3AED", c2:"#F5F3FF", custom:"lang", bio:"Embed short quotations, then explain them. Commentary earns the points."},
+ {id:"la_gavel", body:"gavel", n:"Verdict Gavel", u:3, r:"rare", p:3, c1:"#92400E", c2:"#FDE68A", custom:"lang", bio:"A strong conclusion delivers a verdict and explains why it matters."},
+ {id:"la_torch", body:"torch", n:"Freedom Torch", u:1, r:"epic", p:2, c1:"#B45309", c2:"#FDE68A", custom:"lang", bio:"Great speeches pass a torch to their audience, a call to carry the work forward."},
+ {id:"la_drum", body:"drum", n:"Rhetoric Drum", u:4, r:"epic", p:2, c1:"#DC2626", c2:"#FEF3C7", custom:"lang", bio:"Parallelism and repetition give a speech its drumbeat."},
+ {id:"la_lion", body:"lion", n:"Courage Lion", u:6, r:"epic", p:2, c1:"#F59E0B", c2:"#B45309", custom:"lang", bio:"Taking a clear position on a hard question takes courage."},
+ {id:"la_helm", body:"helm", n:"Man in the Arena", u:6, r:"legendary", p:1.1, c1:"#94A3B8", c2:"#FDE047", custom:"lang", bio:"Roosevelt praised the one 'actually in the arena', who dares greatly even if he fails."},
+ {id:"la_griffin", body:"griffin", n:"Argument Griffin", u:3, r:"legendary", p:0.9, c1:"#F8FAFC", c2:"#FCD34D", custom:"lang", bio:"Half claim, half evidence, all reasoning."},
+ {id:"la_phoenix", body:"phoenix", n:"Revision Phoenix", u:5, r:"mythical", p:0.6, c1:"#F97316", c2:"#FDE047", custom:"lang", bio:"Every draft burns down so a better one can rise."},
+ {id:"la_kairos", body:"kairos", n:"Kairos Clock", u:1, r:"mythical", p:0.5, c1:"#7C3AED", c2:"#EDE9FE", custom:"lang", bio:"Kairos is the art of saying the right thing at exactly the right moment."},
+ {id:"la_oracle", body:"oracle", n:"The Oracle", u:2, r:"mythical", p:0.35, c1:"#4C1D95", c2:"#C4B5FD", custom:"lang", bio:"Ancient audiences trusted oracles; modern audiences want evidence."},
+ {id:"la_orator", body:"orator", n:"Orator Maximus", u:0, r:"supreme", p:0.05, c1:"#B45309", c2:"#FEF3C7", custom:"lang", bio:"The greatest speaker of all, master of ethos, pathos, logos and kairos."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}};
 const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -653,7 +715,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -693,6 +755,8 @@ const CUSTOM = {
   gov: (p, stage, mood) => artDraw("CS_GOVART", p, stage, mood),
   psy: (p, stage, mood) => artDraw("CS_PSYART", p, stage, mood),
   stat: (p, stage, mood) => artDraw("CS_STATART", p, stage, mood),
+  lit: (p, stage, mood) => artDraw("CS_LITART", p, stage, mood),
+  lang: (p, stage, mood) => artDraw("CS_LANGART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

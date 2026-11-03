@@ -18,6 +18,10 @@ Study platform for AP® Macroeconomics and CLEP® Principles of Macroeconomics. 
 The app has two courses, Macroeconomics and Microeconomics. `assets/js/courses.js` lists each course and its data files (Macro in `assets/data/`, Micro in `assets/data/micro/`). Students pick a course on the landing page (`app.html?course=macro` or `?course=micro`) or from the course switcher at the top of the dashboard. Each course saves its own progress; streak, XP, badges, pets and plan are shared.
 To add another course later, add an entry to `courses.js`, create its data folder with the same file format, and add a pet set in `assets/js/pets.js`.
 
+**English courses (AP English Literature `aplit`, AP English Language `aplang`).** These use reading passages: a passage set is created with `S()` in files like `assets/data/aplit/v1.js`, and each question added after it with `q()` is tied to that passage (`CS_PASSAGES`, shown above the question with line or paragraph numbers). Practice, exams, bosses and the diagnostic keep a passage's questions together (`CS.takeQs` / `CS.setOrder` in `core.js`). Essays are free-response entries with `essay:true`, an optional `passage` id or a six-item `sources` packet, and a 6-point rubric. Key-term questions are generated from the flashcards: after editing `cards.js` or `cards2.js`, run `node scripts/gen-terms.js aplit` (or `aplang`) and commit the new `terms.js`.
+
+**Unit bosses** (`assets/js/bosses.js`): every unit boss in every course is a drawn humanoid monster. Its look (outfit, hair, horns, prop and so on) is one line in the `B` table, and `CS.bossArt(course, unit, state)` draws it; the animations live in `assets/styles.css` under "unit bosses".
+
 ## Content
 - 269 original multiple-choice questions, 5 choices each, every choice explained (`assets/data/questions.js`, `questions2.js`, `fifth.js`)
 - 15 FRQs with rubrics; 8 include a drag-the-curve graph task (`content.js`, `content2.js`, `content3.js`)

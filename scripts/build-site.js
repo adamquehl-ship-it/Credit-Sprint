@@ -16,6 +16,8 @@ const WW = load("assets/data/apworld", ["cards.js","cards2.js","p1.js","p2.js","
 const WG = load("assets/data/apgov", ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","p16.js","p17.js","p18.js","p19.js","p20.js","p21.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"]);
 const WY = load("assets/data/appsych", ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"]);
 const WS = load("assets/data/apstat", ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","g1.js","g2.js","g3.js","g4.js","g5.js","s1.js","s3.js","s4.js","s5.js","content.js","content2.js","frqs2.js","drills.js","games.js"]);
+const WL = load("assets/data/aplit", ["cards.js","cards2.js","terms.js","x1.js","f1.js","f2.js","f3.js","f4.js","v1.js","v2.js","v3.js","v4.js","d1.js","a1.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"]);
+const WN = load("assets/data/aplang", ["cards.js","cards2.js","terms.js","x1.js","x2.js","r1.js","r2.js","r3.js","r4.js","w1.js","w2.js","w3.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"]);
 const UNITS = W.CS_UNITS, Q = W.CS_QUESTIONS_RAW, FIFTH = W.CS_FIFTH;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const slug = s => s.toLowerCase().replace(/®/g,"").replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
@@ -66,7 +68,7 @@ ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
 <div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 10 subjects.</span></div>
-<div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 10 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
+<div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 12 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
 <div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a></div>
 </div><p class="disc">${DISC} © ${new Date().getFullYear()} Credit Sprint.</p></div></footer>
 </div></body></html>
@@ -76,7 +78,7 @@ const out = (rel, html) => { const p = path.join(ROOT, rel); fs.mkdirSync(path.d
 const urls = [];
 
 /* ---------- landing ---------- */
-const nQ = Q.length + WM.CS_QUESTIONS_RAW.length + WB.CS_QUESTIONS_RAW.length + WC.CS_QUESTIONS_RAW.length + WK.CS_QUESTIONS_RAW.length + WH.CS_QUESTIONS_RAW.length + WW.CS_QUESTIONS_RAW.length + WG.CS_QUESTIONS_RAW.length + WY.CS_QUESTIONS_RAW.length + WS.CS_QUESTIONS_RAW.length, nF = W.CS_FRQS.length + WM.CS_FRQS.length + WB.CS_FRQS.length + WC.CS_FRQS.length + WK.CS_FRQS.length + WH.CS_FRQS.length + WW.CS_FRQS.length + WG.CS_FRQS.length + WY.CS_FRQS.length + WS.CS_FRQS.length, nC = W.CS_CARDS_RAW.length + WM.CS_CARDS_RAW.length + WB.CS_CARDS_RAW.length + WC.CS_CARDS_RAW.length + WK.CS_CARDS_RAW.length + WH.CS_CARDS_RAW.length + WW.CS_CARDS_RAW.length + WG.CS_CARDS_RAW.length + WY.CS_CARDS_RAW.length + WS.CS_CARDS_RAW.length;
+const nQ = Q.length + WM.CS_QUESTIONS_RAW.length + WB.CS_QUESTIONS_RAW.length + WC.CS_QUESTIONS_RAW.length + WK.CS_QUESTIONS_RAW.length + WH.CS_QUESTIONS_RAW.length + WW.CS_QUESTIONS_RAW.length + WG.CS_QUESTIONS_RAW.length + WY.CS_QUESTIONS_RAW.length + WS.CS_QUESTIONS_RAW.length + WL.CS_QUESTIONS_RAW.length + WN.CS_QUESTIONS_RAW.length, nF = W.CS_FRQS.length + WM.CS_FRQS.length + WB.CS_FRQS.length + WC.CS_FRQS.length + WK.CS_FRQS.length + WH.CS_FRQS.length + WW.CS_FRQS.length + WG.CS_FRQS.length + WY.CS_FRQS.length + WS.CS_FRQS.length + WL.CS_FRQS.length + WN.CS_FRQS.length, nC = W.CS_CARDS_RAW.length + WM.CS_CARDS_RAW.length + WB.CS_CARDS_RAW.length + WC.CS_CARDS_RAW.length + WK.CS_CARDS_RAW.length + WH.CS_CARDS_RAW.length + WW.CS_CARDS_RAW.length + WG.CS_CARDS_RAW.length + WY.CS_CARDS_RAW.length + WS.CS_CARDS_RAW.length + WL.CS_CARDS_RAW.length + WN.CS_CARDS_RAW.length;
 const COURSES = [
   {k:"macro", name:"Macroeconomics", col:"#4F46E5", soft:"#EEF2FF", ic:"bank", q:Q.length, f:W.CS_FRQS.length, c:W.CS_CARDS_RAW.length, units:UNITS.map(u=>u.short), blurb:"GDP, inflation, money and banking, fiscal and monetary policy, international trade.", games:"Fed Chair, Shift It, Chain Reaction"},
   {k:"micro", name:"Microeconomics", col:"#059669", soft:"#ECFDF5", ic:"chart", q:WM.CS_QUESTIONS_RAW.length, f:WM.CS_FRQS.length, c:WM.CS_CARDS_RAW.length, units:WM.CS_UNITS.map(u=>u.short), blurb:"Supply and demand, elasticity, costs, perfect competition, monopoly, game theory, labor markets, externalities.", games:"Profit Max, Nash Hunt, Shift It"},
@@ -87,6 +89,8 @@ const COURSES = [
   {k:"apworld", name:"World History", col:"#0F766E", soft:"#F0FDFA", ic:"globe", q:WW.CS_QUESTIONS_RAW.length, f:WW.CS_FRQS.length, c:WW.CS_CARDS_RAW.length, units:WW.CS_UNITS.map(u=>u.short), blurb:"Global tapestry and trade networks, land-based empires, the Atlantic world, revolutions, industrialization, the world wars, the Cold War and decolonization, and globalization. AP® World History: Modern only.", games:"Timeline Sort, Source Match, Chain Reaction", apOnly:true, apLine:"55 multiple-choice questions in 55 minutes, then 3 short-answer questions, a DBQ and a long essay"},
   {k:"apgov", name:"U.S. Government", col:"#1E3A8A", soft:"#EFF6FF", ic:"landmark", q:WG.CS_QUESTIONS_RAW.length, f:WG.CS_FRQS.length, c:WG.CS_CARDS_RAW.length, units:WG.CS_UNITS.map(u=>u.short), blurb:"Foundations of democracy, Congress, the presidency and the courts, civil liberties and civil rights, political beliefs and elections, with landmark cases and foundational documents. AP® U.S. Government and Politics plus CLEP® American Government.", games:"Court Case Match, Branch Check, Amendment Sprint"},  {k:"appsych", name:"Psychology", col:"#7C3AED", soft:"#F5F3FF", ic:"brain", q:WY.CS_QUESTIONS_RAW.length, f:WY.CS_FRQS.length, c:WY.CS_CARDS_RAW.length, units:WY.CS_UNITS.map(u=>u.short), blurb:"Biological bases of behavior, cognition, development and learning, social psychology and personality, mental and physical health, with famous studies and research methods. AP® Psychology plus CLEP® Introductory Psychology.", games:"Famous Studies Match, Brain Check, Disorder Sort"},
   {k:"apstat", name:"Statistics", col:"#0369A1", soft:"#F0F9FF", ic:"chart", q:WS.CS_QUESTIONS_RAW.length, f:WS.CS_FRQS.length, c:WS.CS_CARDS_RAW.length, units:WS.CS_UNITS.map(u=>u.short), blurb:"Exploring and collecting data, probability and distributions, inference for proportions and means, and regression, built for the redesigned AP\u00AE Statistics exam. AP\u00AE Statistics only.", games:"Which Test?, Shape Match, Probability Plinko", apOnly:true, apLine:"42 multiple-choice questions in 90 minutes, then 4 free-response questions in 90 minutes"},
+  {k:"aplit", name:"English Literature", col:"#BE123C", soft:"#FFF1F2", ic:"book", q:WL.CS_QUESTIONS_RAW.length, f:WL.CS_FRQS.length, c:WL.CS_CARDS_RAW.length, units:WL.CS_UNITS.map(u=>u.short), blurb:"Short fiction, poetry, novels and drama with real reading passages, plus poetry, prose and literary argument essays with sample answers. AP\u00AE English Literature and CLEP\u00AE Analyzing and Interpreting Literature.", games:"Device Spotter, Name That Form, Tone Check"},
+  {k:"aplang", name:"English Language", col:"#B45309", soft:"#FFFBEB", ic:"pen", q:WN.CS_QUESTIONS_RAW.length, f:WN.CS_FRQS.length, c:WN.CS_CARDS_RAW.length, units:WN.CS_UNITS.map(u=>u.short), blurb:"Rhetoric and argument with nonfiction reading sets, revise-the-draft questions, and synthesis, rhetorical analysis and argument essays. AP\u00AE English Language and CLEP\u00AE College Composition.", games:"Appeal Sort, Fallacy Finder, Rhetoric Spotter"},
 ];
 const courseCard = c => `<a class="ccard" href="app.html?course=${c.k}" style="--cc:${c.col};--cs:${c.soft}">
   <span class="ccard-top"><span class="ccard-ico">${ic(c.ic,26)}</span><span class="stack" style="gap:2px"><b>${c.name}</b><span class="muted small">${c.clepOnly?"CLEP® exam":c.apOnly?"AP® exam":"AP® and CLEP®"}</span></span></span>
@@ -125,7 +129,7 @@ out("index.html", page({
 </div></section>
 ${landing(COURSES, ic)}
 <section class="sec alt"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Ten courses, seventeen exams</span><h2>Seventeen ways to earn college credit</h2><p>AP® and CLEP® cover the same core material in each course. Study once and you're ready for both. If May doesn't go your way, CLEP® is a second shot. Marketing is a CLEP® exam only, World History is an AP® exam only, and U.S. History pairs AP® with the two CLEP® U.S. History exams.</p></div>
+  <div class="sec-head"><span class="eyebrow">Twelve courses, twenty-one exams</span><h2>Twenty-one ways to earn college credit</h2><p>AP® and CLEP® cover the same core material in each course. Study once and you're ready for both. If May doesn't go your way, CLEP® is a second shot. Marketing is a CLEP® exam only, World History is an AP® exam only, and U.S. History pairs AP® with the two CLEP® U.S. History exams.</p></div>
   <div class="two">
     ${COURSES.map(c=>`<div class="examcard" style="border-top:4px solid ${c.col}"><span class="row-wrap" style="gap:10px"><span class="ccard-ico" style="--cc:${c.col}">${ic(c.ic,22)}</span><h3>${c.name}</h3></span>
       <p class="muted small">${c.blurb}</p>
@@ -145,7 +149,7 @@ ${landing(COURSES, ic)}
   </div>
 </div></section>
 <section class="sec alt" id="games"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all ten courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
+  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all twelve courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
   <div class="gamechips">${GAMES.map(([k,n])=>`<span class="gamechip"><span>${ic(k)}</span>${n}</span>`).join("")}</div>
 </div></section>
 <section class="sec" id="how"><div class="wrap">
@@ -542,6 +546,40 @@ ${sample.map((x,k)=>qBlock(x,k+1)).join("")}
 <aside><div class="panel"><h3>Practice ${esc(u.name.split(":")[0])} free</h3><p class="muted small">${yqsFor(u.id).length} questions, flashcards, a boss battle, free-response practice and a study plan built around your weak spots.</p><a class="btn" href="../app.html?course=appsych">Start studying</a></div>
 <div class="panel flat"><span class="eyebrow">All Psychology units</span>${YU.map(v=>`<a href="${path.basename(yGuideLinks.find(l=>l.u.id===v.id)?yGuideLinks.find(l=>l.u.id===v.id).file:"")||"#"}" style="${v.id===u.id?"font-weight:800;color:var(--ink)":""}">${esc(v.name)}</a>`).join("")}</div></aside></main>`}));
 });
+/* ---------- English guide pages (Literature and Language) ---------- */
+const engGuide = (Wd, ck, label, apName, clepName) => {
+  const QQ = Wd.CS_QUESTIONS_RAW, UU = Wd.CS_UNITS, links = [];
+  /* sample questions: short ones that stand alone (no reading passage), skipping plain definitions */
+  const forU = u => QQ.map((q,i)=>({q,i,F:null})).filter(x=>x.q[0]===u);
+  const samp = u => forU(u).filter(x=>!(x.q[4]&&x.q[4].p) && !/^Which (term best fits|statement best describes)/.test(x.q[1]));
+  UU.forEach(u => {
+    const file = `guides/${slug(label)}-unit-${u.id}-${slug(u.name)}.html`; links.push({file, u});
+    let sample = samp(u.id).slice(0,5); if (sample.length < 3) sample = sample.concat(forU(u.id).filter(x=>!(x.q[4]&&x.q[4].p)).slice(0, 5 - sample.length));
+    const cards = Wd.CS_CARDS_RAW.filter(c=>c[0]===u.id), fig = Wd.CS_FIGS && Wd.CS_FIGS[u.graph] ? Wd.CS_FIGS[u.graph](0) : "";
+    const nP = new Set(forU(u.id).filter(x=>x.q[4]&&x.q[4].p).map(x=>x.q[4].p)).size;
+    out(file, page({depth:1, canon:"/"+file,
+      title:`${apName} Unit ${u.id}: ${u.short} Study Guide | Credit Sprint`,
+      desc:`Free study guide for ${apName.replace(/®/g,"")} and ${clepName.replace(/®/g,"")} Unit ${u.id}, ${u.name}: key ideas, exam traps, key terms and practice questions with explanations.`,
+      ld:{"@context":"https://schema.org","@type":"LearningResource","name":`${apName.replace(/®/g,"")} Unit ${u.id}: ${u.name}`,"educationalLevel":"High school","provider":{"@type":"Organization","name":"Credit Sprint","url":SITE}},
+      body:`<main class="wrap doc"><article>
+<p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Study guides</a> / ${esc(label)} Unit ${u.id}</p>
+<h1>Credit Sprint's Guide to ${apName}, Unit ${u.id}: ${esc(u.name)}</h1>
+<div class="row-wrap"><span class="tag good">AP® ${esc(u.ap)}</span><span class="tag">CLEP® ${esc(u.clep)}</span></div>
+<p style="font-size:1.08rem">${esc(u.summary)}</p>
+${fig ? `<div class="figure" style="max-width:460px">${fig}</div>` : ""}
+<h2>What you need to know</h2><ul>${u.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+<h2>Exam traps</h2>${u.traps.map(t=>`<div class="trap"><b>Watch for</b>${esc(t)}</div>`).join("")}
+<h2>Key terms</h2><ul>${cards.slice(0,16).map(c=>`<li><b>${esc(c[1])}:</b> ${esc(c[2])}</li>`).join("")}</ul>
+<h2>Practice questions</h2><p class="muted">A few of the ${forU(u.id).length} Unit ${u.id} questions in Credit Sprint${nP ? `, which also include ${nP} full reading passages with question sets` : ""}. Every choice is explained in the app.</p>
+${sample.map((x,k)=>qBlock(x,k+1)).join("")}
+</article>
+<aside><div class="panel"><h3>Practice Unit ${u.id} free</h3><p class="muted small">${forU(u.id).length} questions, flashcards, a boss battle, essay practice with sample essays and a study plan built around your weak spots.</p><a class="btn" href="../app.html?course=${ck}">Start studying</a></div>
+<div class="panel flat"><span class="eyebrow">All ${esc(label)} units</span>${UU.map(v=>`<a href="${path.basename(`guides/${slug(label)}-unit-${v.id}-${slug(v.name)}.html`)}" style="${v.id===u.id?"font-weight:800;color:var(--ink)":""}">Unit ${v.id}: ${esc(v.name)}</a>`).join("")}</div></aside></main>`}));
+  });
+  return links;
+};
+const litGuideLinks = engGuide(WL, "aplit", "English Literature", "AP® English Literature", "CLEP® Analyzing and Interpreting Literature");
+const langGuideLinks = engGuide(WN, "aplang", "English Language", "AP® English Language", "CLEP® College Composition");
 /* ---------- Statistics guide pages ---------- */
 const SQ = WS.CS_QUESTIONS_RAW, SU = WS.CS_UNITS;
 const sqsFor = u => SQ.map((q,i)=>({q,i,F:null})).filter(x=>x.q[0]===u);
@@ -571,10 +609,14 @@ ${sample.map((x,k)=>qBlock(x,k+1)).join("")}
 });
 /* guides hub */
 out("guides/index.html", page({depth:1, canon:"/guides/index.html",
-  title:"Free AP® and CLEP® Study Guides for 10 Subjects | Credit Sprint",
-  desc:"Free unit-by-unit study guides for Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology and Statistics, with key ideas, exam traps and practice questions.",
+  title:"Free AP® and CLEP® Study Guides for 12 Subjects | Credit Sprint",
+  desc:"Free unit-by-unit study guides for Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology, Statistics, English Literature and English Language, with key ideas, exam traps and practice questions.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Study guides</p>
-<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for all 10 Credit Sprint subjects.</p>
+<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for all 12 Credit Sprint subjects.</p>
+<h2>English Literature</h2>
+<div class="linkgrid">${litGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>Unit ${u.id}: ${esc(u.name)}</b><span>AP® ${esc(u.ap)}</span></a>`).join("")}</div>
+<h2>English Language</h2>
+<div class="linkgrid">${langGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>Unit ${u.id}: ${esc(u.name)}</b><span>AP® ${esc(u.ap)}</span></a>`).join("")}</div>
 <h2>Statistics</h2>
 <div class="linkgrid">${sGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>${esc(u.name)}</b><span>AP® ${u.ap}</span></a>`).join("")}</div>
 <h2>Psychology</h2>
@@ -824,7 +866,7 @@ urls.push("/app.html");
 fs.writeFileSync(path.join(ROOT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 /* question counts for the app's course cards, course picker, onboarding and sign-up (other courses' data isn't loaded in the app) */
 const stat = w => ({q:w.CS_QUESTIONS_RAW.length, f:w.CS_FRQS.length, c:w.CS_CARDS_RAW.length, u:w.CS_UNITS.length});
-fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. */\nwindow.CS_COURSE_STATS = ${JSON.stringify({macro:stat(W), micro:stat(WM), bio:stat(WB), chem:stat(WC), mkt:stat(WK), apush:stat(WH), apworld:stat(WW), apgov:stat(WG), appsych:stat(WY), apstat:stat(WS)})};\n`);
+fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. */\nwindow.CS_COURSE_STATS = ${JSON.stringify({macro:stat(W), micro:stat(WM), bio:stat(WB), chem:stat(WC), mkt:stat(WK), apush:stat(WH), apworld:stat(WW), apgov:stat(WG), appsych:stat(WY), apstat:stat(WS), aplit:stat(WL), aplang:stat(WN)})};\n`);
 fs.writeFileSync(path.join(ROOT,"robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
 /* stamp the same version into app.html's CSS and script links */
 const appPath = path.join(ROOT, "app.html");
