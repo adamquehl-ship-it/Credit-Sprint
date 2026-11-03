@@ -137,7 +137,7 @@ CS.seasonCard = () => {
         return `<li class="pr-row ${on?"on":""} ${cur?"cur":""} ${big?"big":""}">${cell("free", FREE[i], i)}
           <span class="pr-stop"><span class="sp-n ${on?"on":""}" data-tier="${i}">${big?"★":""}${i+1}</span>${cur?`<span class="pr-you">${(t - xp).toLocaleString()} XP to go</span>`:""}</span>
           ${cell("pass", PASS[i], i)}</li>`; }).join("")}</ol></div>
-    <div class="shop"><span class="small"><b>💎 ${(s.gems||0).toLocaleString()}</b> gems</span>
+    <div class="shop"><button class="small qs-btn" data-wallet title="What are gems?"><b>💎 ${(s.gems||0).toLocaleString()}</b> gems</button>
       <button class="btn ghost sm" data-go="store">${I("bag")} Spend gems in the Store</button></div>
     <span class="tiny muted">Every 2 weeks a new season starts with a new map theme and fresh rewards. All XP from every course counts.</span>
   </div>`;
@@ -209,7 +209,7 @@ CS.questBlock = () => {
   const s = S(), si = CS.seasonInfo(), st = CS.streak(), lv = CS.level();
   return `<section class="quest qt-${si.theme.k}" aria-label="Quest map">
     <div class="quest-head"><div class="stack" style="gap:2px"><span class="eyebrow qe">Season ${si.num} · ${esc(si.theme.n)}</span><h2>${esc(CS.C.name)} quest</h2></div>
-      <div class="qstats"><span title="Day streak">🔥 ${st}</span><span title="Gems">💎 ${(s.gems||0).toLocaleString()}</span><span title="Level">⚡ Lv ${lv.lv}</span>${CS.seasonClaimable()?`<span class="qnew" title="Rewards ready">🎁 ${CS.seasonClaimable()}</span>`:""}</div></div>
+      <div class="qstats"><span title="Day streak">🔥 ${st}</span><button class="qs-btn" data-wallet title="What are gems?">💎 ${(s.gems||0).toLocaleString()}</button><span title="Level">⚡ Lv ${lv.lv}</span>${CS.seasonClaimable()?`<span class="qnew" title="Rewards ready">🎁 ${CS.seasonClaimable()}</span>`:""}</div></div>
     <div class="quest-grid"><div class="stack" style="gap:12px;min-width:0">${CS.questMap()}
       <div class="qlegend tiny muted"><span><i class="lg-done"></i>Mastered (70%+ or boss beaten)</span><span><i class="lg-cur"></i>Your next unit</span><span>Chests open when you master the unit before them</span></div></div>
       <div class="stack" style="gap:12px;min-width:0">${CS.seasonCard()}</div></div>

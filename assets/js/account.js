@@ -85,11 +85,13 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-av-r
 /* ---------- sidebar status ---------- */
 let status = "";
 function setStatus(t){ status = t; renderChip(); }
+const guestNow = () => !!(window.CS_STORE && window.CS_STORE.guest && !CS.account);
 function renderChip(){
   const a = CS.account, top = $("#top-acct"), bar = $("#guest-bar");
   if (bar) { bar.hidden = !(window.CS_STORE.guest && !a);
     bar.innerHTML = `<span>${I("shield")}<b>Guest mode:</b> your progress is erased when you close this tab, and you can't join leagues.</span><button class="btn sm" data-account="signup">Sign up free to save it</button>`; }
   if (top) top.innerHTML = a ? `<button class="top-acct on" data-account="open" title="Manage account">${avHTML(a)}${CS.friendReqCount && CS.friendReqCount() ? `<span class="req-dot" title="Friend requests">${CS.friendReqCount()}</span>` : ""}<span class="hide-sm">Account</span></button>`
+    : guestNow() ? `<button class="btn sm top-acct guest" data-account="signup" title="Guest mode: progress is erased when you close this tab">${I("shield")}<span class="show-sm">Save</span><span class="hide-sm">Sign up</span></button>`
     : `<button class="btn sm top-acct" data-account="signup">Sign up</button>`;
   const el = $("#side-acct"); if (!el) return;
   el.innerHTML = a ? `<button class="acct-chip on" data-account="open">${avHTML(a)}<span class="stack" style="gap:0;min-width:0"><b class="small">${esc(a.name || "Add your name")}</b><span class="tiny muted">${esc(status || "Signed in")}</span></span></button>`
@@ -139,7 +141,7 @@ CS.openAccount = async (opts = {}) => {
   function draw(){
     const tabs = [["email","Email code",cfg.email],["google","Google",!!cfg.google],["password","Username",cfg.password]].filter(t => t[2]);
     m.innerHTML = (gate ? closeRow("Save your diagnostic results") + `<p class="muted small">Make a free account first so your results, study plan and score estimate are saved on every device. It takes about 20 seconds, then your diagnostic starts.</p>`
-      : signup ? closeRow("Create your free account") + `<p class="muted small">Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` + suLine() : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
+      : signup ? closeRow(opts.headline || "Create your free account") + `<p class="muted small">${opts.why ? esc(opts.why) + " " : ""}Save your streak, pets and progress on every device, and join this week's league. It takes about 20 seconds. New here? Any option below creates your account.</p>` + suLine() : closeRow("Sign in to Credit Sprint") + `<p class="muted small">Save your progress across devices and compete in weekly leagues. New here? Signing in creates your account.</p>`) + `
       <div class="seg" role="tablist" style="max-width:420px">${tabs.map(([k,n]) => `<button role="tab" data-tab="${k}" aria-pressed="${tab===k}">${n}</button>`).join("")}</div>
       <div class="stack" id="acct-body" style="gap:12px"></div>${err?`<div class="feedback bad">${esc(err)}</div>`:""}
       <p class="tiny muted">You must be 13 or older to create an account. We only show your first name and last initial on leaderboards. By signing in you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>${gate ? `<button class="linklike" data-skip style="align-self:flex-start">Skip for now and start the diagnostic (results stay on this device only)</button>` : ask ? `<button class="btn ghost sm" data-x style="align-self:flex-start">Maybe later. Keep studying without an account</button>` : ""}`;
@@ -230,7 +232,7 @@ let gLoad = null;
 function loadGoogle(){ if (window.google && window.google.accounts) return Promise.resolve();
   return gLoad || (gLoad = new Promise((ok, no) => { const s = document.createElement("script"); s.src = "https://accounts.google.com/gsi/client"; s.async = true; s.onload = ok; s.onerror = no; document.head.appendChild(s); })); }
 
-document.addEventListener("click", e => { if (e.target.closest("[data-billing]")) { e.preventDefault(); if (CS.openBilling) CS.openBilling(); return; } const b = e.target.closest("[data-account]"); if (b) { e.preventDefault(); CS.openAccount({signup: b.dataset.account === "signup"}); } });
+document.addEventListener("click", e => { if (e.target.closest("[data-billing]")) { e.preventDefault(); if (CS.openBilling) CS.openBilling(); return; } const b = e.target.closest("[data-account]"); if (b) { e.preventDefault(); CS.openAccount(Object.assign({signup: b.dataset.account === "signup"}, b.dataset.account === "signup" && guestNow() ? {why:"You're in guest mode, so your progress is erased when you close this tab and you can't join leagues."} : {})); } });
 
 /* ---------- boot: who's signed in? ---------- */
 renderChip();
@@ -241,7 +243,7 @@ CS.maybeSignedIn = () => !!CS.account || (!CS.accountSettled && (() => { try { r
 const settle = () => { CS.accountSettled = true; accountKnown(CS.account); document.dispatchEvent(new CustomEvent("cs:account")); };
 if (!online()) settle();
 if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); resumeNext(); })
-  .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401) promptSignup(/[?&]signup\b/.test(location.search)); }).finally(settle);
+  .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401 && /[?&]signup\b/.test(location.search)) promptSignup(true); }).finally(settle);
 
 /* ask signed-out students to make an account once per visit, after onboarding closes */
 function promptSignup(force){
@@ -251,7 +253,19 @@ function promptSignup(force){
     /* already asked this visit (for example by the sign-up step before the diagnostic), or a diagnostic is in progress */
     try { if (!force && sessionStorage.getItem("cs.asked")) return; } catch(e) {}
     if (document.querySelector("#p-run .opt")) { if (++tries < 600) setTimeout(go, 5000); return; }
-    try { sessionStorage.setItem("cs.asked", "1"); } catch(e) {} CS.openAccount({prompt:true}); };
+    try { sessionStorage.setItem("cs.asked", "1"); } catch(e) {} CS.openAccount(Object.assign({prompt:true}, promptSignup.msg || {})); };
   setTimeout(go, 1200);
 }
+/* ask for an account at a moment of progress (first finished quiz, first hatched pet, or 20 answers this visit) rather than on arrival */
+const MILESTONES = {
+  quiz: {headline:"Nice round. Keep it?", why:"You just finished a quiz, but as a guest it disappears when you close this tab."},
+  hatch: {headline:"Don't lose your new pet", why:"Guest pets disappear when you close this tab."},
+  answers: {headline:"20 questions in. Save your work?", why:"Your answers shape your study plan and score estimate, but as a guest they disappear when you close this tab."}
+};
+CS.milestone = kind => {
+  if (CS.account || !online() || !window.CS_STORE || !window.CS_STORE.guest || !CS.accountSettled) return;
+  promptSignup.msg = MILESTONES[kind] || null; promptSignup(false);
+};
+{ const rec = CS.record; let n = 0;
+  CS.record = function(...a){ const out = rec.apply(this, a); if (++n === 20) setTimeout(() => CS.milestone("answers"), 1500); return out; }; }
 })();

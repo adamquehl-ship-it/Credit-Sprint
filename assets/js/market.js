@@ -66,8 +66,29 @@ CS.onLearn = o => { const c = W(), d = CS.today(); c.seen.learn = c.seen.learn &
   if (k && !c.seen.learn.k[k]) { c.seen.learn.k[k] = 1; CS.earnCreds(k[0] === "v" ? 8 : 5, k[0] === "v" ? "lesson watched" : "lesson opened"); } };
 /* top bar balance */
 CS.afterChrome = () => { const el = $("#chips"); if (!el || $("#cred-chip")) return;
-  el.insertAdjacentHTML("afterbegin", `<button class="chip-stat cred-chip" id="cred-chip" title="Your creds. Spend them in Pets → Market">${CS.credIcon(16)}${fmt(CS.creds())}</button>`);
-  $("#cred-chip").onclick = () => { tab = "market"; CS.go("pets"); }; };
+  el.insertAdjacentHTML("afterbegin", `<button class="chip-stat cred-chip" id="cred-chip" title="Your creds. Tap to see how creds and gems work">${CS.credIcon(16)}${fmt(CS.creds())}</button>`);
+  $("#cred-chip").onclick = () => CS.walletInfo(); };
+/* one place that explains both currencies: tap the coin chip, or the gem count on the dashboard */
+CS.walletInfo = () => {
+  const g = S().gems || 0, w = document.createElement("div"); w.className = "modal-wrap";
+  w.innerHTML = `<div class="modal wallet-modal" role="dialog" aria-modal="true" aria-label="Your wallet">
+    <div class="spread" style="flex-wrap:nowrap"><h2>Your wallet</h2><button class="btn ghost sm" data-x>Close</button></div>
+    <p class="muted small" style="margin:0">Credit Sprint has two currencies. Both are shared across every course.</p>
+    <div class="wallet-row"><span class="wallet-ic">${CS.credIcon(30)}</span><div class="stack" style="gap:3px;min-width:0"><b>${fmt(CS.creds())} creds</b>
+      <span class="small muted"><b>Earn</b> them for quizzes, lessons, games, bosses, exams and daily quests (up to ${DAY_CAP} a day).</span>
+      <span class="small muted"><b>Spend</b> them in Pets → Market to buy pets from other students and to merge pets.</span></div>
+      <button class="btn sm" data-wgo="market">Market</button></div>
+    <div class="wallet-row"><span class="wallet-ic" style="font-size:26px">💎</span><div class="stack" style="gap:3px;min-width:0"><b>${g.toLocaleString()} gems</b>
+      <span class="small muted"><b>Earn</b> them from the season pass road and quest chests.</span>
+      <span class="small muted"><b>Spend</b> them in the Store on eggs, themes and streak freezes.</span></div>
+      <button class="btn sm" data-wgo="store">Store</button></div></div>`;
+  document.body.appendChild(w);
+  const close = () => w.remove();
+  w.addEventListener("click", e => { if (e.target === w || e.target.closest("[data-x]")) close(); const b = e.target.closest("[data-wgo]"); if (b) { close(); if (b.dataset.wgo === "market") { tab = "market"; CS.go("pets"); } else CS.go("store"); } });
+  document.addEventListener("keydown", function k(e){ if (e.key === "Escape") { close(); document.removeEventListener("keydown", k); } });
+  const f = w.querySelector("[data-x]"); if (f) f.focus();
+};
+document.addEventListener("click", e => { if (e.target.closest("[data-wallet]")) CS.walletInfo(); });
 
 /* ---------- pets: tabs (Collection · Merge · Market) ---------- */
 let tab = "collection", mkt = null, mktErr = "", mktFilter = "all", busy = false;

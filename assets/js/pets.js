@@ -917,7 +917,7 @@ function hatch(egg){
   const rar = egg.forceR || (egg.minR ? rollRarityMin(egg.minR) : rollRarity()); const P = st(), pet = rollPet(rar), R = CS.RARITY[rar], dup = !!P.owned[pet.id];
   if (dup) { P.owned[pet.id].growth += 15; P.owned[pet.id].copies = (P.owned[pet.id].copies||1)+1; CS.addXP(50); }
   else P.owned[pet.id] = {growth:0, at:CS.today(), copies:1};
-  P.hatched++; if (!P.active) P.active = pet.id; CS.save(); CS.refresh && CS.refresh();
+  P.hatched++; if (!P.active) P.active = pet.id; CS.save(); CS.refresh && CS.refresh(); if (CS.milestone) setTimeout(() => CS.milestone("hatch"), 4000);
   const big = rar === "mythical" || rar === "supreme";
   const w = overlay(`<span class="eyebrow">${big?"Something incredible is hatching…":"Hatching…"}</span><div class="hatch-stage"><div class="egg-shake">${CS.eggSVG(egg.r, egg.need, egg.need, 120)}</div></div><h2 class="hatch-title" style="opacity:0">&nbsp;</h2><div class="hatch-body"></div>`);
   setTimeout(() => {

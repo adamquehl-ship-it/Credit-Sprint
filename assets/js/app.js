@@ -450,7 +450,7 @@ render.practice = (o) => {
 function quiz(p){
   const r = run, qs = r.qs;
   if (r.i >= qs.length) {
-    if (!r.finished) { r.finished = true; markTask("quiz"); if (r.kind==="mistakes") markTask("mist"); CS.addXP(10 + (r.score===qs.length?20:0)); CS.refresh(); if (r.score===qs.length) CS.toast("Perfect round! +20 bonus XP"); }
+    if (!r.finished) { r.finished = true; markTask("quiz"); if (r.kind==="mistakes") markTask("mist"); CS.addXP(10 + (r.score===qs.length?20:0)); CS.refresh(); if (r.score===qs.length) CS.toast("Perfect round! +20 bonus XP"); if (CS.milestone) setTimeout(() => CS.milestone("quiz"), 2500); }
     const u = r.unit ? CS.UNITS[r.unit-1] : null;
     p.innerHTML = `<span class="eyebrow">${u?`Unit ${u.id} complete`:r.kind==="mistakes"?"Notebook review complete":r.kind==="graphs"?"Graph round complete":"Smart review complete"}</span>
       <div class="result-big">${r.score}/${qs.length}</div>

@@ -42,7 +42,37 @@ const ic = (k, sz=20) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" 
 const DISC = "AP® and CLEP® are trademarks registered by the College Board, which is not affiliated with, and does not endorse, this site. All practice questions are original.";
 const FAV = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='1' y='1' width='38' height='38' rx='10' fill='%234F46E5'/%3E%3Cpath d='M20 1 H29 A10 10 0 0 1 39 11 V29 A10 10 0 0 1 29 39 H20 Z' fill='%2310B981'/%3E%3Ctext x='11' y='26.2' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='16.5' fill='%23fff'%3EC%3C/text%3E%3Ctext x='29.5' y='26.2' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='16.5' fill='%2306281C'%3ES%3C/text%3E%3C/svg%3E`;
 
+/* keep search titles near 60 characters: apply shortening steps in order, stopping as soon as the title fits */
+const TITLE_MAX = 65;
+const TITLE_STEPS = [
+  t => t.replace(" Practice Problems with Solutions", " Practice Problems"),
+  t => t.replace("(AP® and CLEP®)", "(AP® & CLEP®)"),
+  t => t.replace("CLEP® Principles of Marketing", "CLEP® Marketing").replace("CLEP® History of the U.S.", "CLEP® U.S. History").replace("AP® U.S. Government and Politics", "AP® U.S. Gov"),
+  t => t.replace(/(Study Guide \([^)]*\)):[^|]*(\s\|)/, "$1$2"),
+  t => t.replace(/,? (c\. )?\d{3,4}( CE)? to (c\. )?(\d{3,4}|the Present)/, ""),
+  t => t.replace(/ \| Credit Sprint$/, ""),
+  t => t.replace(/ \((AP|CLEP)[^)]*\)/, ""),
+  t => t.replace(/ Study Guide$/, " Guide"),
+];
+/* hand-written short forms where the generic steps can't get a title under the limit */
+const TITLE_SHORT = [
+  [/^CLEP® History of the United States Exam Guide/, "CLEP® U.S. History Exam Guide: Format, Scores, Credit, Retakes"],
+  [/^CLEP® Principles of Macroeconomics Exam Guide/, "CLEP® Macroeconomics Exam Guide: Format, Scores, Retakes"],
+  [/^CLEP® Principles of Microeconomics Exam Guide/, "CLEP® Microeconomics Exam Guide: Format, Scores, Retakes"],
+  [/^Macroeconomics Unit 2:/, "AP® Macro Unit 2: Economic Indicators & Business Cycle Guide"],
+  [/^Macroeconomics Unit 3:/, "AP® Macro Unit 3: National Income & Price Determination"],
+  [/^Macroeconomics Unit 5:/, "AP® Macro Unit 5: Long-Run Stabilization Policy Study Guide"],
+  [/^Macroeconomics Unit 6:/, "AP® Macro Unit 6: International Trade & Finance Study Guide"],
+  [/^Microeconomics Unit 3:/, "AP® Micro Unit 3: Production, Cost & Perfect Competition"],
+  [/^Microeconomics Unit 6:/, "AP® Micro Unit 6: Market Failure & Government Study Guide"],
+  [/^U.S. History Period 5:/, "APUSH Period 5: Civil War and Reconstruction Study Guide"],
+  [/^U.S. History Period 7:/, "APUSH Period 7: Progressivism, World Wars, Depression Guide"],
+  [/^Marketing Unit 3:/, "CLEP® Marketing Unit 3: Environment & Research Study Guide"],
+  [/^Credit Sprint · AP® & CLEP® Prep/, "Credit Sprint · AP® & CLEP® Prep for 12 Courses, Free to Start"],
+];
+function fitTitle(t){ if (t.length > TITLE_MAX) for (const [re, v] of TITLE_SHORT) if (re.test(t)) return v; for (const f of TITLE_STEPS) { if (t.length <= TITLE_MAX) break; t = f(t); } return t; }
 function page({title, desc, canon, depth=0, body, ld}){
+  title = fitTitle(title);
   const up = "../".repeat(depth);
   return `<!doctype html>
 <html lang="en">

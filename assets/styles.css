@@ -581,7 +581,7 @@ select,input[type=date]{font:inherit;color:var(--ink);background:var(--surface);
 .lg li.me{background:color-mix(in srgb,var(--lg) 14%,var(--surface));color:var(--ink)} .lg li.me .av{background:var(--lg);color:#fff} .lg li.me .xp,.lg li.me .rk{color:var(--ink)}
 .lg li.zone{display:block;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:0;padding:4px 6px}
 .lg li.zone.up{color:var(--good);border-top:2px dashed var(--good)} .lg li.zone.dn{color:var(--bad);border-top:2px dashed var(--bad)}
-/* themes: each season's map is its own world (same in light and dark mode) */
+/* themes: each season's map is its own world; the light worlds get a night-time version in dark mode */
 .qt-meadow{--q-map:linear-gradient(180deg,#F1FBF4,#DFF4E6);--q-road:#CDEBD8;--q-road2:#FFFFFF;--q-go:#22C55E;--q-go2:#15803D;--q-lock:#D3E2D9;--q-lock2:#B2C5B9;--q-lockt:#73907F;--q-label:#FFFFFF;--q-ink:#173626;--q-shadow:#BFE3CC}
 .qt-night{--q-map:radial-gradient(circle at 75% 15%,#2B3577,#121838 70%);--q-road:#252F68;--q-road2:#7C8AF0;--q-go:#2DD4BF;--q-go2:#0F766E;--q-lock:#323C7A;--q-lock2:#1C2350;--q-lockt:#8E97D2;--q-label:#E9EBFF;--q-ink:#141A40;--q-shadow:#0A0E22}
 .qt-isles{--q-map:repeating-radial-gradient(circle at 30% 120%,#7DD3FC 0 22px,#89D8FD 22px 44px);--q-road:rgba(255,255,255,.18);--q-road2:#FFFFFF;--q-go:#F97316;--q-go2:#C2410C;--q-lock:#F1F5F9;--q-lock2:#94A3B8;--q-lockt:#64748B;--q-label:#FFFFFF;--q-ink:#0C2D48;--q-shadow:#9ACDEA}
@@ -590,6 +590,18 @@ select,input[type=date]{font:inherit;color:var(--ink);background:var(--surface);
 .qt-blossom{--q-map:linear-gradient(180deg,#FFF1F6,#FBD9E8);--q-road:#F6C6DA;--q-road2:#FFFFFF;--q-go:#DB2777;--q-go2:#9D174D;--q-lock:#F4DCE7;--q-lock2:#DBAFC3;--q-lockt:#9A6A80;--q-label:#FFFFFF;--q-ink:#4A1230;--q-shadow:#F0BDD2}
 .qt-ember{--q-map:radial-gradient(circle at 50% 110%,#7C2D12,#1F0F0A 70%);--q-road:#3A1A10;--q-road2:#FB923C;--q-go:#F97316;--q-go2:#9A3412;--q-lock:#4A2418;--q-lock2:#2A120B;--q-lockt:#C08A70;--q-label:#FFEDD5;--q-ink:#2A0F05;--q-shadow:#140806}
 .qt-reef{--q-map:linear-gradient(180deg,#0E7490,#164E63);--q-road:#0F5E73;--q-road2:#A5F3FC;--q-go:#F472B6;--q-go2:#BE185D;--q-lock:#1C6A80;--q-lock2:#0B3B48;--q-lockt:#9ED9E6;--q-label:#ECFEFF;--q-ink:#042F3A;--q-shadow:#083544}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]) .qt-meadow{--q-map:linear-gradient(180deg,#0F2419,#0B1A13);--q-road:#1B3A2A;--q-road2:#3E7A58;--q-go:#22C55E;--q-go2:#15803D;--q-lock:#203A2D;--q-lock2:#13261C;--q-lockt:#7FA892;--q-label:#173025;--q-ink:#DDF5E6;--q-shadow:#06100B}
+:root:not([data-theme="light"]) .qt-isles{--q-map:repeating-radial-gradient(circle at 30% 120%,#0B3A57 0 22px,#0D4263 22px 44px);--q-road:rgba(255,255,255,.08);--q-road2:#7DD3FC;--q-go:#F97316;--q-go2:#C2410C;--q-lock:#16465F;--q-lock2:#0A2738;--q-lockt:#8DBBD4;--q-label:#0F2F44;--q-ink:#E0F2FE;--q-shadow:#051520}
+:root:not([data-theme="light"]) .qt-frost{--q-map:linear-gradient(180deg,#0F1C2E,#0A1422);--q-road:#1B2E47;--q-road2:#5B8BC0;--q-go:#0EA5E9;--q-go2:#0369A1;--q-lock:#1E3149;--q-lock2:#111F31;--q-lockt:#8AA5C4;--q-label:#16263B;--q-ink:#E0EEFC;--q-shadow:#050B14}
+:root:not([data-theme="light"]) .qt-canyon{--q-map:linear-gradient(180deg,#2A160C,#1C0E07);--q-road:#43230F;--q-road2:#C2703F;--q-go:#EA580C;--q-go2:#9A3412;--q-lock:#3E2414;--q-lock2:#25150B;--q-lockt:#C79A7C;--q-label:#331C0F;--q-ink:#FFE9D6;--q-shadow:#0D0603}
+:root:not([data-theme="light"]) .qt-blossom{--q-map:linear-gradient(180deg,#2A1220,#1C0B16);--q-road:#43192F;--q-road2:#B4527F;--q-go:#EC4899;--q-go2:#9D174D;--q-lock:#3C1A2C;--q-lock2:#240E1A;--q-lockt:#D39AB6;--q-label:#33152A;--q-ink:#FFE4F0;--q-shadow:#0D040A}
+}
+:root[data-theme="dark"] .qt-meadow{--q-map:linear-gradient(180deg,#0F2419,#0B1A13);--q-road:#1B3A2A;--q-road2:#3E7A58;--q-go:#22C55E;--q-go2:#15803D;--q-lock:#203A2D;--q-lock2:#13261C;--q-lockt:#7FA892;--q-label:#173025;--q-ink:#DDF5E6;--q-shadow:#06100B}
+:root[data-theme="dark"] .qt-isles{--q-map:repeating-radial-gradient(circle at 30% 120%,#0B3A57 0 22px,#0D4263 22px 44px);--q-road:rgba(255,255,255,.08);--q-road2:#7DD3FC;--q-go:#F97316;--q-go2:#C2410C;--q-lock:#16465F;--q-lock2:#0A2738;--q-lockt:#8DBBD4;--q-label:#0F2F44;--q-ink:#E0F2FE;--q-shadow:#051520}
+:root[data-theme="dark"] .qt-frost{--q-map:linear-gradient(180deg,#0F1C2E,#0A1422);--q-road:#1B2E47;--q-road2:#5B8BC0;--q-go:#0EA5E9;--q-go2:#0369A1;--q-lock:#1E3149;--q-lock2:#111F31;--q-lockt:#8AA5C4;--q-label:#16263B;--q-ink:#E0EEFC;--q-shadow:#050B14}
+:root[data-theme="dark"] .qt-canyon{--q-map:linear-gradient(180deg,#2A160C,#1C0E07);--q-road:#43230F;--q-road2:#C2703F;--q-go:#EA580C;--q-go2:#9A3412;--q-lock:#3E2414;--q-lock2:#25150B;--q-lockt:#C79A7C;--q-label:#331C0F;--q-ink:#FFE9D6;--q-shadow:#0D0603}
+:root[data-theme="dark"] .qt-blossom{--q-map:linear-gradient(180deg,#2A1220,#1C0B16);--q-road:#43192F;--q-road2:#B4527F;--q-go:#EC4899;--q-go2:#9D174D;--q-lock:#3C1A2C;--q-lock2:#240E1A;--q-lockt:#D39AB6;--q-label:#33152A;--q-ink:#FFE4F0;--q-shadow:#0D040A}
 @media (max-width:860px){ .quest-grid{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:480px){ .qmap{height:500px} .qnode{width:104px;font-size:.72rem} .qnode b{width:52px;height:48px;font-size:1.15rem} .qpet svg{width:58px;height:58px} .qsay{display:none} }
 @media (prefers-reduced-motion:reduce){ .qnode.cur b,.qchest.ready svg,.qpet,.qstats .qnew{animation:none} }
@@ -1144,3 +1156,18 @@ textarea.essay{min-height:340px;line-height:1.6}
 .boss-mini.done{background:var(--good-bg)}
 .boss-mini i{position:absolute;right:2px;top:2px;width:20px;height:20px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center}
 .boss-mini i .ico{width:13px;height:13px}
+
+/* wallet explainer */
+.wallet-modal{max-width:460px;gap:14px}
+.wallet-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--rule);border-radius:12px;background:var(--surface-2)}
+.wallet-row>.stack{flex:1}
+.wallet-ic{flex:none;width:36px;display:grid;place-items:center}
+@media (max-width:420px){.wallet-row{flex-wrap:wrap}.wallet-row .btn{width:100%}}
+.qs-btn{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dotted currentColor}
+
+/* phones: the guest warning lives in the top-bar Save button instead of a full-width banner */
+.top-acct.guest .ico,.top-acct.guest svg{width:15px;height:15px}
+.top-acct .show-sm{display:none}
+@media (max-width:560px){.guest-bar{display:none!important}
+  .top-acct.guest{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn,#B45309) 55%,transparent);color:var(--warn,#B45309);padding-inline:10px;gap:5px}
+  .top-acct.guest .show-sm{display:inline}.top-acct.guest .hide-sm{display:none}}
