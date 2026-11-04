@@ -14,6 +14,9 @@ const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js",
 const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
 const APLIT = ["cards.js","cards2.js","terms.js","x1.js","f1.js","f2.js","f3.js","f4.js","v1.js","v2.js","v3.js","v4.js","d1.js","a1.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"].map(f=>"assets/data/aplit/"+f);
 const APLANG = ["cards.js","cards2.js","terms.js","x1.js","x2.js","r1.js","r2.js","r3.js","r4.js","w1.js","w2.js","w3.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"].map(f=>"assets/data/aplang/"+f);
+const CALC_AB_FILES = ["cards.js","c1.js","c2.js","g1.js","g2.js","g3.js","g4.js","g5.js","g6.js","g7.js","g8.js","content.js","content2.js","frqs.js","drills.js","games.js"];
+const CALCAB = CALC_AB_FILES.map(f=>"assets/data/calc/"+f);
+const CALCBC = CALCAB.concat(["cards.js","c1.js","g9.js","g10.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/calc/bc/"+f));
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     bosses:{1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"}, key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -111,11 +114,31 @@ const C = window.CS_COURSES = {
     chainDesc:"Put the marketing steps in order: from a research problem to a decision, from awareness to purchase, from a product idea to the market.",
     crunchDesc:"Two minutes of marketing math: markup, margin, break-even, market share, elasticity of demand and reach. Type the number.",
     drillDesc:"Markups, margins, break-even, market share, elasticity and channel math: fresh numbers every time.",
-    planGames:["Mix Master","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]}
+    planGames:["Mix Master","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]},
+  calcab:{k:"calcab", name:"Calculus AB", short:"Calc AB", ap:"AP\u00AE Calculus AB", clep:"CLEP\u00AE Calculus", clepShort:"CLEP\u00AE Calculus",
+    key:"creditsprint.calcab.v1", col:"#65A30D", soft:"#F7FEE7", apFmt:"42 multiple choice and 6 free-response questions in 3 hours 10 minutes", clepFmt:"About 44 multiple choice in 90 minutes", blurb:"Limits, derivatives and their applications, integrals and the Fundamental Theorem, differential equations, and area and volume. AP\u00AE Calculus AB and CLEP\u00AE Calculus.", icon:"integral", data:CALCAB, nUnits:8, cat:"Math & statistics",
+    graphs:false, unitWord:"Unit", frqHead:"AP\u00AE Section II \u00B7 6 questions \u00B7 90 minutes",
+    apExamText:"The real exam is hybrid digital: 42 multiple-choice questions in 1 hour 40 minutes (29 without a calculator, then 13 with a graphing calculator), worth 50% of your score, then 6 free-response questions in 90 minutes (2 with a calculator, 4 without), worth 50%, handwritten on paper. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:42, min:100, name:"Full-length AP\u00AE multiple choice"}, mini:{n:15, min:36, name:"Mini exam"}}, clep:{full:{n:44, min:90, name:"Full-length CLEP\u00AE"}, mini:{n:20, min:41, name:"Mini exam"}}},
+    bosses:{1:"The Limit Lurker",2:"The Secant Sorceress",3:"The Chain Wraith",4:"The Rate Racer",5:"The Extremum Empress",6:"The Riemann Reaper",7:"The Slope Field Siren",8:"The Volume Vandal"},
+    chainDesc:"Put the steps in order: evaluating a limit, related rates, optimization, u-substitution, separable differential equations and volumes.",
+    crunchDesc:"Two minutes of calculus calculations: derivatives at a point, limits, Riemann sums, integrals, average value and volumes. Type the number.",
+    drillDesc:"Do the calculations: limits, derivatives, tangent lines, related rates, Riemann sums, definite integrals, growth and decay, area and volume. Fresh numbers every time.",
+    planGames:["Derivative Dash","Tangent Shot","Graph Detective","Integral Sprint","Sprint","True or False"]},
+  calcbc:{k:"calcbc", name:"Calculus BC", short:"Calc BC", ap:"AP\u00AE Calculus BC", clep:"", clepShort:"", apOnly:true,
+    key:"creditsprint.calcbc.v1", col:"#A21CAF", soft:"#FDF4FF", apFmt:"42 multiple choice and 6 free-response questions in 3 hours 10 minutes", clepFmt:"", blurb:"Everything in Calculus AB plus integration by parts, improper integrals, Euler's method, logistic growth, parametric, polar and vector functions, and infinite series. AP\u00AE Calculus BC only.", icon:"integral", data:CALCBC, nUnits:10, cat:"Math & statistics",
+    graphs:false, unitWord:"Unit", frqHead:"AP\u00AE Section II \u00B7 6 questions \u00B7 90 minutes",
+    apExamText:"The real exam is hybrid digital: 42 multiple-choice questions in 1 hour 40 minutes (29 without a calculator, then 13 with a graphing calculator), worth 50% of your score, then 6 free-response questions in 90 minutes (2 with a calculator, 4 without), worth 50%, handwritten on paper. You also get an AB subscore. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:42, min:100, name:"Full-length AP\u00AE multiple choice"}, mini:{n:15, min:36, name:"Mini exam"}}, clep:{full:{n:42, min:100, name:"Full-length AP\u00AE multiple choice"}, mini:{n:15, min:36, name:"Mini exam"}}},
+    bosses:{1:"The Limit Lurker",2:"The Secant Sorceress",3:"The Chain Wraith",4:"The Rate Racer",5:"The Extremum Empress",6:"The Riemann Reaper",7:"The Slope Field Siren",8:"The Volume Vandal",9:"The Polar Phantom",10:"The Series Serpent"},
+    chainDesc:"Put the steps in order: limits, related rates, integration by parts, Euler's method, polar area and interval of convergence.",
+    crunchDesc:"Two minutes of calculus calculations: derivatives, integrals, Euler's method, series sums, Taylor coefficients, parametric slopes and polar areas. Type the number.",
+    drillDesc:"Do the calculations: derivatives, integrals, Euler's method, geometric series, radius of convergence, Taylor coefficients, parametric and polar. Fresh numbers every time.",
+    planGames:["Derivative Dash","Tangent Shot","Integral Sprint","Series Court","Sprint","True or False"]}
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

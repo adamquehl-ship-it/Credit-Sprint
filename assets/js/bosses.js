@@ -99,6 +99,15 @@ const B = {
   4:{g:"f",sk:"#FDBA74",o:"gown",oc:"#0F766E",ac:"#F472B6",hair:"long",hc:"#7C2D12",f:["twoface","ears"],p:"mic"},
   5:{g:"m",sk:"#FCA5A5",o:"suit",oc:"#111827",ac:"#DC2626",hair:"slick",hc:"#1F2937",f:["glasses","horns"],p:"redpen"},
   6:{g:"m",sk:"#F1F5F9",o:"coat",oc:"#CBD5E1",ac:"#111827",hair:"spiky",hc:"#111827",f:["inkeyes","fangs","drip"],x:["pages","cape"],p:"quill",ey:"#111827"}},
+ calcab:{
+  1:{g:"m",sk:"#A7F3D0",o:"hood",oc:"#065F46",ac:"#34D399",f:["glow"],x:["aura"],p:"infinity",ey:"#6EE7B7"},
+  2:{g:"f",sk:"#FDE68A",o:"robe",oc:"#7C3AED",ac:"#FDE047",hair:"long",hc:"#1E1B4B",hat:"jester",f:["thirdeye"],p:"staff"},
+  3:{g:"m",sk:"#CBD5E1",o:"armor",oc:"#475569",ac:"#F97316",hair:"none",f:["horns","glow"],x:["chains"],p:"key",ey:"#F97316"},
+  4:{g:"f",sk:"#FCA5A5",o:"suit",oc:"#B91C1C",ac:"#FDE047",hair:"pony",hc:"#450A0A",hat:"helmet",f:["goggles"],p:"bolt"},
+  5:{g:"f",sk:"#F0ABFC",o:"gown",oc:"#86198F",ac:"#FDE047",hair:"bun",hc:"#3B0764",hat:"crown",f:["eyeliner"],x:["cape"],p:"scepter"},
+  6:{g:"m",sk:"#E5E7EB",o:"hood",oc:"#111827",ac:"#A78BFA",f:["glow","sunken"],x:["aura"],p:"integral",ey:"#C4B5FD"},
+  7:{g:"f",sk:"#5EEAD4",o:"gown",oc:"#0F766E",ac:"#FDE047",hair:"tentacles",hc:"#134E4A",f:["scales","fins"],x:["tail"],p:"trident"},
+  8:{g:"m",sk:"#FDBA74",o:"golem",oc:"#9A3412",ac:"#FDE047",f:["cracks","glow"],x:["smoke"],p:"hammer",ey:"#FDE047"}},
  mkt:{
   1:{g:"f",sk:"#BBF7D0",o:"hood",oc:"#15803D",ac:"#A3E635",f:["glow"],x:["aura"],p:"flask",ey:"#BEF264"},
   2:{g:"m",sk:"#FCD34D",o:"suit",oc:"#9D174D",ac:"#FDE047",hair:"slick",hc:"#1F2937",f:["bowtie","grin"],p:"box"},
@@ -111,11 +120,16 @@ const B = {
   9:{g:"f",sk:"#E5E7EB",o:"hood",oc:"#334155",ac:"#FCA5A5",f:["glow"],x:["aura"],p:"box",ey:"#FCA5A5"},
   10:{g:"m",sk:"#BEF264",o:"suit",oc:"#3F6212",ac:"#FDE047",hair:"none",f:["antennae","compound"],x:["bugwings","swarm"],p:"mail"}}
 };
+B.calcbc = Object.assign({}, B.calcab, {
+  9:{g:"f",sk:"#BAE6FD",o:"robe",oc:"#1E3A8A",ac:"#FDE047",hair:"long",hc:"#F8FAFC",f:["glow"],x:["aura","sparks"],p:"orb",ey:"#FDE047"},
+  10:{g:"m",sk:"#86EFAC",o:"armor",oc:"#14532D",ac:"#FBBF24",hair:"none",hat:"crown",f:["horns","scales","fangs"],x:["batwings","snaketail"],p:"infinity"}});
 CS.BOSS_ART = B;
 
 /* ---------- parts ---------- */
 const prop = (k, c, a) => {
   switch (k) {
+    case "integral": return `<text x="0" y="8" font-size="46" font-weight="900" text-anchor="middle" fill="${a}" stroke="${INK}" stroke-opacity=".7" stroke-width="1.6" font-family="Georgia, 'Times New Roman', serif" font-style="italic">∫</text>`;
+    case "infinity": return `<path d="M0 -14 C-6 -24 -22 -24 -22 -14 C-22 -4 -6 -4 0 -14 C6 -24 22 -24 22 -14 C22 -4 6 -4 0 -14Z" fill="none" stroke="${a}" stroke-width="5"><animateTransform attributeName="transform" type="rotate" values="-8;8;-8" dur="2.4s" repeatCount="indefinite"/></path>`;
     case "tag": return `<g transform="rotate(-18)"><path d="M-12 -14 H8 L18 0 L8 14 H-12Z" fill="${a}" ${O}/><circle cx="8" cy="0" r="3" fill="#fff"/><text x="-4" y="5" font-size="12" font-weight="900" fill="${INK}" text-anchor="middle" font-family="sans-serif">$</text></g>`;
     case "balloon": return `<path d="M0 0 Q-4 14 2 26" stroke="${INK}" stroke-width="1.6" fill="none"/><ellipse cx="0" cy="-18" rx="16" ry="20" fill="${a}" ${O}><animate attributeName="rx" values="14;17;14" dur="1.6s" repeatCount="indefinite"/></ellipse><text x="0" y="-13" font-size="14" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">%</text>`;
     case "coins": return [0,1,2].map(i=>`<ellipse cx="${-6+i*4}" cy="${-i*7}" rx="12" ry="5" fill="#FBBF24" ${O}/>`).join("") + `<circle cx="10" cy="-26" r="7" fill="#FDE047" ${O}/><text x="10" y="-22" font-size="9" font-weight="900" text-anchor="middle" fill="#92400E" font-family="sans-serif">$</text>`;

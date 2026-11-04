@@ -1,6 +1,6 @@
 # Credit Sprint
 
-Study platform for AP® Macroeconomics and CLEP® Principles of Macroeconomics. Clean Slate theme with light/dark mode. Live at https://creditsprintprep.com once the domain is connected.
+Study platform for 14 AP® and CLEP® courses, from Macroeconomics to Calculus BC. Clean Slate theme with light/dark mode. Live at https://creditsprintprep.com once the domain is connected.
 
 ## Site map
 | Path | What it is |
@@ -19,6 +19,8 @@ The app has two courses, Macroeconomics and Microeconomics. `assets/js/courses.j
 To add another course later, add an entry to `courses.js`, create its data folder with the same file format, and add a pet set in `assets/js/pets.js`.
 
 **English courses (AP English Literature `aplit`, AP English Language `aplang`).** These use reading passages: a passage set is created with `S()` in files like `assets/data/aplit/v1.js`, and each question added after it with `q()` is tied to that passage (`CS_PASSAGES`, shown above the question with line or paragraph numbers). Practice, exams, bosses and the diagnostic keep a passage's questions together (`CS.takeQs` / `CS.setOrder` in `core.js`). Essays are free-response entries with `essay:true`, an optional `passage` id or a six-item `sources` packet, and a 6-point rubric. Key-term questions are generated from the flashcards: after editing `cards.js` or `cards2.js`, run `node scripts/gen-terms.js aplit` (or `aplang`) and commit the new `terms.js`.
+
+**Calculus (AP® Calculus AB `calcab` with CLEP® Calculus, AP® Calculus BC `calcbc`).** Both courses share `assets/data/calc/`. AB loads the base files (units 1–8); BC loads the same files plus everything in `assets/data/calc/bc/`, which switches the unit weights to BC, adds the BC-only topics in units 4, 6, 7 and 8, and adds Unit 9 (parametric, polar, vectors) and Unit 10 (series). The two courses keep separate progress but share one pet set (`CALCP` in `pets.js`, art in `assets/js/calcart.js`). Calculus games: Derivative Dash, Tangent Shot, Graph Detective, Integral Sprint, and Series Court (BC). Free-response prompts can carry a `table` (rows of cells) that the app shows under the prompt. The generated numeric questions (`g1.js`–`g8.js`, `bc/g9.js`, `bc/g10.js`) were computed exactly, so every answer key is right; edit them like any other question file.
 
 **Unit bosses** (`assets/js/bosses.js`): every unit boss in every course is a drawn humanoid monster. Its look (outfit, hair, horns, prop and so on) is one line in the `B` table, and `CS.bossArt(course, unit, state)` draws it; the animations live in `assets/styles.css` under "unit bosses".
 

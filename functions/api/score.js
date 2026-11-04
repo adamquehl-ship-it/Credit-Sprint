@@ -8,7 +8,7 @@ export async function onRequestPost({request, env}) {
   let b; try { b = await request.json(); } catch { return json({error: "Bad JSON."}, 400); }
   const rubric = (b.rubric || []).slice(0, 10).map(r => clip(r, 300));
   if (!rubric.length || !b.answer) return json({error: "Missing rubric or answer."}, 400);
-  const subj = ({micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History", apgov:"U.S. Government", appsych:"Psychology", apstat:"Statistics", aplit:"English Literature and Composition", aplang:"English Language and Composition"})[b.course] || "Macroeconomics";
+  const subj = ({micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History", apgov:"U.S. Government", appsych:"Psychology", apstat:"Statistics", aplit:"English Literature and Composition", aplang:"English Language and Composition", calcab:"Calculus AB", calcbc:"Calculus BC"})[b.course] || "Macroeconomics";
   const system = `You are an experienced ${b.course === "mkt" ? "CLEP Principles of Marketing case-study" : "AP " + subj + " free-response"} reader. Score the student's answer strictly against the rubric, one point per rubric line, the way official readers do: award a point only if the answer clearly states the required idea; ignore spelling; do not award points for vague or contradictory answers. If a rubric point requires a graph, award it only if the student's written description clearly states the required labels and the shift.
 Return ONLY valid JSON, no prose, in exactly this shape:
 {"points":[{"earned":true|false,"note":"one short sentence telling the student why"}],"summary":"two sentences: what they did well and the single most important fix"}

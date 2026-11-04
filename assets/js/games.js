@@ -33,6 +33,12 @@ const GAMES = [
     {k:"shapes", n:"Shape Match", ic:"chart", d:"60 seconds. A clue describes a distribution or scatterplot; name its shape, center or association. A mistake costs 3 seconds.", best:()=>S().best.shapes!=null?`Best: ${S().best.shapes} matched`:"Not played yet", isNew:true},
     {k:"sbias", n:"Bias Spotter", ic:"cards", d:"A short study description hides a flaw: undercoverage, voluntary response, confounding, no control group. Name it.", best:()=>S().best.sbias!=null?`Best: ${S().best.sbias}/8`:"Not played yet", isNew:true},
     {k:"plinko", n:"Probability Plinko", ic:"star", d:"Solve a probability problem and drop the ball. Right answers land in the jackpot slot. Binomial, independence, conditional probability and more.", best:()=>S().best.plinko!=null?`Best: ${S().best.plinko}/8`:"Not played yet", isNew:true}] : []),
+  ...((CS.COURSE==="calcab"||CS.COURSE==="calcbc") ? [
+    {k:"deriv", n:"Derivative Dash", ic:"bolt", d:"60 seconds. A function appears; tap its derivative. Power, product, quotient and chain rules at speed. A mistake costs 3 seconds.", best:()=>S().best.deriv!=null?`Best: ${S().best.deriv} correct`:"Not played yet", isNew:true},
+    {k:"tshot", n:"Tangent Shot", ic:"target", d:"A curve and a point. Four lines pass through it; only one is the tangent. Read the slope and take the shot.", best:()=>S().best.tshot!=null?`Best: ${S().best.tshot}/8`:"Not played yet", isNew:true},
+    {k:"graphd", n:"Graph Detective", ic:"chart", d:"A clue about f′ or f″ appears. Decide what it tells you about f: increasing, concave down, a relative maximum, an inflection point and more.", best:()=>S().best.graphd!=null?`Best: ${S().best.graphd}/8`:"Not played yet", isNew:true},
+    {k:"integ", n:"Integral Sprint", ic:"calc", d:"60 seconds of antiderivatives: power rule, trig, exponentials, logs and u-substitution. Tap the right one; a mistake costs 3 seconds.", best:()=>S().best.integ!=null?`Best: ${S().best.integ} correct`:"Not played yet", isNew:true},
+    ...(CS.COURSE==="calcbc" ? [{k:"series", n:"Series Court", ic:"sword", d:"60 seconds. Each series takes the stand: converges absolutely, converges conditionally or diverges? Pick the verdict. A mistake costs 3 seconds.", best:()=>S().best.series!=null?`Best: ${S().best.series} judged`:"Not played yet", isNew:true}] : [])] : []),
   ...(CS.COURSE==="apgov" ? [
     {k:"court", n:"Court Case Match", ic:"cards", d:"A landmark Supreme Court case appears. Pick the ruling that matches it, from Marbury to Dobbs.", best:()=>S().best.court!=null?`Best: ${S().best.court}/8`:"Not played yet", isNew:true},
     {k:"branch", n:"Branch Check", ic:"cards", d:"60 seconds. Sort each power into the legislative, executive or judicial branch. A mistake costs 3 seconds.", best:()=>S().best.branch!=null?`Best: ${S().best.branch} sorted`:"Not played yet", isNew:true},
@@ -75,7 +81,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, device, form, pov, tone, appeal, fallacy, claimev, rhet})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -1247,6 +1253,85 @@ const appeal = a => sortGame(a, {k:"appeal", n:"Appeal Sort", data:"CS_LANG_APPE
 const fallacy = a => spotGame(a, {k:"fallacy", n:"Fallacy Finder", data:"CS_LANG_FALLACY", intro:"Each round shows a short argument with a flaw in its reasoning. Name the fallacy. Eight arguments per game.", ask:"This argument commits:", win:"Nothing slips past you. Spotting weak reasoning is how you answer counterarguments.", tip:"Ask what the argument skips: a real choice (false dilemma), the real opponent (straw man), or the steps between cause and effect (slippery slope)."});
 const claimev = a => sortGame(a, {k:"claimev", n:"Claim or Evidence?", data:"CS_LANG_CE", u:2, names:["Claim","Evidence","Commentary","Counterargument"], intro:"You have 60 seconds. Each sentence comes from an argument. Decide what job it does in the paragraph.", win:"You know how a paragraph is built. Most points on the essays come from commentary.", tip:"A claim is arguable, evidence is a fact, example or quotation, commentary explains how the evidence proves the claim, and a counterargument gives the other side."});
 const rhet = a => spotGame(a, {k:"rhet", n:"Rhetoric Spotter", data:"CS_LANG_RHET", intro:"A sentence from a speech or essay appears. Name the rhetorical choice the writer makes. Eight sentences per game.", ask:"Which rhetorical choice is this?", win:"Strong ear for rhetoric. In an analysis, always add what the choice does for the purpose.", tip:"Look at the sentence's shape: repeated openings (anaphora), balanced opposites (antithesis), a question with no answer expected (rhetorical question)."});
+
+/* ---------- Calculus: Derivative Dash, Integral Sprint, Graph Detective, Tangent Shot, Series Court ---------- */
+/* 60-second game where each item brings its own tempting wrong answers: [prompt, answer, why, unit, [w1, w2, w3]] */
+function ownPick(area, c){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const all = () => window[c.data] || [];
+  area.innerHTML = `<p style="max-width:62ch">${c.intro} Tap a button, or press 1 to 4. A mistake costs 3 seconds.</p><div><button class="btn accent" id="op-go">Start</button></div>`;
+  $("#op-go").onclick = start;
+  function start(){ time = 60; score = 0; miss = 0; items = CS.shuffle(all().slice()); show(); clearInterval(timer); timer = every(() => { time--; const t = $("#mx-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(){
+    if (!items.length) items = CS.shuffle(all().slice());
+    const it = items[0], opts = CS.shuffle([it[1]].concat((it[4] || []).slice(0, 3)));
+    area.innerHTML = `<div class="hud"><span>Time <b id="mx-t">${Math.max(0,time)}</b></span><span>Correct <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div><p class="muted tiny">${c.ask}</p>
+      <div class="mx-btns">${opts.map((o, i) => `<button class="btn big" data-b="${i}">${i+1} · ${esc(o)}</button>`).join("")}</div><div id="mx-fb" class="tiny muted" style="min-height:1.4em"></div>`;
+    const choose = b => { if (time <= 0) return; const ok = opts[b] === it[1]; CS.record({u: it[3] || 1}, ok, false); items.shift();
+      if (ok) score++; else { miss++; time -= 3; if (time <= 0) return end(); }
+      show(); if (!ok) { const f = $("#mx-fb"); if (f) f.textContent = `Not quite: ${it[0]} → ${it[1]}. ${it[2]}`; } };
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { if (/^[1-4]$/.test(e.key)) choose(+e.key - 1); };
+  }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest(c.k, score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">${esc(c.n)} · results</span><div class="result-big">${score}</div><p class="muted">correct, ${miss} missed${nb?" · new personal best":""}. ${score>=14?c.win:c.tip}</p>
+      <div class="row-wrap"><button class="btn" id="op-again">Play again</button><button class="btn ghost" data-go="practice">Practice ${esc(c.more)}</button></div>`;
+    $("#op-again").onclick = start;
+  }
+}
+const deriv = a => ownPick(a, {k:"deriv", n:"Derivative Dash", data:"CS_CALC_DD", ask:"Which is f′(x)?", more:"derivatives", intro:"You have 60 seconds. A function appears; tap its derivative.", win:"Fast and accurate. Now try the chain rule drills for multi-step functions.", tip:"Name the rule first: power, product, quotient or chain. Then remember the inside derivative."});
+const integ = a => ownPick(a, {k:"integ", n:"Integral Sprint", data:"CS_CALC_INT", ask:"Which is the antiderivative?", more:"integrals", intro:"You have 60 seconds. An integral appears; tap its antiderivative.", win:"Your antiderivatives are automatic. Check each one by differentiating it in your head.", tip:"Check an answer by differentiating it: you should get the integrand back. For u-substitution, divide by the inside derivative."});
+const graphd = a => spotGame(a, {k:"graphd", n:"Graph Detective", data:"CS_CALC_GRAPH", intro:"A clue describes f′ or f″, or the graph of f′. Decide what it tells you about f. Eight clues per game.", ask:"This tells you that:", win:"You read derivative graphs like an AP reader. Use the same language in your justifications.", tip:"Sign of f′: increasing or decreasing. Sign change of f′: extremum. Sign of f″ (or f′ rising or falling): concavity. Sign change of f″: inflection point."});
+const series = a => sortGame(a, {k:"series", n:"Series Court", data:"CS_CALC_SERIES", u:10, names:["Converges absolutely","Converges conditionally","Diverges"], intro:"You have 60 seconds. Each series takes the stand. Decide the verdict.", win:"A fair and fast judge. Name the test that proves each verdict, as you must on the exam.", tip:"Start with the nth-term test, then look for geometric or p-series, then alternating, then the ratio test for factorials and exponentials."});
+function tshot(area){
+  const ROUNDS = 8; let i = 0, right = 0;
+  const FN = [
+    {t:"f(x) = x²", f:x=>x*x, d:x=>2*x, xs:[-1.5,-1,1,1.5], u:2},
+    {t:"f(x) = x³ − 3x", f:x=>x*x*x-3*x, d:x=>3*x*x-3, xs:[-1.6,0,0.6,1.6], u:2},
+    {t:"f(x) = sin x", f:Math.sin, d:Math.cos, xs:[0,0.8,2.2,-1], u:2},
+    {t:"f(x) = eˣ", f:Math.exp, d:Math.exp, xs:[-1,0,0.5,-2], u:2},
+    {t:"f(x) = √x", f:Math.sqrt, d:x=>0.5/Math.sqrt(x), xs:[0.5,1,2,3], u:2},
+    {t:"f(x) = ln x", f:Math.log, d:x=>1/x, xs:[0.5,1,2,3], u:3},
+    {t:"f(x) = 4 − x²", f:x=>4-x*x, d:x=>-2*x, xs:[-1,0.5,1,1.5], u:2},
+    {t:"f(x) = cos x", f:Math.cos, d:x=>-Math.sin(x), xs:[0.6,1.6,-1,2.4], u:2}
+  ];
+  const r2 = x => String(Math.round(x*100)/100).replace("-", "−");
+  area.innerHTML = `<p style="max-width:62ch">A curve and a point appear. Four lines pass through the point; only one is tangent to the curve there. Pick it by eye or by computing f′. Eight shots per game.</p><div><button class="btn accent" id="ts-go">Start · ${ROUNDS} shots</button></div>`;
+  $("#ts-go").onclick = () => { i = 0; right = 0; round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const F = FN[Math.floor(Math.random()*FN.length)], x0 = F.xs[Math.floor(Math.random()*F.xs.length)], y0 = F.f(x0), m = F.d(x0);
+    const span = 2.4, X0 = x0 - span, X1 = x0 + span;
+    const offs = CS.shuffle([m + 1.2, m - 1.1, m + 2.6, m - 2.4, m === 0 ? 1.5 : m*2.2 + 0.4, m === 0 ? -1.5 : -m]).filter(s => Math.abs(s - m) > 0.45).slice(0, 3);
+    const slopes = CS.shuffle([m].concat(offs)), cols = ["#DC2626","#2563EB","#16A34A","#B45309"], L = ["A","B","C","D"];
+    const ys = []; for (let k = 0; k <= 80; k++) { const x = X0 + (X1 - X0)*k/80, y = F.f(x); if (isFinite(y)) ys.push(y); }
+    const half = s => Math.min(1.6, 2.6/Math.max(0.01, Math.abs(s)));
+    slopes.forEach(s => ys.push(y0 + half(s)*s, y0 - half(s)*s));
+    const lo = Math.max(Math.min(...ys), y0 - 4), hi = Math.min(Math.max(...ys), y0 + 4), pad = (hi - lo)*0.1 + 0.2;
+    const Y0 = lo - pad, Y1 = hi + pad, W = 300, H = 230, px = x => 20 + (x - X0)/(X1 - X0)*(W - 48), py = y => H - 14 - (y - Y0)/(Y1 - Y0)*(H - 28);
+    let path = ""; for (let k = 0; k <= 120; k++) { const x = X0 + (X1 - X0)*k/120, y = F.f(x); if (!isFinite(y)) continue; path += (path ? " L" : "M") + px(x).toFixed(1) + " " + Math.max(-20, Math.min(H + 20, py(y))).toFixed(1); }
+    const line = (s, c, j) => { const xa = x0 - half(s), xb = x0 + half(s); return `<g><line x1="${px(xa)}" y1="${py(y0 + s*(xa - x0))}" x2="${px(xb)}" y2="${py(y0 + s*(xb - x0))}" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><text x="${px(xb) + 4}" y="${py(y0 + s*(xb - x0)) + 4}" font-size="13" font-weight="800" fill="${c}">${L[j]}</text></g>`; };
+    const svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:460px;background:var(--surface,#fff);border-radius:14px" role="img" aria-label="${esc(F.t)} with four candidate lines"><defs><clipPath id="ts-c"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath></defs><g clip-path="url(#ts-c)">
+      ${(Y0 < 0 && Y1 > 0) ? `<line x1="10" y1="${py(0)}" x2="${W-10}" y2="${py(0)}" stroke="var(--line,#CBD5E1)"/>` : ""}${(X0 < 0 && X1 > 0) ? `<line x1="${px(0)}" y1="10" x2="${px(0)}" y2="${H-10}" stroke="var(--line,#CBD5E1)"/>` : ""}
+      <path d="${path}" fill="none" stroke="var(--ink,#1F2430)" stroke-width="3.2"/>${slopes.map((s, j) => line(s, cols[j], j)).join("")}<circle cx="${px(x0)}" cy="${py(y0)}" r="5.5" fill="#FDE047" stroke="#1F2430" stroke-width="2"/></g></svg>`;
+    area.innerHTML = `<div class="hud"><span>Shot <b>${i+1}</b>/${ROUNDS}</span><span>Hits <b>${right}</b></span></div><p><b>${esc(F.t)}</b> at x = ${r2(x0)}. Which line is tangent to the curve?</p><div style="display:grid;place-items:center">${svg}</div>
+      <div class="sm-opts">${slopes.map((s, j) => `<button class="btn ghost sm-o" data-o="${j}" style="border-color:${cols[j]}">${L[j]}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const j = +b.dataset.o, ok = slopes[j] === m; CS.record({u: F.u}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (slopes[+x.dataset.o] === m) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Hit!":"Missed: it was line "+L[slopes.indexOf(m)]+"."}</b> The tangent slope is f′(${r2(x0)}) = ${r2(m)}. ${ok?"":"Line "+L[j]+" has slope "+r2(slopes[j])+"."}</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next shot":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+    area._key = e => { const k = "abcd".indexOf(String(e.key).toLowerCase()); if (k >= 0) { const b = $$(".sm-o", area)[k]; if (b) b.click(); } };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("tshot", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Tangent Shot · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"Sharpshooter. You can see a derivative.":"The tangent line hugs the curve at the point and matches its steepness there; it should not cut across the curve nearby (except at an inflection point)."}</p>
+      <div class="row-wrap"><button class="btn" id="ts-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="2">Review Unit 2</button></div>`;
+    $("#ts-again").onclick = () => { i = 0; right = 0; round(); };
+  }
+}
 
 /* ---------- Statistics: Which Test?, Shape Match, Bias Spotter, Probability Plinko ---------- */
 function whichtest(area){

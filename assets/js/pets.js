@@ -409,14 +409,47 @@ const APLANGP = [
  {id:"la_oracle", body:"oracle", n:"The Oracle", u:2, r:"mythical", p:0.35, c1:"#4C1D95", c2:"#C4B5FD", custom:"lang", bio:"Ancient audiences trusted oracles; modern audiences want evidence."},
  {id:"la_orator", body:"orator", n:"Orator Maximus", u:0, r:"supreme", p:0.05, c1:"#B45309", c2:"#FEF3C7", custom:"lang", bio:"The greatest speaker of all, master of ethos, pathos, logos and kairos."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}};
-const SET = CS.PET_SETS[CS.COURSE] ? CS.PET_SETS[CS.COURSE].pets : MACRO;
+const CALCP = [
+ {id:"ca_pi", body:"pi", n:"Pi Pup", u:1, r:"common", p:6, c1:"#F97316", c2:"#FED7AA", custom:"calc", bio:"π ≈ 3.14159 never ends and never repeats, just like this pup's tail wags."},
+ {id:"ca_dx", body:"dxduck", n:"Derivative Duck", u:2, r:"common", p:6, c1:"#FACC15", c2:"#2563EB", custom:"calc", bio:"The derivative measures an instantaneous rate of change: the slope of the tangent line."},
+ {id:"ca_parabola", body:"parabola", n:"Parabola Pig", u:5, r:"common", p:6, c1:"#F9A8D4", c2:"#FBCFE8", custom:"calc", bio:"A parabola has one vertex, where the derivative is zero: an absolute max or min."},
+ {id:"ca_sine", body:"sine", n:"Sine Snail", u:3, r:"common", p:6, c1:"#0EA5E9", c2:"#BAE6FD", custom:"calc", bio:"The derivative of sin x is cos x, and the derivative of cos x is −sin x."},
+ {id:"ca_limit", body:"limit", n:"Limit Lizard", u:1, r:"common", p:6, c1:"#22C55E", c2:"#FDE047", custom:"calc", bio:"A limit is the value a function approaches, whether or not it ever gets there."},
+ {id:"ca_tangent", body:"tangent", n:"Tangent Toucan", u:2, r:"common", p:6, c1:"#1F2937", c2:"#F97316", custom:"calc", bio:"The tangent line touches a curve at one point and matches its slope there."},
+ {id:"ca_grid", body:"grid", n:"Graph Paper Bunny", u:5, r:"common", p:6, c1:"#A5B4FC", c2:"#F43F5E", custom:"calc", bio:"Sketch the graph: increasing, decreasing, concave up and concave down."},
+ {id:"ca_delta", body:"delta", n:"Delta Dino", u:4, r:"common", p:6, c1:"#14B8A6", c2:"#0F766E", custom:"calc", bio:"Δ means change: Δy ÷ Δx is the average rate of change."},
+ {id:"ca_integral", body:"integral", n:"Integral Eel", u:6, r:"uncommon", p:4, c1:"#6366F1", c2:"#E0E7FF", custom:"calc", bio:"The ∫ sign is a stretched S, for the sum of infinitely many thin slices."},
+ {id:"ca_riemann", body:"riemann", n:"Riemann Raccoon", u:6, r:"uncommon", p:4, c1:"#94A3B8", c2:"#FDE047", custom:"calc", bio:"Rectangles under a curve approximate area: left, right, midpoint or trapezoid."},
+ {id:"ca_chain", body:"chainfox", n:"Chain Rule Fox", u:3, r:"uncommon", p:4, c1:"#EA580C", c2:"#FDE047", custom:"calc", bio:"Outside derivative, keep the inside, times the inside derivative."},
+ {id:"ca_asymptote", body:"asymptote", n:"Asymptote Owl", u:1, r:"uncommon", p:4, c1:"#8B5CF6", c2:"#C4B5FD", custom:"calc", bio:"An asymptote is a line the graph approaches forever without settling on it."},
+ {id:"ca_slope", body:"slope", n:"Slope Field Sheep", u:7, r:"uncommon", p:4, c1:"#1F2937", c2:"#2563EB", custom:"calc", bio:"Every dash in a slope field is a tiny tangent line to some solution curve."},
+ {id:"ca_ladder", body:"ladder", n:"Ladder Llama", u:4, r:"uncommon", p:4, c1:"#FDE68A", c2:"#B45309", custom:"calc", bio:"Related rates: as the base slides out, the top slides down, linked by x² + y² = L²."},
+ {id:"ca_vole", body:"vole", n:"Volume Vole", u:8, r:"uncommon", p:4, c1:"#A16207", c2:"#FEF3C7", custom:"calc", bio:"Spin a region around an axis and slice it into discs: V = π∫R² dx."},
+ {id:"ca_infinity", body:"infinity", n:"Infinity Ferret", u:1, r:"rare", p:3, c1:"#7C3AED", c2:"#FDE047", custom:"calc", bio:"∞ is not a number; a limit equal to ∞ means the function grows without bound."},
+ {id:"ca_e", body:"eeagle", n:"Euler's e-gle", u:3, r:"rare", p:3, c1:"#0369A1", c2:"#0369A1", custom:"calc", bio:"e ≈ 2.718 is the base whose exponential is its own derivative."},
+ {id:"ca_hopital", body:"hopital", n:"L'Hospital Hedgehog", u:4, r:"rare", p:3, c1:"#A16207", c2:"#78350F", custom:"calc", bio:"Stuck at 0/0? Differentiate the top and the bottom and try again."},
+ {id:"ca_moose", body:"moose", n:"Mean Value Moose", u:5, r:"rare", p:3, c1:"#92400E", c2:"#FDE68A", custom:"calc", bio:"Somewhere between a and b, the tangent slope equals the average slope."},
+ {id:"ca_washer", body:"washer", n:"Washer Walrus", u:8, r:"rare", p:3, c1:"#78716C", c2:"#F59E0B", custom:"calc", bio:"A washer is a disc with a hole: π(R² − r²), never π(R − r)²."},
+ {id:"ca_ftc", body:"ftcdragon", n:"Fundamental Dragon", u:6, r:"epic", p:2, c1:"#DC2626", c2:"#FDE047", custom:"calc", bio:"The Fundamental Theorem ties derivatives and integrals into one idea."},
+ {id:"ca_squeeze", body:"squeeze", n:"Squeeze Python", u:1, r:"epic", p:2, c1:"#16A34A", c2:"#BBF7D0", custom:"calc", bio:"Trap a function between two that share a limit, and it has to share it too."},
+ {id:"ca_octopus", body:"octopus", n:"Optimization Octopus", u:5, r:"epic", p:2, c1:"#DB2777", c2:"#FDE047", custom:"calc", bio:"Eight arms, one goal: find the critical points and pick the best one."},
+ {id:"ca_lion", body:"lion", n:"Leibniz Lion", u:2, r:"legendary", p:1.1, c1:"#F59E0B", c2:"#B45309", custom:"calc", bio:"Leibniz gave calculus the dy/dx and ∫ notation still used today."},
+ {id:"ca_apple", body:"apple", n:"Newton's Apple", u:4, r:"legendary", p:0.9, c1:"#EF4444", c2:"#2563EB", custom:"calc", bio:"Newton built calculus to describe motion: position, velocity and acceleration."},
+ {id:"ca_ouroboros", body:"ouroboros", n:"Infinite Series Serpent", u:6, r:"mythical", p:0.6, c1:"#0F766E", c2:"#FDE047", custom:"calc", bio:"Add infinitely many terms and sometimes you still get a finite sum."},
+ {id:"ca_unicorn", body:"unicorn", n:"Golden Ratio Unicorn", u:5, r:"mythical", p:0.5, c1:"#F5F3FF", c2:"#F472B6", custom:"calc", bio:"φ ≈ 1.618 hides in spirals, sunflowers and a limit of Fibonacci ratios."},
+ {id:"ca_djinn", body:"djinn", n:"Zero-over-Zero Djinn", u:1, r:"mythical", p:0.35, c1:"#38BDF8", c2:"#FDE047", custom:"calc", bio:"0/0 grants no wish until you simplify: factor, cancel, or use L'Hospital."},
+ {id:"ca_wizard", body:"wizard", n:"The Grand Integrator", u:0, r:"supreme", p:0.05, c1:"#4C1D95", c2:"#FACC15", custom:"calc", bio:"The wizard who has evaluated every integral, from Riemann sums to series."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}, calc:{name:"Calculus", pets:CALCP}};
+/* AB and BC share one pet set */
+CS.PET_SET_KEY = k => ({calcab:"calc", calcbc:"calc"})[k] || k;
+const SET = CS.PET_SETS[CS.PET_SET_KEY(CS.COURSE)] ? CS.PET_SETS[CS.PET_SET_KEY(CS.COURSE)].pets : MACRO;
 CS.PETS = SET;
 const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, CALCP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -715,7 +748,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart", CS_CALCART:"calcart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -757,6 +790,7 @@ const CUSTOM = {
   stat: (p, stage, mood) => artDraw("CS_STATART", p, stage, mood),
   lit: (p, stage, mood) => artDraw("CS_LITART", p, stage, mood),
   lang: (p, stage, mood) => artDraw("CS_LANGART", p, stage, mood),
+  calc: (p, stage, mood) => artDraw("CS_CALCART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>
@@ -944,7 +978,7 @@ CS.petMood = () => { const s = S(), today = s.days[CS.today()]||0, h = new Date(
 
 /* ---------- Pets view ---------- */
 CS.render = CS.render || {};
-let petFilter = "all", petSet = CS.COURSE;
+let petFilter = "all", petSet = CS.PET_SET_KEY(CS.COURSE);
 CS.render.pets = () => {
   const P = st(), v = $("#v-pets"), egg = P.eggs[0], A = P.active ? CS.PET[P.active] : null, ownedN = Object.keys(P.owned).filter(k => (CS.PET[k]||{}).r !== "secret").length;
   const mood = CS.petMood(), moodTxt = {happy:"is happy you're studying today.", sleepy:"is sleepy. Answer a question to wake it up.", sad:"is worried about your streak!"}[mood];
