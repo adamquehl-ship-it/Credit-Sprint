@@ -1,5 +1,5 @@
-/* Landing page extras: live demo question, pet showcase strip, credit calculator, course finder quiz, team (coming soon). Used by build-site.js */
-const fs = require("fs"), path = require("path");
+/* Landing page extras: live demo question, pet showcase strip, credit calculator, course finder quiz, founder card (scripts/founder.js). Used by build-site.js */
+const fs = require("fs"), path = require("path"), founder = require("./founder.js");
 module.exports = function(COURSES, ic) {
   const Q = JSON.parse(fs.readFileSync(path.join(__dirname, "landing-q.json"), "utf8"));
   const meta = COURSES.map(c => ({k:c.k, n:c.name, col:c.col, clepOnly:!!c.clepOnly, apOnly:!!c.apOnly}));
@@ -25,11 +25,7 @@ module.exports = function(COURSES, ic) {
 .lp-field{display:flex;flex-direction:column;gap:4px;font-size:.82rem;font-weight:700;color:var(--muted)}
 .lp-field input{font:inherit;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:9px 11px;width:130px}
 .lp-big{font-size:2.3rem;font-weight:800;letter-spacing:-.02em;color:var(--good);line-height:1.1}
-.lp-team{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-@media(max-width:760px){.lp-team{grid-template-columns:1fr}}
-.lp-person{border:1.5px dashed var(--rule);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:var(--surface)}
-.lp-av{width:72px;height:72px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
-.lp-soon{font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-bg);padding:3px 9px;border-radius:999px}
+${founder.css}
 </style>`;
   const body = `${css}
 <section class="sec" id="try"><div class="wrap">
@@ -51,14 +47,7 @@ module.exports = function(COURSES, ic) {
     <div class="panel"><span class="eyebrow">Not sure where to start?</span><h3>Find your first course</h3><div id="quiz" class="stack" style="gap:10px"></div></div>
   </div>
 </div></section>
-<section class="sec alt" id="team"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">The people behind it <span class="lp-soon">Coming soon</span></span><h2>Meet the team</h2><p>Credit Sprint is built by students who have taken these exams. The founder's story and the team bios are on their way.</p></div>
-  <div class="lp-team">
-    <div class="lp-person"><span class="lp-av">${ic("star",30)}</span><b>The founder</b><span class="muted small">Why Credit Sprint exists and how it started.</span><span class="lp-soon">Coming soon</span></div>
-    <div class="lp-person"><span class="lp-av">${ic("pen",30)}</span><b>Content and tutors</b><span class="muted small">The people who write and check every question.</span><span class="lp-soon">Coming soon</span></div>
-    <div class="lp-person"><span class="lp-av">${ic("spark",30)}</span><b>Builders and artists</b><span class="muted small">The team behind the games and the pets.</span><span class="lp-soon">Coming soon</span></div>
-  </div>
-</div></section>
+${founder.teamSection()}
 <script>(function(){
 var Q=${JSON.stringify(Q)},C=${JSON.stringify(meta)};
 var $=function(i){return document.getElementById(i)};

@@ -52,14 +52,14 @@ function apply(html, look) {
 
   const heroes = {
     p1: `<section class="pro-hero p1"><div class="wrap pro-split">
-        <div class="pro-copy"><span class="pro-eyebrow">AP® and CLEP® prep for 12 subjects</span>
+        <div class="pro-copy"><span class="pro-eyebrow">AP® and CLEP® prep for 15 subjects</span>
           <h1>Earn college credit with ten minutes a day.</h1>
           <p class="pro-lead">Practice questions with every answer explained, a diagnostic that finds your weak units, and a study plan built around your exam date.</p>
           ${ctas(true)}${ticks}</div>
         ${frame(shot, "The Credit Sprint dashboard: a unit map and the season pass")}</div>
         <div class="wrap"><div class="pro-chips"><span>Courses</span>${chips}</div></div></section>`,
     p2: `<section class="pro-hero p2"><div class="wrap pro-center">
-        <span class="pro-eyebrow">AP® and CLEP® prep for 12 subjects</span>
+        <span class="pro-eyebrow">AP® and CLEP® prep for 15 subjects</span>
         <h1>The study app that makes AP® and CLEP® prep <em>feel like a game.</em></h1>
         <p class="pro-lead">Unit maps, a season pass and weekly leagues keep you coming back. Every question is written for the real exam, with every answer explained.</p>
         ${ctas(false)}${ticks}
@@ -91,7 +91,7 @@ function apply(html, look) {
       <div class="pro-courses">${C.map(([k, n, c, ex]) => `<a href="app.html?course=${k}" style="--cc:${c}"><b>${n}</b><span>${ex}</span><em>Start free →</em></a>`).join("")}</div>
       <p class="small muted" style="margin-top:12px">Unit-by-unit <a href="guides/index.html">study guides</a> and <a href="practice/index.html">worked practice problems</a> are free for everyone.</p>
     </div></section>`;
-  const newBody = `<!-- home page look: ${look} -->\n${styles}\n${heroes[look]}\n<section class="wrap pro-proof-wrap">${proof}</section>\n${S.how}\n${product}\n${S.try}\n${courses}\n${S.features}\n${S.games}\n${S.pets}\n${S.pricing}\n${S.calc}\n${S.faq}\n${S.team}\n${S.cta}\n${scriptsOutside(body, scripts)}\n<style>${CSS.base}\n${CSS[look]}</style>\n`;
+  const newBody = `<!-- home page look: ${look} -->\n${styles}\n${heroes[look]}\n<section class="wrap pro-proof-wrap">${proof}</section>\n${require("./founder.js").strip()}\n${S.how}\n${product}\n${S.try}\n${courses}\n${S.features}\n${S.games}\n${S.pets}\n${S.team}\n${S.pricing}\n${S.calc}\n${S.faq}\n${S.cta}\n${scriptsOutside(body, scripts)}\n<style>${CSS.base}\n${CSS[look]}</style>\n`;
   let out = html.slice(0, mainOpen) + newBody + html.slice(mainClose);
   out = out.replace('<a class="btn sm" href="index.html#courses">Start free</a>', '<a class="btn sm" href="app.html">Start free</a>').replace('<a href="index.html#courses">Courses</a>', '<a href="index.html#all-courses">Courses</a>');
   if (look === "p3") out = out.replace("family=Manrope:wght@500;600;700;800", "family=Manrope:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700");

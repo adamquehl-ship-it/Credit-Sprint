@@ -44,6 +44,7 @@ const ICON = {
   flame:'<path d="M12 21c-3.9 0-6.5-2.6-6.5-6.2 0-3.4 2.4-5.3 3.6-8 .9 1.6 1.6 2.5 2.9 3.1-.2-2.4.7-4.7 2.6-6.4.4 3.5 4.9 5.6 4.9 11.1 0 3.7-3 6.4-7.5 6.4z"/>'
 };
 const ic = (k, sz=20) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+const founder = require("./founder.js");
 const DISC = "AP® and CLEP® are trademarks registered by the College Board, which is not affiliated with, and does not endorse, this site. All practice questions are original.";
 const FAV = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='1' y='1' width='38' height='38' rx='10' fill='%234F46E5'/%3E%3Cpath d='M20 1 H29 A10 10 0 0 1 39 11 V29 A10 10 0 0 1 29 39 H20 Z' fill='%2310B981'/%3E%3Ctext x='11' y='26.2' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='16.5' fill='%23fff'%3EC%3C/text%3E%3Ctext x='29.5' y='26.2' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='16.5' fill='%2306281C'%3ES%3C/text%3E%3C/svg%3E`;
 
@@ -73,7 +74,7 @@ const TITLE_SHORT = [
   [/^U.S. History Period 5:/, "APUSH Period 5: Civil War and Reconstruction Study Guide"],
   [/^U.S. History Period 7:/, "APUSH Period 7: Progressivism, World Wars, Depression Guide"],
   [/^Marketing Unit 3:/, "CLEP® Marketing Unit 3: Environment & Research Study Guide"],
-  [/^Credit Sprint · AP® & CLEP® Prep/, "Credit Sprint · AP® & CLEP® Prep for 12 Courses, Free to Start"],
+  [/^Credit Sprint · AP® & CLEP® Prep/, "Credit Sprint · AP® & CLEP® Prep for 15 Courses, Free to Start"],
 ];
 function fitTitle(t){ if (t.length > TITLE_MAX) for (const [re, v] of TITLE_SHORT) if (re.test(t)) return v; for (const f of TITLE_STEPS) { if (t.length <= TITLE_MAX) break; t = f(t); } return t; }
 function page({title, desc, canon, depth=0, body, ld}){
@@ -102,9 +103,9 @@ ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 <div class="row-wrap" style="gap:8px;flex-wrap:nowrap"><a class="btn ghost sm" href="${up}app.html?signup=1">Sign up</a><a class="btn sm" href="${up}index.html#courses">Start free</a></div></div></header>
 ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
-<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 12 subjects.</span></div>
+<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 15 subjects.</span></div>
 <div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 15 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
-<div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a></div>
+<div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a>${founder.footerLinks(up)}</div>
 </div><p class="disc">${DISC} © ${new Date().getFullYear()} Credit Sprint.</p></div></footer>
 </div></body></html>
 `;
@@ -187,13 +188,13 @@ ${landing(COURSES, ic)}
   </div>
 </div></section>
 <section class="sec alt" id="games"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all fourteen courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
+  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all fifteen courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
   <div class="gamechips">${GAMES.map(([k,n])=>`<span class="gamechip"><span>${ic(k)}</span>${n}</span>`).join("")}</div>
 </div></section>
 <section class="sec" id="how"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">How it works</span><h2>Ten minutes a day to exam-ready</h2></div>
   <div class="steps">
-    <div><h3>Pick a course</h3><p>Macro, Micro, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology, Statistics or all ten. Take a quick diagnostic and see your weak units right away.</p></div>
+    <div><h3>Pick a course</h3><p>Fifteen courses, from Macro to Marketing. Take a quick diagnostic and see your weak units right away.</p></div>
     <div><h3>Plan</h3><p>Set your exam date. Get a week-by-week plan or a 30-day sprint.</p></div>
     <div><h3>Practice daily</h3><p>Walk the quest map with your pet, climb the 2-week season pass and race your weekly league.</p></div>
     <div><h3>Prove it</h3><p>Beat every unit boss and ace a practice exam. Then go earn the credit.</p></div>
@@ -1008,3 +1009,4 @@ require("./landing-options.js");
   for (const f of ["index.html", "app.html"]) { const fp = path.join(ROOT, f); let h = fs.readFileSync(fp, "utf8"); if (!h.includes("manifest.webmanifest")) { h = h.replace('<meta name="theme-color"', tag + '<meta name="theme-color"'); if (!h.includes("manifest.webmanifest")) h = h.replace("</head>", tag + "</head>"); fs.writeFileSync(fp, h); } } }
 fs.writeFileSync(appPath, fs.readFileSync(appPath, "utf8").replace(/\?v=[a-z0-9]+/g, "?v="+VER).replace(/window\.CS_V="[a-z0-9]*"/, 'window.CS_V="'+VER+'"'));
 console.log("Built", urls.length, "pages", "· version", VER);
+if (founder.missing().length) console.warn("Founder card still has placeholders for:", founder.missing().join(", "), "(edit scripts/founder.js before deploying)");
