@@ -9,7 +9,14 @@ const FOUNDER = {
   story: "I took 11 AP® exams in high school and scored a 4 or higher on every one, including 5s in Human Geography, World History, U.S. Government and Microeconomics. Now I study Finance and Philosophy, Politics and Economics (PPE) at Ohio State. I built Credit Sprint to be the prep I wanted back then: a clear plan, practice that explains every answer, and games that make the hard units stick.", // 3–4 sentences, first person: which exams you took, what the credit saved you, why you built this
   profile: "https://www.linkedin.com/in/adam-quehl-5765a3389/", // your LinkedIn or X profile URL
   profileLabel: "LinkedIn", // or "X"
+  year: "Class of 2030",           // optional, e.g. "Class of 2029"; shown after the role
 };
+
+/* Teammates. Leave empty and the section reads "Meet the founder"; add people and it becomes "Meet the team",
+   with a row of cards under the founder card. Then run `node scripts/build-site.js`. Example entry:
+   {name:"Jordan Lee", role:"Writes Biology and Chemistry questions", photo:"assets/img/team-jordan.jpg",
+    exams:[["Biology", 5], ["Chemistry", 5]], blurb:"One sentence in their own words.", profile:"https://www.linkedin.com/in/…"} */
+const TEAM = [];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const todo = t => `<span class="lp-todo">[${t}]</span>`;
@@ -37,6 +44,13 @@ const css = `.lp-founder{display:grid;grid-template-columns:180px minmax(0,1fr);
 .lp-strip img,.lp-strip .ini{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none}
 .lp-strip .ini{display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800}
 .lp-strip a{color:var(--accent);font-weight:700}
+.lp-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px;max-width:1100px}
+@media(max-width:900px){.lp-team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.lp-team-grid{grid-template-columns:minmax(0,1fr)}}
+.lp-mate{border:1px solid var(--rule);border-radius:14px;padding:18px;background:var(--surface);display:flex;gap:14px;align-items:flex-start}
+.lp-mate img,.lp-mate .ini{width:64px;height:64px;border-radius:50%;object-fit:cover;flex:none}
+.lp-mate .ini{display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800}
+.lp-mate b{display:block}.lp-mate p{margin:4px 0 0;font-size:.9rem;line-height:1.5}
+.lp-mate .lp-founder-exams{margin-top:8px}.lp-mate a{color:var(--accent);font-weight:700;font-size:.88rem}
 .lp-todo{background:#FFF1B8;color:#6B5300;border:1px dashed #C9A400;border-radius:6px;padding:1px 6px;font-weight:600}`;
 
 function teamSection() {
@@ -48,18 +62,24 @@ function teamSection() {
   const exams = f.exams.length ? f.exams.map(([n, sc]) => `<li>${esc(n)}<strong>${esc(sc)}</strong></li>`).join("") : `<li>${todo("exams you took and your scores")}</li>`;
   const link = f.profile ? `<a href="${esc(f.profile)}" rel="me noopener" target="_blank">${esc(f.name)} on ${esc(f.profileLabel)}</a>` : todo("add your LinkedIn or X link");
   return `<section class="sec alt" id="team"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Who's behind Credit Sprint</span><h2>Meet the founder</h2></div>
+  <div class="sec-head"><span class="eyebrow">Who's behind Credit Sprint</span><h2>${TEAM.length ? "Meet the team" : "Meet the founder"}</h2></div>
   <div class="lp-founder">
     ${photo}
     <div>
       <p class="lp-founder-name">${esc(f.name)}</p>
-      <p class="lp-founder-role">${esc(f.role)}</p>
+      <p class="lp-founder-role">${esc(f.role)}${f.year ? ", " + esc(f.year) : ""}</p>
       <p class="lp-founder-story">${story}</p>
       <div class="lp-founder-scores"><b>${esc(first())}'s AP® scores</b><ul class="lp-founder-exams">${exams}</ul></div>
       <div class="lp-founder-links">${link}</div>
     </div>
-  </div>
+  </div>${TEAM.length ? `\n  <div class="lp-team-grid">${TEAM.map(mate).join("")}</div>` : ""}
 </div></section>`;
+}
+function mate(t) {
+  const ini = (t.name || "?").split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  const photo = t.photo ? `<img src="${esc(t.photo)}" alt="${esc(t.name)}" width="64" height="64" loading="lazy">` : `<span class="ini" aria-hidden="true">${ini}</span>`;
+  const ex = (t.exams || []).length ? `<ul class="lp-founder-exams">${t.exams.map(([n, sc]) => `<li>${esc(n)}<strong>${esc(sc)}</strong></li>`).join("")}</ul>` : "";
+  return `<div class="lp-mate">${photo}<div><b>${esc(t.name)}</b><span class="small muted">${esc(t.role || "")}</span>${t.blurb ? `<p>${esc(t.blurb)}</p>` : ""}${ex}${t.profile ? `<a href="${esc(t.profile)}" rel="noopener" target="_blank">LinkedIn</a>` : ""}</div></div>`;
 }
 
 /* one-line founder strip near the top of the home page, linking down to the full card */
@@ -82,4 +102,4 @@ function missing() {
   return m;
 }
 
-module.exports = { FOUNDER, css, teamSection, strip, footerLinks, missing };
+module.exports = { FOUNDER, TEAM, css, teamSection, strip, footerLinks, missing };
