@@ -698,6 +698,7 @@ render.frq = () => {
         <div class="row-wrap">${f.units.map(u=>`<span class="tag">Unit ${u}</span>`).join("")}<span class="tag acc">${f.kind} · ${f.rubric.length} points · ~${f.minutes} min</span></div>
         <h2>${esc(f.title)}</h2>${String(f.prompt).split(/\n\s*\n/).map(x=>`<p>${esc(x)}</p>`).join("")}
         ${f.passage ? CS.passageHTML(f.passage) : ""}
+        ${f.fig && CS.figure ? `<div class="figure" style="max-width:440px">${CS.figure(f.fig)}</div>` : ""}
         ${f.table ? `<div style="overflow-x:auto"><table class="frq-table" style="border-collapse:collapse;margin:4px 0 8px;font-variant-numeric:tabular-nums">${f.table.map((r,ri)=>`<tr>${r.map((c,ci)=>`<${ci===0?"th":"td"} style="border:1px solid var(--line, #CBD5E1);padding:6px 12px;text-align:${ci===0?"left":"center"};${ri===0?"background:var(--accent-soft)":""}">${esc(c)}</${ci===0?"th":"td"}>`).join("")}</tr>`).join("")}</table></div>` : ""}
         ${f.sources ? `<div class="srcs"><div class="srcs-tabs" role="tablist">${f.sources.map((x,i)=>`<button role="tab" class="srcs-tab" data-src="${i}" aria-selected="${i===0}">Source ${String.fromCharCode(65+i)}</button>`).join("")}</div>${f.sources.map((x,i)=>`<div class="srcs-pane" data-pane="${i}" ${i?"hidden":""}><p class="srcs-cite"><b>Source ${String.fromCharCode(65+i)}</b> · ${esc(x.t)}</p>${String(x.x).split(/\n\s*\n/).map(y=>`<p>${esc(y)}</p>`).join("")}</div>`).join("")}</div>` : ""}
         ${f.essay ? `<div class="sample"><span class="eyebrow">How to plan it</span><ol style="margin:6px 0 0;padding-left:1.2em">${f.parts.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>` : `<ol class="parts" type="a">${f.parts.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`}
@@ -837,26 +838,35 @@ function coursePicker(){
   let pop = $("#course-pop"); if (pop) { closeCoursePicker(); return; }
   const mob = window.innerWidth <= 620;
   const sc = document.createElement("div"); sc.id = "course-scrim"; sc.className = "course-scrim"; sc.onclick = closeCoursePicker; document.body.appendChild(sc);
-  pop = document.createElement("div"); pop.id = "course-pop"; pop.className = "course-pop" + (mob ? " sheet" : ""); pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Courses");
-  const row = c => { const sm = CS.courseSummary(c.k), cur = c.k === CS.COURSE, m = Math.round((sm.avg||0)*100);
-    const stat = !sm.started ? "Not started" : `${sm.answered} answered · ${m}% mastery`;
-    return `<button data-course="${c.k}" class="cp-row ${cur?"cur":""}" style="--cc:${c.col};--cs:${c.soft}" ${cur?'aria-current="true"':""}>
+  pop = document.createElement("div"); pop.id = "course-pop"; pop.className = "course-pop cp2" + (mob ? " sheet" : ""); pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Courses");
+  const all = Object.values(window.CS_COURSES);
+  const exams = c => c.apOnly ? "AP®" : c.clepOnly ? "CLEP®" : "AP® · CLEP®";
+  /* one compact tile per course: icon, name, exams and progress on one line, and a thin mastery bar */
+  const tile = c => { const sm = CS.courseSummary(c.k), cur = c.k === CS.COURSE, m = Math.round((sm.avg||0)*100);
+    return `<button data-course="${c.k}" class="cp-tile ${cur?"cur":""}" style="--cc:${c.col};--cs:${c.soft}" title="${esc(c.blurb||"")}" data-name="${esc((c.name+" "+(c.short||"")+" "+(c.cat||"")).toLowerCase())}" data-cat="${esc(c.cat||"")}" ${cur?'aria-current="true"':""}>
       <span class="cp-ico">${I(c.icon||"book")}</span>
-      <span class="cp-main"><span class="cp-name">${esc(c.name)}${cur?`<span class="cp-badge">Current</span>`:""}</span>
-        <span class="cp-sub">${esc(c.blurb||"")}</span>
-        <span class="cp-meta"><span>${c.nUnits||""} units · ${esc(CS_STATLINE(c.k)||"AP® & CLEP®")}</span><span>${esc(stat)}</span></span>
-        <span class="cp-bar"><i style="width:${m}%"></i></span></span>
-      <span class="cp-go">${cur?I("check"):`<span class="cp-btn">${sm.started?"Switch":"Start"}</span>`}</span></button>`; };
-  const groups = {}; Object.values(window.CS_COURSES).forEach(c => (groups[c.cat||"Courses"] = groups[c.cat||"Courses"] || []).push(c));
-  pop.innerHTML = `<div class="cp-head"><div><b>Courses</b><span class="tiny muted">Streak, XP, pets and creds carry across every course.</span></div><button class="cp-x" aria-label="Close">${I("x")}</button></div>
-    <div class="cp-list">${Object.entries(groups).map(([g,cs]) => `<span class="cp-group">${esc(g)}</span>` + cs.map(row).join("")).join("")}</div>
-    <div class="cp-foot">${I("spark")}<span>More subjects are on the way.</span></div>`;
+      <span class="cp-main"><span class="cp-name">${esc(c.name)}</span><span class="cp-meta">${exams(c)}${cur?" · Current":sm.started?" · "+m+"%":""}</span>${sm.started?`<span class="cp-bar"><i style="width:${m}%"></i></span>`:""}</span>
+      ${cur?`<span class="cp-go">${I("check")}</span>`:""}</button>`; };
+  const mine = all.filter(c => c.k === CS.COURSE || CS.courseSummary(c.k).started);
+  const cats = [...new Set(all.map(c => c.cat || "Courses"))];
+  pop.innerHTML = `<div class="cp-head"><div><b>Courses</b><span class="tiny muted">${all.length} courses · streak, XP, pets and creds carry across all of them.</span></div><button class="cp-x" aria-label="Close">${I("x")}</button></div>
+    <div class="cp-tools"><input class="cp-search" type="search" placeholder="Find a subject" aria-label="Find a subject" autocomplete="off">
+      <div class="cp-chips" role="group" aria-label="Filter by subject area"><button data-cpf="" aria-pressed="true">All</button>${cats.map(g => `<button data-cpf="${esc(g)}" aria-pressed="false">${esc(g)}</button>`).join("")}</div></div>
+    <div class="cp-list">${mine.length > 1 ? `<span class="cp-group">Your courses</span><div class="cp-grid cp-mine">${mine.map(tile).join("")}</div><span class="cp-group">All courses</span>` : ""}<div class="cp-grid cp-all">${all.map(tile).join("")}</div><p class="cp-none muted small" hidden>No course matches. More subjects are on the way.</p></div>`;
   document.body.appendChild(pop);
-  if (!mob) { const r = $("#course-pill").getBoundingClientRect(); pop.style.top = (r.bottom + 8) + "px"; pop.style.left = Math.max(8, Math.min(window.innerWidth - 428, r.left)) + "px"; }
+  if (!mob) { const r = $("#course-pill").getBoundingClientRect(); pop.style.top = (r.bottom + 8) + "px"; pop.style.left = Math.max(8, Math.min(window.innerWidth - Math.min(600, window.innerWidth - 16) - 8, r.left)) + "px"; }
+  let cat = "", q = "";
+  const filter = () => { let n = 0; const filtering = !!(cat || q);
+    $$(".cp-all .cp-tile", pop).forEach(b => { const ok = (!cat || b.dataset.cat === cat) && (!q || b.dataset.name.includes(q)); b.hidden = !ok; if (ok) n++; });
+    $$(".cp-mine, .cp-group", pop).forEach(x => x.hidden = filtering);
+    $(".cp-none", pop).hidden = n > 0; };
+  $(".cp-search", pop).oninput = e => { q = e.target.value.trim().toLowerCase(); filter(); };
+  $(".cp-search", pop).onkeydown = e => { if (e.key === "Enter") { const b = $$(".cp-all .cp-tile", pop).find(x => !x.hidden); if (b) b.click(); } };
+  $$("[data-cpf]", pop).forEach(b => b.onclick = () => { cat = b.dataset.cpf; $$("[data-cpf]", pop).forEach(x => x.setAttribute("aria-pressed", x === b)); filter(); });
   $(".cp-x", pop).onclick = closeCoursePicker;
   $("#course-pill").setAttribute("aria-expanded","true");
   document.addEventListener("keydown", cpEsc);
-  const f = $(".cp-row.cur", pop) || $(".cp-row", pop); if (f) f.focus({preventScroll:true});
+  if (!mob) $(".cp-search", pop).focus({preventScroll:true}); else { const f = $(".cp-tile.cur", pop); if (f) f.focus({preventScroll:true}); }
 }
 function cpEsc(e){ if (e.key === "Escape") closeCoursePicker(); }
 function closeCoursePicker(){ const p = $("#course-pop"), s = $("#course-scrim"); if (p) p.remove(); if (s) s.remove(); document.removeEventListener("keydown", cpEsc); const b = $("#course-pill"); if (b) b.setAttribute("aria-expanded","false"); }

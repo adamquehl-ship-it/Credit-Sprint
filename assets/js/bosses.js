@@ -108,6 +108,14 @@ const B = {
   6:{g:"m",sk:"#E5E7EB",o:"hood",oc:"#111827",ac:"#A78BFA",f:["glow","sunken"],x:["aura"],p:"integral",ey:"#C4B5FD"},
   7:{g:"f",sk:"#5EEAD4",o:"gown",oc:"#0F766E",ac:"#FDE047",hair:"tentacles",hc:"#134E4A",f:["scales","fins"],x:["tail"],p:"trident"},
   8:{g:"m",sk:"#FDBA74",o:"golem",oc:"#9A3412",ac:"#FDE047",f:["cracks","glow"],x:["smoke"],p:"hammer",ey:"#FDE047"}},
+ aphug:{
+  1:{g:"m",sk:"#BAE6FD",o:"robe",oc:"#1E3A8A",ac:"#FDE047",hair:"long",hc:"#E0F2FE",hat:"tricorn",f:["monocle","glow"],x:["cape"],p:"globe",ey:"#FDE047"},
+  2:{g:"m",sk:"#D6D3D1",o:"coat",oc:"#44403C",ac:"#F59E0B",hair:"slick",hc:"#1C1917",hat:"tophat",f:["sunken","mustache"],x:["swarm"],p:"hourglass"},
+  3:{g:"f",sk:"#C4B5FD",o:"gown",oc:"#6D28D9",ac:"#F0ABFC",hair:"long",hc:"#2E1065",f:["glow","thirdeye"],x:["aura","sparks"],p:"orb",ey:"#F0ABFC"},
+  4:{g:"m",sk:"#FCA5A5",o:"suit",oc:"#7F1D1D",ac:"#FDE047",hair:"slick",hc:"#1F2937",f:["grin","horns"],x:["tail"],p:"redpen"},
+  5:{g:"f",sk:"#FDE68A",o:"rags",oc:"#A16207",ac:"#84CC16",hair:"bob",hc:"#713F12",hat:"straw",f:["glow"],p:"trident",ey:"#84CC16"},
+  6:{g:"f",sk:"#E5E7EB",o:"hood",oc:"#374151",ac:"#FB923C",f:["glow","fade"],x:["aura","smoke"],p:"key",ey:"#FB923C"},
+  7:{g:"m",sk:"#FDBA74",o:"suit",oc:"#111827",ac:"#FBBF24",hair:"none",hat:"tophat",f:["monocle","horns"],x:["smoke"],p:"coins"}},
  mkt:{
   1:{g:"f",sk:"#BBF7D0",o:"hood",oc:"#15803D",ac:"#A3E635",f:["glow"],x:["aura"],p:"flask",ey:"#BEF264"},
   2:{g:"m",sk:"#FCD34D",o:"suit",oc:"#9D174D",ac:"#FDE047",hair:"slick",hc:"#1F2937",f:["bowtie","grin"],p:"box"},
@@ -128,6 +136,7 @@ CS.BOSS_ART = B;
 /* ---------- parts ---------- */
 const prop = (k, c, a) => {
   switch (k) {
+    case "globe": return `<circle cx="0" cy="-12" r="17" fill="#38BDF8" ${O}/><path d="M-10 -22 q6 4 4 10 q-2 6 4 9 M4 -26 q-2 6 6 8 M-14 -6 q8 -2 12 6" stroke="#15803D" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-12" rx="17" ry="6" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.4"><animateTransform attributeName="transform" type="rotate" values="-10 0 -12;10 0 -12;-10 0 -12" dur="3s" repeatCount="indefinite"/></ellipse><path d="M0 5 V14 M-8 14 H8" stroke="${INK}" stroke-width="2.4"/>`;
     case "integral": return `<text x="0" y="8" font-size="46" font-weight="900" text-anchor="middle" fill="${a}" stroke="${INK}" stroke-opacity=".7" stroke-width="1.6" font-family="Georgia, 'Times New Roman', serif" font-style="italic">∫</text>`;
     case "infinity": return `<path d="M0 -14 C-6 -24 -22 -24 -22 -14 C-22 -4 -6 -4 0 -14 C6 -24 22 -24 22 -14 C22 -4 6 -4 0 -14Z" fill="none" stroke="${a}" stroke-width="5"><animateTransform attributeName="transform" type="rotate" values="-8;8;-8" dur="2.4s" repeatCount="indefinite"/></path>`;
     case "tag": return `<g transform="rotate(-18)"><path d="M-12 -14 H8 L18 0 L8 14 H-12Z" fill="${a}" ${O}/><circle cx="8" cy="0" r="3" fill="#fff"/><text x="-4" y="5" font-size="12" font-weight="900" fill="${INK}" text-anchor="middle" font-family="sans-serif">$</text></g>`;

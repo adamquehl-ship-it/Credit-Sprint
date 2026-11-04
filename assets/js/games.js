@@ -43,6 +43,11 @@ const GAMES = [
     {k:"court", n:"Court Case Match", ic:"cards", d:"A landmark Supreme Court case appears. Pick the ruling that matches it, from Marbury to Dobbs.", best:()=>S().best.court!=null?`Best: ${S().best.court}/8`:"Not played yet", isNew:true},
     {k:"branch", n:"Branch Check", ic:"cards", d:"60 seconds. Sort each power into the legislative, executive or judicial branch. A mistake costs 3 seconds.", best:()=>S().best.branch!=null?`Best: ${S().best.branch} sorted`:"Not played yet", isNew:true},
     {k:"amend", n:"Amendment Sprint", ic:"bolt", d:"60 seconds. A clue describes an amendment; name it before time runs out.", best:()=>S().best.amend!=null?`Best: ${S().best.amend} named`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="aphug" ? [
+    {k:"models", n:"Model Match", ic:"cards", d:"A clue describes a model or theory. Name it: the DTM, von Thünen, Burgess, Rostow, Wallerstein, the gravity model and more.", best:()=>S().best.models!=null?`Best: ${S().best.models}/8`:"Not played yet", isNew:true},
+    {k:"diffsort", n:"Diffusion Sort", ic:"bolt", d:"60 seconds. Sort each example into relocation, contagious, hierarchical or stimulus diffusion. A mistake costs 3 seconds.", best:()=>S().best.diffsort!=null?`Best: ${S().best.diffsort} sorted`:"Not played yet", isNew:true},
+    {k:"pyramid", n:"Pyramid Reader", ic:"chart", d:"A population pyramid appears. Read its shape and name the demographic transition stage, from Stage 1 to Stage 5.", best:()=>S().best.pyramid!=null?`Best: ${S().best.pyramid}/8`:"Not played yet", isNew:true},
+    {k:"sectsort", n:"Sector Sort", ic:"cards", d:"60 seconds. Sort each job into the primary, secondary, tertiary, quaternary or quinary sector. A mistake costs 3 seconds.", best:()=>S().best.sectsort!=null?`Best: ${S().best.sectsort} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="aplit" ? [
     {k:"device", n:"Device Spotter", ic:"quill", d:"A line of poetry or prose appears. Name the literary device it uses: metaphor, apostrophe, enjambment, irony and more.", best:()=>S().best.device!=null?`Best: ${S().best.device}/8`:"Not played yet", isNew:true},
     {k:"form", n:"Name That Form", ic:"cards", d:"A clue describes a poem's form, a genre or a structure. Name it: sonnet, villanelle, ode, tragedy, frame story and more.", best:()=>S().best.form!=null?`Best: ${S().best.form}/8`:"Not played yet", isNew:true},
@@ -81,7 +86,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -1253,6 +1258,57 @@ const appeal = a => sortGame(a, {k:"appeal", n:"Appeal Sort", data:"CS_LANG_APPE
 const fallacy = a => spotGame(a, {k:"fallacy", n:"Fallacy Finder", data:"CS_LANG_FALLACY", intro:"Each round shows a short argument with a flaw in its reasoning. Name the fallacy. Eight arguments per game.", ask:"This argument commits:", win:"Nothing slips past you. Spotting weak reasoning is how you answer counterarguments.", tip:"Ask what the argument skips: a real choice (false dilemma), the real opponent (straw man), or the steps between cause and effect (slippery slope)."});
 const claimev = a => sortGame(a, {k:"claimev", n:"Claim or Evidence?", data:"CS_LANG_CE", u:2, names:["Claim","Evidence","Commentary","Counterargument"], intro:"You have 60 seconds. Each sentence comes from an argument. Decide what job it does in the paragraph.", win:"You know how a paragraph is built. Most points on the essays come from commentary.", tip:"A claim is arguable, evidence is a fact, example or quotation, commentary explains how the evidence proves the claim, and a counterargument gives the other side."});
 const rhet = a => spotGame(a, {k:"rhet", n:"Rhetoric Spotter", data:"CS_LANG_RHET", intro:"A sentence from a speech or essay appears. Name the rhetorical choice the writer makes. Eight sentences per game.", ask:"Which rhetorical choice is this?", win:"Strong ear for rhetoric. In an analysis, always add what the choice does for the purpose.", tip:"Look at the sentence's shape: repeated openings (anaphora), balanced opposites (antithesis), a question with no answer expected (rhetorical question)."});
+
+
+/* ---------- Human Geography: Model Match, Diffusion Sort, Sector Sort, Pyramid Reader ---------- */
+const models = a => spotGame(a, {k:"models", n:"Model Match", data:"CS_HUG_MODELS", intro:"A clue describes a geographic model or theory. Name it. Eight clues per game.", ask:"Which model or theory is this?", win:"You know your models. On the FRQs, also name a limitation of each one.", tip:"Sort models by unit first: population (DTM, Malthus, Ravenstein), cities (Burgess, Hoyt, rank-size), farming (von Thünen) and development (Rostow, Wallerstein, Weber)."});
+const diffsort = a => sortGame(a, {k:"diffsort", n:"Diffusion Sort", data:"CS_HUG_DIFF", u:3, names:["Relocation","Contagious","Hierarchical","Stimulus"], intro:"You have 60 seconds. Each example shows a trait spreading. Decide which type of diffusion it is.", win:"You can name a diffusion type in a flash. Now explain the evidence, as the FRQs ask.", tip:"Did people move? Relocation. Did it spread to everyone nearby? Contagious. Did it start with big places or powerful people? Hierarchical. Did it change on the way? Stimulus."});
+const sectsort = a => sortGame(a, {k:"sectsort", n:"Sector Sort", data:"CS_HUG_SECTOR", u:7, names:["Primary","Secondary","Tertiary","Quaternary","Quinary"], intro:"You have 60 seconds. Sort each job into its economic sector.", win:"Sector sorted. Remember: as countries develop, workers move from primary toward tertiary and beyond.", tip:"Primary takes from the earth, secondary makes things, tertiary serves people, quaternary handles information and quinary makes the top decisions."});
+function pyramid(area){
+  const ROUNDS = 8; let i = 0, right = 0, deck = [];
+  /* bar widths (percent of population) for 5-year groups, youngest first, by DTM stage */
+  const BASE = {
+    1:[12,11.2,10.4,9.7,9,8.3,7.5,6.7,5.9,5,4.1,3.2,2.4,1.6,1,.5,.2],
+    2:[17,15,13,11,9,8,7,5.5,4.5,3.6,2.8,2.2,1.6,1.1,.7,.4,.2],
+    3:[10,10,9.5,9,8.5,8,7.5,7,6.5,6,5,4,3.2,2.4,1.6,1,.5],
+    4:[6,6.2,6.4,6.6,6.8,7,7,7,6.9,6.8,6.5,6.2,5.6,4.8,3.8,2.8,2.4],
+    5:[4,4.4,4.8,5.2,5.6,6,6.4,6.8,7.2,7.4,7.4,7.2,6.8,6,5,4,3.6]};
+  const WHY = {1:"Wide base and a steep, narrow top: high births and high deaths, so few people live to old age.",
+    2:"A very wide base that narrows fast: births stay high while deaths fall, so the population is young and booming.",
+    3:"The base is starting to narrow: births are falling, and more people survive to middle age.",
+    4:"Nearly a column: low births and low deaths keep each age group about the same size.",
+    5:"Narrower at the base than in the middle: births are below replacement and the population is aging and shrinking."};
+  const EX = {1:"no country today (some remote groups)",2:"Niger or Mali",3:"India or Mexico",4:"the United States or France",5:"Japan, Italy or South Korea"};
+  const svg = st => { const b = BASE[st].map(v => v * (0.9 + Math.random()*0.2)), mx = Math.max(...b), H = 10;
+    return `<svg viewBox="0 0 320 ${b.length*H+30}" class="biofig" role="img" aria-label="Population pyramid"><title>Population pyramid</title>
+      <line x1="160" y1="6" x2="160" y2="${b.length*H+8}" stroke="var(--ink)" stroke-width="1"/>
+      ${b.map((v,k)=>{ const w = v/mx*130, y = (b.length-1-k)*H+8, wf = w*(0.96 + Math.random()*0.06);
+        return `<rect x="${160-w}" y="${y}" width="${w}" height="${H-1.5}" fill="#60A5FA"/><rect x="160" y="${y}" width="${wf}" height="${H-1.5}" fill="#F472B6"/>`; }).join("")}
+      <text x="80" y="${b.length*H+24}" font-size="10" text-anchor="middle" fill="var(--muted)">Male</text><text x="240" y="${b.length*H+24}" font-size="10" text-anchor="middle" fill="var(--muted)">Female</text>
+      <text x="6" y="${b.length*H+4}" font-size="9" fill="var(--muted)">0–4</text><text x="6" y="14" font-size="9" fill="var(--muted)">80+</text></svg>`; };
+  const go = () => { deck = CS.shuffle([1,2,3,4,5,1,2,3,4,5].slice(1)).concat([CS.shuffle([2,3,4,5])[0]]).slice(0, ROUNDS); i = 0; right = 0; round(); };
+  area.innerHTML = `<p style="max-width:62ch">A population pyramid appears. Read the shape of its base, middle and top, then pick the stage of the demographic transition model it shows. Eight pyramids per game.</p><div><button class="btn accent" id="py-go">Start · ${ROUNDS} pyramids</button></div>`;
+  $("#py-go").onclick = go;
+  function round(){
+    if (i >= ROUNDS) return end();
+    const st = deck[i];
+    area.innerHTML = `<div class="hud"><span>Pyramid <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div>
+      <div style="max-width:420px">${svg(st)}</div><p class="muted tiny">Which DTM stage does this pyramid show?</p>
+      <div class="sm-opts py-opts">${[1,2,3,4,5].map(n=>`<button class="btn ghost sm-o" data-o="${n}"><small>Stage</small> ${n}</button>`).join("")}</div><div id="sm-fb"></div>`;
+    let done = false;
+    $$(".sm-o", area).forEach(b => b.onclick = () => { if (done) return; done = true; const pick = +b.dataset.o, ok = pick === st; CS.record({u:2}, ok, false); if (ok) right++;
+      $$(".sm-o", area).forEach(x => { x.disabled = true; if (+x.dataset.o === st) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      $("#sm-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":"Not quite: this is Stage "+st+"."}</b> ${WHY[st]} Example: ${EX[st]}.</div><div style="margin-top:10px"><button class="btn" id="sm-next">${i+1<ROUNDS?"Next":"See results"}</button></div>`;
+      $("#sm-next").onclick = () => { i++; round(); }; $("#sm-next").focus({preventScroll:true}); area._key = e => { if (e.key === "Enter") $("#sm-next").click(); }; });
+    area._key = e => { if (/^[1-5]$/.test(e.key)) { const b = $$(".sm-o", area)[+e.key-1]; if (b) b.click(); } };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest("pyramid", right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">Pyramid Reader · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${right>=7?"You read pyramids like a demographer. On the exam, connect the shape to birth rates, death rates and policy.":"Look at the base first: wide means high births (Stages 1 and 2), narrowing means falling births (Stage 3), a column means Stage 4 and a narrow base means Stage 5."}</p>
+      <div class="row-wrap"><button class="btn" id="py-again">Play again</button><button class="btn ghost" data-go="learn">Review Unit 2</button></div>`;
+    $("#py-again").onclick = go;
+  }
+}
 
 /* ---------- Calculus: Derivative Dash, Integral Sprint, Graph Detective, Tangent Shot, Series Court ---------- */
 /* 60-second game where each item brings its own tempting wrong answers: [prompt, answer, why, unit, [w1, w2, w3]] */

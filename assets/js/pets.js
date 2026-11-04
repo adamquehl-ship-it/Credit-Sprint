@@ -440,7 +440,38 @@ const CALCP = [
  {id:"ca_djinn", body:"djinn", n:"Zero-over-Zero Djinn", u:1, r:"mythical", p:0.35, c1:"#38BDF8", c2:"#FDE047", custom:"calc", bio:"0/0 grants no wish until you simplify: factor, cancel, or use L'Hospital."},
  {id:"ca_wizard", body:"wizard", n:"The Grand Integrator", u:0, r:"supreme", p:0.05, c1:"#4C1D95", c2:"#FACC15", custom:"calc", bio:"The wizard who has evaluated every integral, from Riemann sums to series."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}, calc:{name:"Calculus", pets:CALCP}};
+const HUGP = [
+ {id:"hg_compass", body:"compass", n:"Compass Rose", u:1, r:"common", p:6, c1:"#0EA5E9", c2:"#FDE047", custom:"geo", bio:"North, south, east, west: direction is the first tool of every geographer."},
+ {id:"hg_pin", body:"pin", n:"Push-Pin Pal", u:1, r:"common", p:6, c1:"#EF4444", c2:"#FEE2E2", custom:"geo", bio:"Marks an absolute location: one exact point of latitude and longitude."},
+ {id:"hg_globe", body:"globe", n:"Globe Bean", u:1, r:"common", p:6, c1:"#38BDF8", c2:"#22C55E", custom:"geo", bio:"The only map with no distortion in shape, area, distance or direction."},
+ {id:"hg_suitcase", body:"suitcase", n:"Suitcase Sam", u:2, r:"common", p:6, c1:"#B45309", c2:"#FDE68A", custom:"geo", bio:"Packed for a move. Push factors at home, pull factors ahead."},
+ {id:"hg_pyramid", body:"pyramid", n:"Pyramid Pup", u:2, r:"common", p:6, c1:"#F472B6", c2:"#FBCFE8", custom:"geo", bio:"A wide base means a young population. This pup is still growing."},
+ {id:"hg_wheat", body:"wheat", n:"Wheat Sprout", u:5, r:"common", p:6, c1:"#EAB308", c2:"#FEF3C7", custom:"geo", bio:"First domesticated in the Fertile Crescent about 10,000 years ago."},
+ {id:"hg_barn", body:"barn", n:"Barnaby the Barn", u:5, r:"common", p:6, c1:"#DC2626", c2:"#FDE68A", custom:"geo", bio:"Stands on a dispersed farmstead, far from the nearest neighbor."},
+ {id:"hg_house", body:"house", n:"Suburb Sprout", u:6, r:"common", p:6, c1:"#93C5FD", c2:"#475569", custom:"geo", bio:"Built after the highways came. Two-car garage, long commute."},
+ {id:"hg_flag", body:"flag", n:"Sovereign Flag", u:4, r:"uncommon", p:4, c1:"#2563EB", c2:"#FEF3C7", custom:"geo", bio:"A state needs people, territory, a government and sovereignty."},
+ {id:"hg_passport", body:"passport", n:"Passport Pip", u:2, r:"uncommon", p:4, c1:"#1E3A8A", c2:"#FDE047", custom:"geo", bio:"Stamped at every border: a transnational migrant's best friend."},
+ {id:"hg_tractor", body:"tractor", n:"Tractor Tot", u:5, r:"uncommon", p:4, c1:"#16A34A", c2:"#FDE047", custom:"geo", bio:"The Second Agricultural Revolution: one machine, the work of fifty farmhands."},
+ {id:"hg_bus", body:"bus", n:"Transit Bus", u:6, r:"uncommon", p:4, c1:"#F59E0B", c2:"#1F2937", custom:"geo", bio:"Higher density, more riders. Transit-oriented development's favorite ride."},
+ {id:"hg_factory", body:"factory", n:"Smokestack Sid", u:7, r:"uncommon", p:4, c1:"#9CA3AF", c2:"#FDE047", custom:"geo", bio:"A bulk-reducing plant that sits right next to its raw materials."},
+ {id:"hg_speech", body:"speech", n:"Lingua Franca", u:3, r:"uncommon", p:4, c1:"#A78BFA", c2:"#4C1D95", custom:"geo", bio:"Speaks to traders in every port. Swahili, English and more."},
+ {id:"hg_mountain", body:"mountain", n:"Possibili-Peak", u:1, r:"uncommon", p:4, c1:"#64748B", c2:"#86EFAC", custom:"geo", bio:"The mountain sets limits. People decide how to terrace, tunnel and farm it."},
+ {id:"hg_skyscraper", body:"skyscraper", n:"CBD Tower", u:6, r:"rare", p:3, c1:"#334155", c2:"#94A3B8", custom:"geo", bio:"Where bid rent is highest, the only way to build is up."},
+ {id:"hg_ship", body:"ship", n:"Container Ship", u:7, r:"rare", p:3, c1:"#1E3A8A", c2:"#F97316", custom:"geo", bio:"Carries the global supply chain across the oceans, one box at a time."},
+ {id:"hg_lantern", body:"lantern", n:"Pilgrim's Lantern", u:3, r:"rare", p:3, c1:"#B91C1C", c2:"#FBBF24", custom:"geo", bio:"Lights the way on the long road to a sacred space."},
+ {id:"hg_rings", body:"rings", n:"Von Thünen Rings", u:5, r:"rare", p:3, c1:"#22C55E", c2:"#FDE047", custom:"geo", bio:"Dairy, forest, grain, ranch: every ring set by the cost of getting to market."},
+ {id:"hg_satellite", body:"satellite", n:"Remote Sensor", u:1, r:"rare", p:3, c1:"#CBD5E1", c2:"#2563EB", custom:"geo", bio:"Watches the whole planet from orbit and feeds the GIS layers."},
+ {id:"hg_hexagon", body:"hexagon", n:"Central Place Hex", u:6, r:"epic", p:2, c1:"#0D9488", c2:"#CCFBF1", custom:"geo", bio:"Christaller's market areas fit together in perfect hexagons."},
+ {id:"hg_salamander", body:"salamander", n:"Gerrymander Salamander", u:4, r:"epic", p:2, c1:"#7C3AED", c2:"#FDE047", custom:"geo", bio:"Named for an 1812 district drawn so oddly it looked like a salamander."},
+ {id:"hg_terrace", body:"terrace", n:"Terrace Turtle", u:5, r:"epic", p:2, c1:"#15803D", c2:"#A3E635", custom:"geo", bio:"Carries rice terraces on its shell: steps that stop erosion on steep slopes."},
+ {id:"hg_atlas", body:"atlas", n:"The Great Atlas", u:1, r:"legendary", p:1.1, c1:"#7C2D12", c2:"#FDE68A", custom:"geo", bio:"Every projection, every scale, every map, bound in one book."},
+ {id:"hg_camel", body:"camel", n:"Silk Road Camel", u:3, r:"legendary", p:0.9, c1:"#D97706", c2:"#DC2626", custom:"geo", bio:"Carried silk, spices, religions and languages across Eurasia."},
+ {id:"hg_golem", body:"golem", n:"Gaia Golem", u:1, r:"mythical", p:0.6, c1:"#78716C", c2:"#22C55E", custom:"geo", bio:"Made of continents and stone: human-environment interaction in one body."},
+ {id:"hg_leviathan", body:"leviathan", n:"Megalopolis Leviathan", u:6, r:"mythical", p:0.5, c1:"#0F766E", c2:"#475569", custom:"geo", bio:"A skyline that stretches from Boston to Washington along its back."},
+ {id:"hg_dragon", body:"dragon", n:"Monsoon Dragon", u:5, r:"mythical", p:0.35, c1:"#E0F2FE", c2:"#1D4ED8", custom:"geo", bio:"Brings the summer rains that feed half the world's rice."},
+ {id:"hg_cartographer", body:"cartographer", n:"The Grand Cartographer", u:0, r:"supreme", p:0.05, c1:"#14532D", c2:"#FDE047", custom:"geo", bio:"Has mapped every place, region and scale on Earth."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}, calc:{name:"Calculus", pets:CALCP}, aphug:{name:"Human Geography", pets:HUGP}};
 /* AB and BC share one pet set */
 CS.PET_SET_KEY = k => ({calcab:"calc", calcbc:"calc"})[k] || k;
 const SET = CS.PET_SETS[CS.PET_SET_KEY(CS.COURSE)] ? CS.PET_SETS[CS.PET_SET_KEY(CS.COURSE)].pets : MACRO;
@@ -449,7 +480,7 @@ const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, CALCP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, CALCP, HUGP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -748,7 +779,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart", CS_CALCART:"calcart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart", CS_CALCART:"calcart", CS_GEOART:"geoart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -791,6 +822,7 @@ const CUSTOM = {
   lit: (p, stage, mood) => artDraw("CS_LITART", p, stage, mood),
   lang: (p, stage, mood) => artDraw("CS_LANGART", p, stage, mood),
   calc: (p, stage, mood) => artDraw("CS_CALCART", p, stage, mood),
+  geo: (p, stage, mood) => artDraw("CS_GEOART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

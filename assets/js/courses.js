@@ -14,6 +14,7 @@ const APWORLD = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js",
 const APUSH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","content.js","content2.js","frqs2.js","frqs3.js","frqs4.js","drills.js"].map(f => "assets/data/apush/"+f);
 const APLIT = ["cards.js","cards2.js","terms.js","x1.js","f1.js","f2.js","f3.js","f4.js","v1.js","v2.js","v3.js","v4.js","d1.js","a1.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"].map(f=>"assets/data/aplit/"+f);
 const APLANG = ["cards.js","cards2.js","terms.js","x1.js","x2.js","r1.js","r2.js","r3.js","r4.js","w1.js","w2.js","w3.js","content.js","content2.js","essays1.js","essays2.js","essays3.js","games.js"].map(f=>"assets/data/aplang/"+f);
+const APHUG = ["cards.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/aphug/"+f);
 const CALC_AB_FILES = ["cards.js","c1.js","c2.js","g1.js","g2.js","g3.js","g4.js","g5.js","g6.js","g7.js","g8.js","content.js","content2.js","frqs.js","drills.js","games.js"];
 const CALCAB = CALC_AB_FILES.map(f=>"assets/data/calc/"+f);
 const CALCBC = CALCAB.concat(["cards.js","c1.js","g9.js","g10.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/calc/bc/"+f));
@@ -60,6 +61,16 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of timeline recall: which AP\u00AE era does each event, person or empire belong to? Type 1 to 4.",
     drillDesc:"Place the event: name the AP\u00AE era for key events, empires and people. Fresh questions every time.",
     planGames:["Timeline Sort","Source Match","Sprint","Match-up","Chain Reaction","True or False"]},
+  aphug:{k:"aphug", name:"Human Geography", short:"Human Geo", ap:"AP\u00AE Human Geography", clep:"", clepShort:"", apOnly:true,
+    key:"creditsprint.aphug.v1", col:"#15803D", soft:"#F0FDF4", apFmt:"60 multiple choice and 3 free-response questions in 2 hours 15 minutes", clepFmt:"", blurb:"Maps and scale, population and migration, culture, language and religion, political geography, agriculture, cities and economic development.", icon:"map", data:APHUG, nUnits:7, cat:"Social science",
+    graphs:false, unitWord:"Unit", frqHead:"AP\u00AE Section II \u00B7 3 questions \u00B7 75 minutes",
+    apExamText:"The real exam is digital: 60 multiple-choice questions in 60 minutes (50% of your score), many built around maps, charts and data, then 3 free-response questions in 75 minutes (50%): one with no stimulus, one with one stimulus and one with two. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:60, min:60, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:20, name:"Mini exam"}}, clep:{full:{n:60, min:60, name:"Full-length AP\u00AE multiple choice"}, mini:{n:20, min:20, name:"Mini exam"}}},
+    bosses:{1:"The Map Distorter",2:"The Malthusian Menace",3:"The Diffusion Djinn",4:"The Gerrymander",5:"The Monocrop Monarch",6:"The Sprawl Specter",7:"The Smokestack Baron"},
+    chainDesc:"Put the steps in order: the demographic transition, a migration decision, the spread of a trend, devolution, the Green Revolution, gentrification and Rostow's stages.",
+    crunchDesc:"Two minutes of geography math: densities, natural increase, doubling time, dependency ratios, the rank-size rule and the gravity model. Type the number.",
+    drillDesc:"Do the geography math: arithmetic and physiological density, birth rates, natural increase, doubling time, dependency ratios, map scale, rank-size and GNI per capita. Fresh numbers every time.",
+    planGames:["Model Match","Diffusion Sort","Pyramid Reader","Sector Sort","Sprint","True or False"]},
   apgov:{k:"apgov", name:"U.S. Government", short:"US Gov", ap:"AP\u00AE U.S. Government and Politics", clep:"CLEP\u00AE American Government", clepShort:"CLEP\u00AE American Government",
     key:"creditsprint.apgov.v1", col:"#1E3A8A", soft:"#EFF6FF", apFmt:"55 multiple choice and 4 free-response questions in 3 hours", clepFmt:"About 100 multiple choice in 90 minutes", blurb:"Foundations of democracy, Congress, the presidency and the courts, civil liberties and civil rights, political beliefs and elections: with landmark cases and foundational documents.", icon:"landmark", data:APGOV, nUnits:5, cat:"Government",
     graphs:false, unitWord:"Unit", clepQ:"about 100",
@@ -138,7 +149,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

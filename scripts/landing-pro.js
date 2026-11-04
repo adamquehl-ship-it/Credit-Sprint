@@ -10,7 +10,7 @@ const fs = require("fs"), path = require("path");
 
 const C = [["macro","Macroeconomics","#4F46E5","AP® · CLEP®"],["micro","Microeconomics","#059669","AP® · CLEP®"],["bio","Biology","#0891B2","AP® · CLEP®"],
   ["chem","Chemistry","#EA580C","AP® · CLEP®"],["apush","U.S. History","#B91C1C","AP® · CLEP®"],["apworld","World History","#0F766E","AP®"],
-  ["apgov","U.S. Government","#1E3A8A","AP® · CLEP®"],["appsych","Psychology","#7C3AED","AP® · CLEP®"],["apstat","Statistics","#0369A1","AP®"],["aplit","English Literature","#BE123C","AP® · CLEP®"],["aplang","English Language","#B45309","AP® · CLEP®"],["calcab","Calculus AB","#65A30D","AP® · CLEP®"],["calcbc","Calculus BC","#A21CAF","AP®"],["mkt","Marketing","#DB2777","CLEP®"]];
+  ["apgov","U.S. Government","#1E3A8A","AP® · CLEP®"],["appsych","Psychology","#7C3AED","AP® · CLEP®"],["apstat","Statistics","#0369A1","AP®"],["aplit","English Literature","#BE123C","AP® · CLEP®"],["aplang","English Language","#B45309","AP® · CLEP®"],["calcab","Calculus AB","#65A30D","AP® · CLEP®"],["calcbc","Calculus BC","#A21CAF","AP®"],["aphug","Human Geography","#15803D","AP®"],["mkt","Marketing","#DB2777","CLEP®"]];
 
 /* find a top-level <section …> by a test on its opening tag or its text, return [start, end] */
 function sectionAt(html, test) {
@@ -68,7 +68,7 @@ function apply(html, look) {
     p3: `<section class="pro-hero p3"><div class="wrap pro-split">
         <div class="pro-copy"><span class="pro-eyebrow">Independent AP® and CLEP® preparation</span>
           <h1>Turn the exams you're already taking into college credit.</h1>
-          <p class="pro-lead">A passing AP® or CLEP® score can replace a semester-long college course. Credit Sprint gives you a clear plan, original practice for fourteen courses and honest feedback on where you stand.</p>
+          <p class="pro-lead">A passing AP® or CLEP® score can replace a semester-long college course. Credit Sprint gives you a clear plan, original practice for fifteen courses and honest feedback on where you stand.</p>
           ${ctas(true)}${ticks}</div>
         <div class="pro-card">
           <span class="pro-eyebrow">How credit adds up</span>
@@ -77,7 +77,7 @@ function apply(html, look) {
           <a class="pro-link" href="#calc">Estimate what you could save →</a>
           <img src="${shot}" alt="The Credit Sprint dashboard" width="1400" height="788" loading="eager">
         </div></div>
-        <div class="wrap"><div class="pro-chips"><span>Twelve courses</span>${chips}</div></div></section>`
+        <div class="wrap"><div class="pro-chips"><span>Fifteen courses</span>${chips}</div></div></section>`
   };
   const product = look === "p2" ? "" : `<section class="sec pro-product"><div class="wrap">
       <div class="sec-head"><span class="eyebrow">Inside the app</span><h2>Practice that keeps you coming back</h2><p class="muted">A unit map that shows where you are, a two-week season pass with rewards, weekly leagues and pets that react to every answer.</p></div>
@@ -87,7 +87,7 @@ function apply(html, look) {
     </div></section>`;
   /* compact course grid replaces the long per-course detail cards */
   const courses = `<section class="sec alt" id="all-courses"><div class="wrap">
-      <div class="sec-head"><span class="eyebrow">Courses</span><h2>Fourteen courses. One account.</h2><p class="muted">Study one class or stack several. Your streak, XP and pets carry across every course.</p></div>
+      <div class="sec-head"><span class="eyebrow">Courses</span><h2>Fifteen courses. One account.</h2><p class="muted">Study one class or stack several. Your streak, XP and pets carry across every course.</p></div>
       <div class="pro-courses">${C.map(([k, n, c, ex]) => `<a href="app.html?course=${k}" style="--cc:${c}"><b>${n}</b><span>${ex}</span><em>Start free →</em></a>`).join("")}</div>
       <p class="small muted" style="margin-top:12px">Unit-by-unit <a href="guides/index.html">study guides</a> and <a href="practice/index.html">worked practice problems</a> are free for everyone.</p>
     </div></section>`;

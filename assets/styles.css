@@ -1171,3 +1171,38 @@ textarea.essay{min-height:340px;line-height:1.6}
 @media (max-width:560px){.guest-bar{display:none!important}
   .top-acct.guest{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn,#B45309) 55%,transparent);color:var(--warn,#B45309);padding-inline:10px;gap:5px}
   .top-acct.guest .show-sm{display:inline}.top-acct.guest .hide-sm{display:none}}
+/* compact course picker: search, subject chips and a two-column grid of small tiles, so every course fits without long scrolling */
+.course-pop.cp2{width:600px;max-width:calc(100vw - 16px)}
+.cp2 .cp-tools{display:flex;flex-direction:column;gap:8px;padding:10px 14px 8px;border-bottom:1px solid var(--rule)}
+.cp2 .cp-search{width:100%;height:38px;border:1.5px solid var(--rule);border-radius:10px;padding:0 12px;font:inherit;font-size:.9rem;background:var(--surface-2);color:var(--ink)}
+.cp2 .cp-search:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.cp2 .cp-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cp2 .cp-chips::-webkit-scrollbar{display:none}
+.cp2 .cp-chips button{flex:none;border:1.5px solid var(--rule);background:var(--surface);color:var(--muted);border-radius:999px;padding:4px 11px;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.cp2 .cp-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.cp2 .cp-list{padding:6px 12px 12px;gap:4px}
+.cp2 .cp-group{padding:6px 4px 2px}
+.cp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.cp2 .cp-tile{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;border:1.5px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:12px;padding:7px 9px;font:inherit;cursor:pointer;transition:border-color .12s,background .12s,transform .12s}
+.cp-tile[hidden]{display:none}
+.cp2 .cp-tile:hover{border-color:var(--cc);background:color-mix(in srgb,var(--cc) 5%,var(--surface));transform:translateY(-1px)}
+.cp-tile:focus-visible{outline:2px solid var(--cc);outline-offset:2px}
+.cp2 .cp-tile.cur{border-color:var(--cc);background:color-mix(in srgb,var(--cc) 9%,var(--surface))}
+.cp-tile .cp-ico{width:32px;height:32px;border-radius:9px}
+.cp-tile .cp-ico .ico{width:17px;height:17px}
+.cp-tile .cp-main{gap:1px}
+.cp-tile .cp-name{font-size:.86rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.cp-tile .cp-meta{font-size:.68rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.cp-tile .cp-bar{height:3px;margin-top:3px}
+.cp-tile .cp-go{min-width:0;margin-left:auto}
+.cp-tile .cp-go>.ico{width:18px;height:18px}
+.cp2 .cp-none{padding:12px 4px}
+@media (max-width:620px){.cp2 .cp-tools{padding:8px 12px}.cp-grid{gap:5px}.cp-tile{padding:6px 7px;gap:7px}.cp-tile .cp-ico{width:28px;height:28px;border-radius:8px}.cp-tile .cp-ico .ico{width:15px;height:15px}.cp-tile .cp-name{font-size:.8rem}.cp-tile .cp-meta{font-size:.64rem}}
+/* onboarding course grid: three columns where there is room, tighter tiles everywhere */
+.ob-courses button{padding:6px 9px}
+.ob-cn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:1000px){.ob-compact .ob-courses,.ob-steps .ob-courses{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.ob-courses{gap:5px}.ob-courses button{padding:5px 7px;gap:7px}.ob-ci{width:24px;height:24px;border-radius:7px}.ob-ci .ico{width:14px;height:14px}.ob-cn b{font-size:.78rem}.ob-cn small{font-size:.62rem}}
+@media (max-width:620px){.cp2 .cp-head{padding:10px 14px 8px}.cp2 .cp-head .tiny{display:none}.cp2 .cp-search{height:34px}}
+@media (max-width:620px){.cp2 .cp-tile .cp-go{display:none}}
+.sm-opts.py-opts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.py-opts .sm-o{justify-content:center;text-align:center;padding-inline:4px;gap:4px}.py-opts .sm-o small{font-weight:600;opacity:.7}
