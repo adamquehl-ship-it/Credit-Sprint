@@ -1,11 +1,12 @@
 /* POST /api/tutor — explains a practice question in a new way and answers follow-ups. */
-import {json, guard, claude} from "../../lib/ai.js";
+import {json, guard, gate, claude} from "../../lib/ai.js";
 
 const clip = (s, n) => String(s || "").slice(0, n);
 
 export async function onRequestPost({request, env}) {
   const blocked = guard(request, env); if (blocked) return blocked;
   let body; try { body = await request.json(); } catch { return json({error: "Bad JSON."}, 400); }
+  const denied = await gate(request, env, String(body.course || "macro"), "tutor"); if (denied) return denied;
   const c = body.ctx || {};
   const subj = ({micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History", apgov:"U.S. Government", appsych:"Psychology", apstat:"Statistics", aplit:"English Literature and Composition", aplang:"English Language and Composition", calcab:"Calculus AB", calcbc:"Calculus BC"})[body.course] || "Macroeconomics";
   const exam = body.exam === "clep" ? (({"English Literature and Composition":"CLEP Analyzing and Interpreting Literature","English Language and Composition":"CLEP College Composition","Psychology":"CLEP Introductory Psychology","U.S. Government":"CLEP American Government","Calculus AB":"CLEP Calculus"})[subj] || (subj === "U.S. History" ? "CLEP History of the United States" : ["Biology", "Chemistry"].includes(subj) ? `CLEP ${subj}` : `CLEP Principles of ${subj}`) ): `AP ${subj}`;

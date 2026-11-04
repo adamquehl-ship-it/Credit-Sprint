@@ -1,11 +1,12 @@
 /* POST /api/score — scores a free-response answer against its rubric and returns per-point feedback. */
-import {json, guard, claude} from "../../lib/ai.js";
+import {json, guard, gate, claude} from "../../lib/ai.js";
 
 const clip = (s, n) => String(s || "").slice(0, n);
 
 export async function onRequestPost({request, env}) {
   const blocked = guard(request, env); if (blocked) return blocked;
   let b; try { b = await request.json(); } catch { return json({error: "Bad JSON."}, 400); }
+  const denied = await gate(request, env, String(b.course || "macro"), "score"); if (denied) return denied;
   const rubric = (b.rubric || []).slice(0, 10).map(r => clip(r, 300));
   if (!rubric.length || !b.answer) return json({error: "Missing rubric or answer."}, 400);
   const subj = ({micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History", apgov:"U.S. Government", appsych:"Psychology", apstat:"Statistics", aplit:"English Literature and Composition", aplang:"English Language and Composition", calcab:"Calculus AB", calcbc:"Calculus BC"})[b.course] || "Macroeconomics";

@@ -1,7 +1,7 @@
 /* GET /api/me — the signed-in student, or 401.  POST /api/me {name?, username?} — set the leaderboard name, or choose a username (once).  DELETE /api/me — delete the account and its data. */
 import {json, start, currentUser, publicUser, cleanName, clearCookie} from "../../lib/auth.js";
 import {avatarVersion, deleteAvatar} from "../../lib/avatars.js";
-import {accessFor, deleteBilling} from "../../lib/billing.js";
+import {accessFor, deleteBilling, ensureBilling, stripe} from "../../lib/billing.js";
 import {deleteMarket} from "../../lib/market.js";
 import {deleteFriends} from "../../lib/friends.js";
 const validUsername = un => /^[a-z0-9_]{3,20}$/.test(un);
@@ -35,6 +35,18 @@ export async function onRequestPost({request, env}) {
 export async function onRequestDelete({request, env}) {
   const s = await start(request, env, {needBody: false}); if (s.error) return s.error;
   const u = await currentUser(env, request); if (!u) return json({error: "Not signed in."}, 401);
+  /* stop any monthly plan first, so a deleted account is never billed again */
+  await ensureBilling(env.DB);
+  const cust = await env.DB.prepare("SELECT customer_id FROM customers WHERE user_id = ?").bind(u.id).first();
+  if (cust && env.STRIPE_SECRET_KEY) {
+    try {
+      const subs = await stripe(env, "subscriptions?status=all&limit=100&customer=" + encodeURIComponent(cust.customer_id));
+      for (const sb of (subs.data || []).filter(x => !["canceled", "incomplete_expired"].includes(x.status))) await stripe(env, "subscriptions/" + sb.id, null, "DELETE");
+    } catch (e) {
+      console.error("cancel on delete failed:", e && e.message);
+      return json({error: "We couldn't cancel your monthly plan, so your account wasn't deleted. Cancel it under Manage billing, then try again."}, 502);
+    }
+  }
   await deleteAvatar(env.DB, u.id);
   await deleteBilling(env.DB, u.id);
   await deleteMarket(env.DB, u.id);

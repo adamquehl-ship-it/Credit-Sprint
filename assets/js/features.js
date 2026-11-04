@@ -18,8 +18,9 @@ CS.tutor = (box, ctx) => {
     const wait = document.createElement("div"); wait.className = "t-msg ai faint"; wait.textContent = "Thinking…"; log.appendChild(wait);
     try {
       const r = await fetch("/api/tutor", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({ctx, messages:msgs.slice(-8), exam:S().exam, course:CS.COURSE})});
-      if (!r.ok) throw new Error(r.status);
-      const j = await r.json(); wait.remove(); msgs.push({role:"assistant", content:j.reply}); add("ai", j.reply);
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { wait.remove(); add("ai", j.error && r.status !== 503 ? j.error : OFFLINE); return; }
+      wait.remove(); msgs.push({role:"assistant", content:j.reply}); add("ai", j.reply);
     } catch(e) { wait.remove(); add("ai", OFFLINE); }
   }
   form.onsubmit = e => { e.preventDefault(); const t = input.value.trim(); if (!t) return; input.value = ""; ask(t); };
@@ -31,8 +32,9 @@ CS.tutor = (box, ctx) => {
 CS.aiScore = async (frq, answer) => {
   const r = await fetch("/api/score", {method:"POST", headers:{"content-type":"application/json"},
     body:JSON.stringify({prompt:frq.prompt, parts:frq.parts, rubric:frq.rubric, answer, course:CS.COURSE})});
-  if (!r.ok) throw new Error(r.status);
-  return r.json();
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(r.status); e.msg = j.error; throw e; }
+  return j;
 };
 
 /* ---------- animated explainer player ---------- */

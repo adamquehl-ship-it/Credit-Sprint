@@ -340,7 +340,7 @@ function renderClep(){
       <div class="stack figure">${CS.figure(C.fig||"ppc")}<span class="eyebrow">${esc(C.figCap||"Growth shifts the PPC outward")}</span>
         <button class="btn ghost" data-go="plan">Build my CLEP® plan</button></div>
     </div>`;
-  $("#clep-growth").onclick = () => { const qs = CS.QS.filter(q=>g.match.test(q.q+" "+q.opts.find(o=>o.ok).t)); run = {qs: CS.takeQs(qs,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"mixed"}; pMode = "mixed"; CS.go("practice", {keepRun:true}); };
+  $("#clep-growth").onclick = () => { if (!CS.takeRound()) { pMode = "mixed"; run = null; return CS.go("practice"); } const qs = CS.QS.filter(q=>g.match.test(q.q+" "+q.opts.find(o=>o.ok).t)); run = {qs: CS.takeQs(qs,10).map(CS.prepQ), i:0, score:0, picked:null, kind:"mixed"}; pMode = "mixed"; CS.go("practice", {keepRun:true}); };
 }
 function renderRes(){
   $("#learn-body").innerHTML = `<div><span class="eyebrow">Official resources</span><h2>Practice with real exam material</h2></div>
@@ -742,7 +742,7 @@ render.frq = () => {
       $("#frq-ai-out").innerHTML = `<div class="sample"><span class="eyebrow">AI feedback · ${st.checks.filter(Boolean).length}/${f.rubric.length} points</span><p style="margin-top:6px">${esc(res.summary||"")}</p>
         <ul style="margin:8px 0 0;padding-left:1.2em">${f.rubric.map((r,i)=>`<li><b>${res.points[i]&&res.points[i].earned?"✓":"✗"} ${esc(r.split(")")[0])})</b> ${esc((res.points[i]&&res.points[i].note)||"")}</li>`).join("")}</ul>
         <p class="faint tiny" style="margin-top:8px">AI scoring can make mistakes. The rubric boxes below are pre-checked; adjust them if you disagree.</p></div>`;
-    } catch(e) { out.innerHTML = `<div class="feedback">AI scoring runs on the live site once it's connected. For now, use <b>Score it myself</b> with the rubric.</div>`; }
+    } catch(e) { if (e.msg && e.message !== "503") { out.innerHTML = `<div class="feedback">${esc(e.msg)}</div>`; return; } out.innerHTML = `<div class="feedback">AI scoring runs on the live site once it's connected. For now, use <b>Score it myself</b> with the rubric.</div>`; }
   };
   $$("#v-frq .rubric input").forEach(cb => cb.onchange = () => { st.checks[+cb.dataset.i] = cb.checked; CS.save(); $("#frq-score").textContent = st.checks.filter(Boolean).length+" / "+f.rubric.length; });
 };

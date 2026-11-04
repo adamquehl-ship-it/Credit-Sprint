@@ -39,6 +39,9 @@ The app works without this; the AI buttons show a friendly message until it's se
 2. In Cloudflare: Workers & Pages → your project → Settings → Variables and secrets → Add → type **Secret**, name `ANTHROPIC_API_KEY`, paste the key. Add it for Production.
 3. Optional variables: `ALLOWED_ORIGIN` = `https://creditsprintprep.com` (blocks other sites from using your key), `TUTOR_MODEL` (default `claude-haiku-5-5`), `SCORE_MODEL` (default `claude-sonnet-5-5`).
 4. Redeploy (push any commit, or Deployments → Retry deployment).
+5. To show the buttons, set `CS.SOON.ai = false` in `assets/js/core.js`.
+
+Who can use it: only signed-in students with Pro for that class (any signed-in student while payments are off). Each student gets 60 tutor replies and 20 FRQ scores a day; change that with `AI_TUTOR_DAILY` and `AI_SCORE_DAILY`.
 
 Rough cost: a tutor reply on Haiku is a fraction of a cent; an FRQ score on Sonnet is about 1–2 cents. Set a spend limit in the Claude Console.
 
@@ -56,7 +59,7 @@ Access is stored per class in the D1 database by the Stripe webhook. The browser
    - Variables: `PRICE_EXAM`, `PRICE_EXAM_EARLY`, `PRICE_EXAM3`, `PRICE_EXAM3_EARLY`, `PRICE_EXAM_ALL`, `PRICE_EXAM_ALL_EARLY`, `PRICE_SPRINT`, `PRICE_SUB_ONE`, `PRICE_SUB_THREE`, `PRICE_SUB_ALL`
 5. Test with card 4242 4242 4242 4242 in Stripe test mode, then repeat steps 1–4 with live-mode keys and prices.
 
-Until the Stripe keys and at least one price are set, the checkout button says checkout opens soon. To refund someone, refund the payment in Stripe; the webhook removes their access automatically. Set `CS.PAYWALL = false` in `upgrade.js` to unlock everything for everyone.
+Until the Stripe keys and at least one price are set, the checkout button says checkout opens soon. To refund someone, refund the payment in Stripe; the webhook removes their access automatically (monthly plans too). Deleting an account cancels any active monthly plan in Stripe first. Set `CS.PAYWALL = false` in `upgrade.js` to unlock everything for everyone.
 
 ## Access codes (free Pro for you, testers or teachers)
 
