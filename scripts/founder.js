@@ -1,4 +1,4 @@
-/* Founder card for the home page "Meet the founder" section (#team) and the footer links on every page.
+/* Founder card for the home page "Meet the team" section (#team) and the footer links on every page.
    Fill in the empty fields, then run `node scripts/build-site.js`.
    While a field is empty, the card shows a yellow "[add ...]" placeholder so it's obvious what's missing. Don't deploy with placeholders showing. */
 const FOUNDER = {
@@ -12,11 +12,15 @@ const FOUNDER = {
   year: "Class of 2030",           // optional, e.g. "Class of 2029"; shown after the role
 };
 
-/* Teammates. Leave empty and the section reads "Meet the founder"; add people and it becomes "Meet the team",
+/* Teammates. Add people here and they appear
    with a row of cards under the founder card. Then run `node scripts/build-site.js`. Example entry:
    {name:"Jordan Lee", role:"Writes Biology and Chemistry questions", photo:"assets/img/team-jordan.jpg",
     exams:[["Biology", 5], ["Chemistry", 5]], blurb:"One sentence in their own words.", profile:"https://www.linkedin.com/in/…"} */
-const TEAM = [];
+const TEAM = [
+  {name:"Armaan Pathak", role:"Chemistry Course Designer", photo:"assets/img/team-armaan.jpg",
+   exams:[["Chemistry", 5], ["U.S. Government", 5], ["Computer Science Principles", 5], ["Biology", 4], ["U.S. History", 4], ["Psychology", 4], ["Macroeconomics", 4], ["Microeconomics", 4], ["Computer Science A", 3], ["Calculus AB", 3]],
+   blurb:"Armaan is a driven student with aspirations to have a career in pharmacology.", profile:"https://www.linkedin.com/in/armaanpathak1/"},
+];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const todo = t => `<span class="lp-todo">[${t}]</span>`;
@@ -50,7 +54,7 @@ const css = `.lp-founder{display:grid;grid-template-columns:180px minmax(0,1fr);
 .lp-mate img,.lp-mate .ini{width:64px;height:64px;border-radius:50%;object-fit:cover;flex:none}
 .lp-mate .ini{display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800}
 .lp-mate b{display:block}.lp-mate p{margin:4px 0 0;font-size:.9rem;line-height:1.5}
-.lp-mate .lp-founder-exams{margin-top:8px}.lp-mate a{color:var(--accent);font-weight:700;font-size:.88rem}
+.lp-mate .lp-founder-exams{margin-top:8px}.lp-mate a{display:inline-block;margin-top:10px;color:var(--accent);font-weight:700;font-size:.88rem}
 .lp-todo{background:#FFF1B8;color:#6B5300;border:1px dashed #C9A400;border-radius:6px;padding:1px 6px;font-weight:600}`;
 
 function teamSection() {
@@ -62,7 +66,7 @@ function teamSection() {
   const exams = f.exams.length ? f.exams.map(([n, sc]) => `<li>${esc(n)}<strong>${esc(sc)}</strong></li>`).join("") : `<li>${todo("exams you took and your scores")}</li>`;
   const link = f.profile ? `<a href="${esc(f.profile)}" rel="me noopener" target="_blank">${esc(f.name)} on ${esc(f.profileLabel)}</a>` : todo("add your LinkedIn or X link");
   return `<section class="sec alt" id="team"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Who's behind Credit Sprint</span><h2>${TEAM.length ? "Meet the team" : "Meet the founder"}</h2></div>
+  <div class="sec-head"><span class="eyebrow">Who's behind Credit Sprint</span><h2>Meet the team</h2></div>
   <div class="lp-founder">
     ${photo}
     <div>
@@ -79,7 +83,7 @@ function mate(t) {
   const ini = (t.name || "?").split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
   const photo = t.photo ? `<img src="${esc(t.photo)}" alt="${esc(t.name)}" width="64" height="64" loading="lazy">` : `<span class="ini" aria-hidden="true">${ini}</span>`;
   const ex = (t.exams || []).length ? `<ul class="lp-founder-exams">${t.exams.map(([n, sc]) => `<li>${esc(n)}<strong>${esc(sc)}</strong></li>`).join("")}</ul>` : "";
-  return `<div class="lp-mate">${photo}<div><b>${esc(t.name)}</b><span class="small muted">${esc(t.role || "")}</span>${t.blurb ? `<p>${esc(t.blurb)}</p>` : ""}${ex}${t.profile ? `<a href="${esc(t.profile)}" rel="noopener" target="_blank">LinkedIn</a>` : ""}</div></div>`;
+  return `<div class="lp-mate">${photo}<div><b>${esc(t.name)}</b><span class="small muted">${esc(t.role || "")}</span>${t.blurb ? `<p>${esc(t.blurb)}</p>` : ""}${ex}${t.profile ? `<a href="${esc(t.profile)}" rel="noopener" target="_blank">${esc(t.name)} on LinkedIn</a>` : ""}</div></div>`;
 }
 
 /* one-line founder strip near the top of the home page, linking down to the full card */
@@ -88,12 +92,12 @@ function strip() {
   const words = ["no","one","two","three","four","five","six","seven","eight","nine","ten"];
   const photo = f.photo ? `<img src="${esc(f.photo)}" alt="" width="44" height="44" loading="lazy">` : `<span class="ini" aria-hidden="true">${initials()}</span>`;
   const facts = n ? `, an Ohio State student who took ${n} AP® exams${fives ? ` (${words[fives] || fives} 5s)` : ""}` : "";
-  return `<section class="wrap lp-strip-wrap" id="founder-strip"><div class="lp-strip">${photo}<span><b>Built by ${esc(f.name)}</b>${facts}. <a href="#team">Meet the founder →</a></span></div></section>`;
+  return `<section class="wrap lp-strip-wrap" id="founder-strip"><div class="lp-strip">${photo}<span><b>Built by ${esc(f.name)}</b>${facts}. <a href="#team">Meet the team →</a></span></div></section>`;
 }
 
 /* footer links for every page; `up` is the "../" prefix for pages in subfolders */
 function footerLinks(up) {
-  return `<a href="${up}index.html#team">Meet the founder</a>` + (FOUNDER.profile ? `<a href="${esc(FOUNDER.profile)}" rel="me noopener" target="_blank">${esc(FOUNDER.profileLabel)}</a>` : "");
+  return `<a href="${up}index.html#team">Meet the team</a>` + (FOUNDER.profile ? `<a href="${esc(FOUNDER.profile)}" rel="me noopener" target="_blank">${esc(FOUNDER.profileLabel)}</a>` : "");
 }
 
 function missing() {
@@ -102,4 +106,12 @@ function missing() {
   return m;
 }
 
-module.exports = { FOUNDER, TEAM, css, teamSection, strip, footerLinks, missing };
+/* data for the study app's Team tab (written to assets/js/team.js by build-site.js) */
+function appData() {
+  const f = FOUNDER;
+  return {founder:{name:f.name, role:f.role + (f.year ? ", " + f.year : ""), photo:f.photo, story:f.story, exams:f.exams, profile:f.profile, profileLabel:f.profileLabel},
+    team:TEAM.map(t => ({name:t.name, role:t.role || "", photo:t.photo || "", blurb:t.blurb || "", exams:t.exams || [], profile:t.profile || ""}))};
+}
+const appFile = () => `/* Generated by scripts/build-site.js from scripts/founder.js. Do not edit by hand. */\nwindow.CS_TEAM = ${JSON.stringify(appData())};\n`;
+
+module.exports = { FOUNDER, TEAM, appFile, css, teamSection, strip, footerLinks, missing };

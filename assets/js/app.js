@@ -11,9 +11,9 @@ const meter = (m, cls="") => `<div class="meter ${cls}" aria-hidden="true"><i st
 /* ---------- router + chrome ---------- */
 const NAV = [
   {k:"home", n:"Dashboard", ic:"home"}, {k:"learn", n:"Learn", ic:"book"}, {k:"practice", n:"Practice", ic:"target"},
-  {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets & badges", ic:"paw"}, {k:"store", n:"Store", ic:"bag"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}
+  {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets & badges", ic:"paw"}, {k:"store", n:"Store", ic:"bag"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}, {k:"team", n:"Team", ic:"users"}
 ];
-const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets & badges", store:"Store", frq:"Free response", plan:"Study plan"};
+const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets & badges", store:"Store", frq:"Free response", plan:"Study plan", team:"Team"};
 const VIEWS = NAV.map(n=>n.k);
 let current = "home";
 CS.view = () => current;
@@ -29,6 +29,27 @@ CS.go = (v, opts={}) => {
   if (v === "home" && CS.focusPass) CS.focusPass();
   CS.chrome();
   if (!opts.keepScroll) window.scrollTo({top:0});
+};
+/* ---------- team: the students who build Credit Sprint (data in team.js, from scripts/founder.js) ---------- */
+render.team = () => {
+  const T = window.CS_TEAM || {founder:null, team:[]}, f = T.founder;
+  const ini = n => (n || "?").split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  const pic = (p, n, size) => p ? `<img src="${esc(p)}" alt="${esc(n)}" width="${size}" height="${size}" style="width:${size}px;height:${size}px;border-radius:${size > 100 ? "14px" : "50%"};object-fit:cover;flex:none">`
+    : `<span style="width:${size}px;height:${size}px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800">${ini(n)}</span>`;
+  const scores = ex => (ex || []).length ? `<div class="tm-scores">${ex.map(([n, s]) => `<span>${esc(n)}<b>${esc(s)}</b></span>`).join("")}</div>` : "";
+  const link = (u, n, lab) => u ? `<a href="${esc(u)}" target="_blank" rel="noopener" class="tm-link">${esc(n)} on ${esc(lab || "LinkedIn")} ${I("ext")}</a>` : "";
+  $("#v-team").innerHTML = `<style>
+#v-team .tm-scores{display:flex;flex-wrap:wrap;gap:5px}#v-team .tm-scores span{border:1px solid var(--rule);border-radius:6px;padding:1px 7px;font-size:.75rem;font-weight:600;color:var(--muted)}
+#v-team .tm-scores b{color:var(--ink);margin-left:3px}#v-team .tm-link{color:var(--accent);font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:4px}#v-team .tm-link .ico{width:14px;height:14px}
+#v-team .tm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+#v-team .tm-lead{display:flex;gap:22px;align-items:flex-start;flex-direction:row}@media(max-width:640px){#v-team .tm-lead{flex-direction:column}}
+#v-team .tm-mate{flex-direction:row;align-items:flex-start;gap:14px}</style>
+  <div class="stack" style="gap:4px"><span class="eyebrow">Who's behind Credit Sprint</span><h2 style="margin:0">Meet the team</h2>
+    <p class="muted" style="margin:0">Students who have taken the exams they build these courses for.</p></div>
+  ${f ? `<div class="panel tm-lead">${pic(f.photo, f.name, 150)}<div class="stack" style="gap:10px;min-width:0"><div><b style="font-size:1.2rem">${esc(f.name)}</b><div class="small muted">${esc(f.role)}</div></div>
+    ${f.story ? `<p style="margin:0;line-height:1.6">${esc(f.story)}</p>` : ""}<div class="stack" style="gap:6px"><span class="eyebrow">${esc(f.name.split(" ")[0])}'s AP® scores</span>${scores(f.exams)}</div>${link(f.profile, f.name, f.profileLabel)}</div></div>` : ""}
+  ${T.team.length ? `<div class="tm-grid">${T.team.map(t => `<div class="panel tm-mate">${pic(t.photo, t.name, 64)}<div class="stack" style="gap:6px;min-width:0"><div><b>${esc(t.name)}</b><div class="small muted">${esc(t.role)}</div></div>
+    ${t.blurb ? `<p class="small" style="margin:0">${esc(t.blurb)}</p>` : ""}${scores(t.exams)}${link(t.profile, t.name)}</div></div>`).join("")}</div>` : ""}`;
 };
 CS.refresh = () => { CS.checkBadges(); CS.save(); CS.chrome(); };
 function dueCount(){ const now = Date.now(); return CS.CARDS.filter(c => (S().cards[c.id]?.due||0) <= now).length; }
