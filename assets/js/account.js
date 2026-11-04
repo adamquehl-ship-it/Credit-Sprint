@@ -12,6 +12,9 @@ const S = () => CS.S();
 const STORE_KEYS = () => ({shared:"creditsprint.shared", courses:Object.fromEntries(Object.values(window.CS_COURSES).map(c => [c.k, c.key]))});
 let cfg = null, live = null, syncT = null, syncing = false;
 CS.account = null;
+/* HeyCatch identity (the SDK is loaded in app.html, which listens for these) */
+const identify = u => { try { document.dispatchEvent(new CustomEvent("cs:identity", {detail:u})); } catch(e) {} };
+const signedOut = () => { try { document.dispatchEvent(new CustomEvent("cs:signout")); } catch(e) {} };
 
 async function api(path, opt = {}) {
   const r = await fetch("/api/" + path, {method: opt.method || "GET", credentials: "same-origin",
@@ -177,10 +180,10 @@ CS.openAccount = async (opts = {}) => {
     }
   }
   async function done(p){
-    try { const r = await p; window.CS_STORE.join(); CS.account = r.user; renderChip(); close();
+    try { const r = await p; window.CS_STORE.join(); CS.account = r.user; renderChip(); close(); identify(r.user);
       if (host) { m.innerHTML = `<div class="feedback good">${I("check")} You're signed in${r.user.name ? ", " + esc(r.user.name.replace(/\.$/, "")) : ""}. Your progress is saved.</div>`; if (opts.onSignedIn) opts.onSignedIn(r.user); }
       if (!r.user.name) askName(); else CS.toast(r.created ? "Account created. Your progress is now saved." : `Welcome back, ${r.user.name}.`);
-      api("me").then(x => { CS.account = x.user; renderChip(); if (CS.afterAccount) CS.afterAccount(); }).catch(() => {});
+      api("me").then(x => { CS.account = x.user; renderChip(); identify(x.user); if (CS.afterAccount) CS.afterAccount(); }).catch(() => {});
       setStatus("Syncing…"); resumeNext(); await pull(false); }
     catch(e) { err = e.data && e.data.needAge ? "Check the box to confirm you're 13 or older." : e.message; draw(); }
   }
@@ -224,8 +227,8 @@ function accountView(focusCode){
       catch(err) { msg.textContent = err.message; } };
     const rm = $("#ac-rmpic", m); if (rm) rm.onclick = async () => { try { await api("avatar", {method:"DELETE"}); a.avatar = null; CS.account = a; renderChip(); draw(); if (live) loadLeague(); } catch(err) { $("#ac-picmsg", m).textContent = err.message; } };
     $("#ac-sync", m).onclick = async () => { setStatus("Syncing…"); await push(); draw(); };
-    $("#ac-out", m).onclick = async () => { clearTimeout(syncT); try { await push(); } catch(e) {} try { await api("auth/logout", {method:"POST"}); } catch(e) {} CS.account = null; live = null; window.CS_STORE.leave(); w.remove(); location.reload(); };
-    $("#ac-del", m).onclick = async () => { if (!confirmDel) { confirmDel = true; return draw(); } try { await api("me", {method:"DELETE"}); } catch(e) {} CS.account = null; live = null; window.CS_STORE.leave(); w.remove(); location.reload(); };
+    $("#ac-out", m).onclick = async () => { clearTimeout(syncT); try { await push(); } catch(e) {} try { await api("auth/logout", {method:"POST"}); } catch(e) {} signedOut(); CS.account = null; live = null; window.CS_STORE.leave(); w.remove(); location.reload(); };
+    $("#ac-del", m).onclick = async () => { if (!confirmDel) { confirmDel = true; return draw(); } try { await api("me", {method:"DELETE"}); } catch(e) {} signedOut(); CS.account = null; live = null; window.CS_STORE.leave(); w.remove(); location.reload(); };
   }
 }
 let gLoad = null;
@@ -242,7 +245,7 @@ let accountKnown; CS.accountReady = new Promise(ok => { accountKnown = ok; });
 CS.maybeSignedIn = () => !!CS.account || (!CS.accountSettled && (() => { try { return localStorage.getItem("creditsprint.member") === "1"; } catch(e) { return false; } })());
 const settle = () => { CS.accountSettled = true; accountKnown(CS.account); document.dispatchEvent(new CustomEvent("cs:account")); };
 if (!online()) settle();
-if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); resumeNext(); })
+if (online()) api("me").then(r => { const first = window.CS_STORE.join(); window.CS_STORE.accountsOn(); CS.account = r.user; identify(r.user); setStatus(sessionStorage.getItem("cs.synced") ? "Synced" : "Signed in"); sessionStorage.removeItem("cs.synced"); if (first) pull(false).catch(() => {}); else push(); if (CS.afterAccount) CS.afterAccount(); resumeNext(); })
   .catch(e => { CS.account = null; if (e.status === 503) window.CS_STORE.accountsOff(); else if (e.status === 401) window.CS_STORE.accountsOn(); renderChip(); if (e.status === 401 && /[?&]signup\b/.test(location.search)) promptSignup(true); }).finally(settle);
 
 /* ask signed-out students to make an account once per visit, after onboarding closes */

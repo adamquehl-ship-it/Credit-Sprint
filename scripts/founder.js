@@ -5,8 +5,8 @@ const FOUNDER = {
   name: "Adam Quehl",
   role: "Founder · Finance and PPE student at Ohio State",
   photo: "assets/img/founder.jpg", // e.g. "assets/img/founder.jpg": a real photo of your face, square, at least 400×400
-  exams: [["Human Geography", 5], ["World History", 5], ["U.S. Government", 5], ["U.S. History", 4], ["Chemistry", 4], ["Calculus AB", 4], ["Psychology", 4], ["Microeconomics", 4], ["English Literature", 4], ["Physics 1", 4], ["English Language", 3]], // AP® exams you took: [exam, score]
-  story: "I took 11 AP® exams in high school and scored a 3 or higher on every one, including 5s in Human Geography, World History and U.S. Government. Now I study Finance and Philosophy, Politics and Economics (PPE) at Ohio State. I built Credit Sprint to be the prep I wanted back then: a clear plan, practice that explains every answer, and games that make the hard units stick.", // 3–4 sentences, first person: which exams you took, what the credit saved you, why you built this
+  exams: [["Human Geography", 5], ["World History", 5], ["U.S. Government", 5], ["Microeconomics", 5], ["U.S. History", 4], ["Chemistry", 4], ["Calculus AB", 4], ["Psychology", 4], ["English Literature", 4], ["English Language", 4], ["Physics 1", 4]], // AP® exams you took: [exam, score]
+  story: "I took 11 AP® exams in high school and scored a 4 or higher on every one, including 5s in Human Geography, World History, U.S. Government and Microeconomics. Now I study Finance and Philosophy, Politics and Economics (PPE) at Ohio State. I built Credit Sprint to be the prep I wanted back then: a clear plan, practice that explains every answer, and games that make the hard units stick.", // 3–4 sentences, first person: which exams you took, what the credit saved you, why you built this
   profile: "https://www.linkedin.com/in/adam-quehl-5765a3389/", // your LinkedIn or X profile URL
   profileLabel: "LinkedIn", // or "X"
 };

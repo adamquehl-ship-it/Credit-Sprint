@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script type="module">import { analytics } from "https://esm.sh/@heycatch/sdk@0.8.3";
+analytics.init({projectKey: "hck_pk_HyH0OP3jODKnWVGSyqzd8lsCRcnpO11o", install: {framework: "web", agent: "other"}});
+/* identity: account.js fires cs:identity after sign-in (and on load when already signed in) and cs:signout on sign-out */
+const ident = u => { if (u && u.id) analytics.setIdentity(u.id, {plan: (u.access || []).length ? "pro" : "free"}); };
+document.addEventListener("cs:identity", e => ident(e.detail));
+document.addEventListener("cs:signout", () => analytics.resetIdentity());
+if (window.CS && window.CS.account) ident(window.CS.account);</script>
 <title>Credit Sprint App · AP® & CLEP® Study Guides, Quizzes and Games</title>
 <meta name="description" content="Study guides, practice questions, flashcards, games and timed practice exams for 14 AP® and CLEP® courses, from Macroeconomics and Biology to U.S. History, English Literature, Statistics and Calculus.">
 <meta name="claude:viewport-fit-sides" content="cover">

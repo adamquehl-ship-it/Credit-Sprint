@@ -45,6 +45,9 @@ const ICON = {
 };
 const ic = (k, sz=20) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
 const founder = require("./founder.js");
+/* HeyCatch analytics (https://heycatch.ai/agents.md). Marketing pages are tagged site:"landing"; app.html has its own init without it.
+   Version pinned to the npm `latest` dist-tag; to update, check https://registry.npmjs.org/@heycatch/sdk/latest and change it here and in app.html. */
+const HEYCATCH = "<script type=\"module\">import { analytics } from \"https://esm.sh/@heycatch/sdk@0.8.3\";\nanalytics.init({projectKey: \"hck_pk_HyH0OP3jODKnWVGSyqzd8lsCRcnpO11o\", site: \"landing\", requestBatching: false, install: {framework: \"web\", agent: \"other\"}});</script>";
 const DISC = "AP® and CLEP® are trademarks registered by the College Board, which is not affiliated with, and does not endorse, this site. All practice questions are original.";
 const FAV = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='1' y='1' width='38' height='38' rx='10' fill='%234F46E5'/%3E%3Cpath d='M20 1 H29 A10 10 0 0 1 39 11 V29 A10 10 0 0 1 29 39 H20 Z' fill='%2310B981'/%3E%3Ctext x='11' y='26.2' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='16.5' fill='%23fff'%3EC%3C/text%3E%3Ctext x='29.5' y='26.2' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='16.5' fill='%2306281C'%3ES%3C/text%3E%3C/svg%3E`;
 
@@ -85,6 +88,7 @@ function page({title, desc, canon, depth=0, body, ld}){
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+${HEYCATCH}
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${SITE}${canon}">
@@ -142,7 +146,7 @@ const check = ic("check",18);
 const lock = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 out("index.html", page({
   title:"Credit Sprint · AP® & CLEP® Prep: Econ, Science, History, English, Psych & Stats", canon:"/",
-  desc:`Earn college credit in economics, biology, chemistry, U.S. and world history, government, psychology, statistics, English literature, English language and marketing. ${Number(nQ).toLocaleString("en-US")} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
+  desc:`Earn college credit in economics, biology, chemistry, U.S. and world history, government, psychology, statistics, calculus, human geography, English literature, English language and marketing. ${Number(nQ).toLocaleString("en-US")} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
   ld:{"@context":"https://schema.org","@type":"WebSite","name":"Credit Sprint","url":SITE},
   body:`<main>
 <section class="wrap hero2" id="courses">
@@ -179,7 +183,7 @@ ${landing(COURSES, ic)}
 <section class="sec" id="features"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Features</span><h2>Everything you need to pass, nothing you don't</h2><p>Built around how the exams actually work: graphs, cause and effect, and a lot of practice.</p></div>
   <div class="feat">
-    <div class="card2"><span class="fi">${ic("target")}</span><h3>Diagnostic and study plan</h3><p>A quick diagnostic (12 questions for Macro or Micro, 16 for Biology) finds your weak units, then a weekly plan, or a 30-day cram plan, puts them first.</p></div>
+    <div class="card2"><span class="fi">${ic("target")}</span><h3>Diagnostic and study plan</h3><p>A quick diagnostic (two questions per unit, 10 to 20 in all) finds your weak units, then a weekly plan, or a 30-day cram plan, puts them first.</p></div>
     <div class="card2"><span class="fi">${ic("check")}</span><h3>Every answer explained</h3><p>Five choices like the real exam, and an explanation for every single one, so you learn from wrong answers too.</p></div>
     <div class="card2"><span class="fi">${ic("chart")}</span><h3>Draw the graph</h3><p>Drag supply, demand, AD, the money supply and more yourself. Graphs are worth real points on the FRQ section.</p></div>
     <div class="card2"><span class="fi">${ic("spark")}</span><h3>AI tutor and FRQ feedback <span class="soon">Coming soon</span></h3><p>Stuck? Ask for a different explanation. Wrote an FRQ? Get it scored against the rubric in seconds.</p></div>
