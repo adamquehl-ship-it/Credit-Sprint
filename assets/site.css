@@ -137,3 +137,13 @@ a.btn{text-decoration:none}
 .price.four .plan{padding:18px}.price.four .plan .amt{font-size:1.8rem}
 @media (max-width:1100px){.price.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.price.four{grid-template-columns:minmax(0,1fr)}}
+/* small screens: keep the site menu as a swipeable row under the logo instead of hiding it */
+@media (max-width:960px){
+  .snav .wrap{flex-wrap:wrap;row-gap:6px;padding-block:10px}
+  .snav .wrap>.row-wrap{margin-left:auto}
+  .snav nav{display:flex;order:3;flex:1 0 100%;justify-content:flex-start;gap:18px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .snav nav::-webkit-scrollbar{display:none}
+  .snav nav a{white-space:nowrap;font-size:.88rem}
+  .snav nav{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:24px}
+}
+@media (max-width:420px){ .snav .wrap{gap:10px} .snav .wrap>.row-wrap .btn.ghost{display:none} }

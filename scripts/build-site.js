@@ -22,6 +22,7 @@ const CALC_AB = ["cards.js","c1.js","c2.js","g1.js","g2.js","g3.js","g4.js","g5.
 const WCA = load("assets/data/calc", CALC_AB);
 const WHG = load("assets/data/aphug", ["cards.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","content.js","content2.js","frqs.js","drills.js","games.js"]);
 const WCB = load("assets/data/calc", CALC_AB.concat(["bc/cards.js","bc/c1.js","bc/g9.js","bc/g10.js","bc/content.js","bc/content2.js","bc/frqs.js","bc/drills.js","bc/games.js"]));
+const WPC = load("assets/data/precalc", ["cards.js","c1.js","g1.js","g2.js","g3.js","g4.js","content.js","content2.js","frqs.js","drills.js","games.js"]);
 const UNITS = W.CS_UNITS, Q = W.CS_QUESTIONS_RAW, FIFTH = W.CS_FIFTH;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const slug = s => s.toLowerCase().replace(/®/g,"").replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
@@ -77,7 +78,7 @@ const TITLE_SHORT = [
   [/^U.S. History Period 5:/, "APUSH Period 5: Civil War and Reconstruction Study Guide"],
   [/^U.S. History Period 7:/, "APUSH Period 7: Progressivism, World Wars, Depression Guide"],
   [/^Marketing Unit 3:/, "CLEP® Marketing Unit 3: Environment & Research Study Guide"],
-  [/^Credit Sprint · AP® & CLEP® Prep/, "Credit Sprint · AP® & CLEP® Prep for 15 Courses, Free to Start"],
+  [/^Credit Sprint · AP® & CLEP® Prep/, "Credit Sprint · AP® & CLEP® Prep for 16 Courses, Free to Start"],
 ];
 function fitTitle(t){ if (t.length > TITLE_MAX) for (const [re, v] of TITLE_SHORT) if (re.test(t)) return v; for (const f of TITLE_STEPS) { if (t.length <= TITLE_MAX) break; t = f(t); } return t; }
 function page({title, desc, canon, depth=0, body, ld}){
@@ -107,8 +108,8 @@ ${ld?`<script type="application/ld+json">${JSON.stringify(ld)}</script>`:""}
 <div class="row-wrap" style="gap:8px;flex-wrap:nowrap"><a class="btn ghost sm" href="${up}app.html?signup=1">Sign up</a><a class="btn sm" href="${up}index.html#courses">Start free</a></div></div></header>
 ${body}
 <footer class="sfoot"><div class="wrap"><div class="cols">
-<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 15 subjects.</span></div>
-<div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 15 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
+<div class="stack" style="gap:8px"><a class="brand" href="${up}index.html" style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink)">${LOGO}Credit Sprint</a><span>Study smarter for AP® and CLEP® exams in 16 subjects.</span></div>
+<div><b>Study</b><a href="${up}app.html">Open the study app</a><a href="${up}index.html#courses">All 16 courses</a><a href="${up}guides/index.html">Unit study guides</a><a href="${up}practice/index.html">Practice problems</a></div>
 <div><b>Company</b><a href="${up}index.html#pricing">Pricing</a><a href="${up}index.html#faq">FAQ</a><a href="${up}privacy.html">Privacy policy</a><a href="${up}terms.html">Terms of service</a>${founder.footerLinks(up)}</div>
 </div><p class="disc">${DISC} © ${new Date().getFullYear()} Credit Sprint.</p></div></footer>
 </div></body></html>
@@ -118,7 +119,7 @@ const out = (rel, html) => { const p = path.join(ROOT, rel); fs.mkdirSync(path.d
 const urls = [];
 
 /* ---------- landing ---------- */
-const nQ = Q.length + WM.CS_QUESTIONS_RAW.length + WB.CS_QUESTIONS_RAW.length + WC.CS_QUESTIONS_RAW.length + WK.CS_QUESTIONS_RAW.length + WH.CS_QUESTIONS_RAW.length + WW.CS_QUESTIONS_RAW.length + WG.CS_QUESTIONS_RAW.length + WY.CS_QUESTIONS_RAW.length + WS.CS_QUESTIONS_RAW.length + WL.CS_QUESTIONS_RAW.length + WN.CS_QUESTIONS_RAW.length + WCB.CS_QUESTIONS_RAW.length + WHG.CS_QUESTIONS_RAW.length, nF = W.CS_FRQS.length + WM.CS_FRQS.length + WB.CS_FRQS.length + WC.CS_FRQS.length + WK.CS_FRQS.length + WH.CS_FRQS.length + WW.CS_FRQS.length + WG.CS_FRQS.length + WY.CS_FRQS.length + WS.CS_FRQS.length + WL.CS_FRQS.length + WN.CS_FRQS.length + WCB.CS_FRQS.length + WHG.CS_FRQS.length, nC = W.CS_CARDS_RAW.length + WM.CS_CARDS_RAW.length + WB.CS_CARDS_RAW.length + WC.CS_CARDS_RAW.length + WK.CS_CARDS_RAW.length + WH.CS_CARDS_RAW.length + WW.CS_CARDS_RAW.length + WG.CS_CARDS_RAW.length + WY.CS_CARDS_RAW.length + WS.CS_CARDS_RAW.length + WL.CS_CARDS_RAW.length + WN.CS_CARDS_RAW.length + WCB.CS_CARDS_RAW.length + WHG.CS_CARDS_RAW.length;
+const nQ = Q.length + WM.CS_QUESTIONS_RAW.length + WB.CS_QUESTIONS_RAW.length + WC.CS_QUESTIONS_RAW.length + WK.CS_QUESTIONS_RAW.length + WH.CS_QUESTIONS_RAW.length + WW.CS_QUESTIONS_RAW.length + WG.CS_QUESTIONS_RAW.length + WY.CS_QUESTIONS_RAW.length + WS.CS_QUESTIONS_RAW.length + WL.CS_QUESTIONS_RAW.length + WN.CS_QUESTIONS_RAW.length + WCB.CS_QUESTIONS_RAW.length + WHG.CS_QUESTIONS_RAW.length + WPC.CS_QUESTIONS_RAW.length, nF = W.CS_FRQS.length + WM.CS_FRQS.length + WB.CS_FRQS.length + WC.CS_FRQS.length + WK.CS_FRQS.length + WH.CS_FRQS.length + WW.CS_FRQS.length + WG.CS_FRQS.length + WY.CS_FRQS.length + WS.CS_FRQS.length + WL.CS_FRQS.length + WN.CS_FRQS.length + WCB.CS_FRQS.length + WHG.CS_FRQS.length + WPC.CS_FRQS.length, nC = W.CS_CARDS_RAW.length + WM.CS_CARDS_RAW.length + WB.CS_CARDS_RAW.length + WC.CS_CARDS_RAW.length + WK.CS_CARDS_RAW.length + WH.CS_CARDS_RAW.length + WW.CS_CARDS_RAW.length + WG.CS_CARDS_RAW.length + WY.CS_CARDS_RAW.length + WS.CS_CARDS_RAW.length + WL.CS_CARDS_RAW.length + WN.CS_CARDS_RAW.length + WCB.CS_CARDS_RAW.length + WHG.CS_CARDS_RAW.length + WPC.CS_CARDS_RAW.length;
 const COURSES = [
   {k:"macro", name:"Macroeconomics", col:"#4F46E5", soft:"#EEF2FF", ic:"bank", q:Q.length, f:W.CS_FRQS.length, c:W.CS_CARDS_RAW.length, units:UNITS.map(u=>u.short), blurb:"GDP, inflation, money and banking, fiscal and monetary policy, international trade.", games:"Fed Chair, Shift It, Chain Reaction"},
   {k:"micro", name:"Microeconomics", col:"#059669", soft:"#ECFDF5", ic:"chart", q:WM.CS_QUESTIONS_RAW.length, f:WM.CS_FRQS.length, c:WM.CS_CARDS_RAW.length, units:WM.CS_UNITS.map(u=>u.short), blurb:"Supply and demand, elasticity, costs, perfect competition, monopoly, game theory, labor markets, externalities.", games:"Profit Max, Nash Hunt, Shift It"},
@@ -133,6 +134,7 @@ const COURSES = [
   {k:"calcab", name:"Calculus AB", col:"#65A30D", soft:"#F7FEE7", ic:"integral", q:WCA.CS_QUESTIONS_RAW.length, f:WCA.CS_FRQS.length, c:WCA.CS_CARDS_RAW.length, units:WCA.CS_UNITS.map(u=>u.short), blurb:"Limits, derivatives and their applications, integrals and the Fundamental Theorem, differential equations, and area and volume. AP\u00AE Calculus AB and CLEP\u00AE Calculus.", games:"Derivative Dash, Tangent Shot, Graph Detective", apLine:"42 multiple-choice questions in 1 hour 40 minutes, then 6 free-response questions in 90 minutes", clepLine:"about 44 multiple-choice questions in 90 minutes; a 50 earns credit at many colleges"},
   {k:"calcbc", name:"Calculus BC", col:"#A21CAF", soft:"#FDF4FF", ic:"integral", q:WCB.CS_QUESTIONS_RAW.length, f:WCB.CS_FRQS.length, c:WCB.CS_CARDS_RAW.length, units:WCB.CS_UNITS.map(u=>u.short), blurb:"All of Calculus AB plus integration by parts, improper integrals, Euler's method, logistic growth, parametric, polar and vector functions, and infinite series. AP\u00AE Calculus BC only.", games:"Series Court, Tangent Shot, Integral Sprint", apOnly:true, apLine:"42 multiple-choice questions in 1 hour 40 minutes, then 6 free-response questions in 90 minutes"},
   {k:"aphug", name:"Human Geography", col:"#15803D", soft:"#F0FDF4", ic:"map", q:WHG.CS_QUESTIONS_RAW.length, f:WHG.CS_FRQS.length, c:WHG.CS_CARDS_RAW.length, units:WHG.CS_UNITS.map(u=>u.short), blurb:"Maps and scale, population and migration, culture, language and religion, political geography, agriculture, cities and economic development. AP\u00AE Human Geography.", games:"Model Match, Pyramid Reader, Diffusion Sort", apOnly:true, apLine:"60 multiple-choice questions in 60 minutes, then 3 free-response questions in 75 minutes"},
+  {k:"precalc", name:"Precalculus", col:"#0E7490", soft:"#ECFEFF", ic:"chart", q:WPC.CS_QUESTIONS_RAW.length, f:WPC.CS_FRQS.length, c:WPC.CS_CARDS_RAW.length, units:WPC.CS_UNITS.map(u=>u.short), blurb:"Polynomial and rational functions, exponential and logarithmic functions, trigonometric and polar functions, plus parametric equations, vectors and matrices. AP\u00AE Precalculus and CLEP\u00AE Precalculus.", games:"Unit Circle Sprint, Log Rules, Function Family Sort", apLine:"42 multiple-choice questions in 1 hour 45 minutes, then 4 free-response questions in 70 minutes", clepLine:"about 48 questions in 90 minutes; a 50 earns credit at many colleges"},
   {k:"aplang", name:"English Language", col:"#B45309", soft:"#FFFBEB", ic:"pen", q:WN.CS_QUESTIONS_RAW.length, f:WN.CS_FRQS.length, c:WN.CS_CARDS_RAW.length, units:WN.CS_UNITS.map(u=>u.short), blurb:"Rhetoric and argument with nonfiction reading sets, revise-the-draft questions, and synthesis, rhetorical analysis and argument essays. AP\u00AE English Language and CLEP\u00AE College Composition.", games:"Appeal Sort, Fallacy Finder, Rhetoric Spotter"},
 ];
 const courseCard = c => `<a class="ccard" href="app.html?course=${c.k}" style="--cc:${c.col};--cs:${c.soft}">
@@ -146,7 +148,7 @@ const check = ic("check",18);
 const lock = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 out("index.html", page({
   title:"Credit Sprint · AP® & CLEP® Prep: Econ, Science, History, English, Psych & Stats", canon:"/",
-  desc:`Earn college credit in economics, biology, chemistry, U.S. and world history, government, psychology, statistics, calculus, human geography, English literature, English language and marketing. ${Number(nQ).toLocaleString("en-US")} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
+  desc:`Earn college credit in economics, biology, chemistry, U.S. and world history, government, psychology, statistics, calculus, precalculus, human geography, English literature, English language and marketing. ${Number(nQ).toLocaleString("en-US")} practice questions with explanations, ${nF} free-response questions, flashcards, games and timed practice exams. Free to start.`,
   ld:{"@context":"https://schema.org","@type":"WebSite","name":"Credit Sprint","url":SITE},
   body:`<main>
 <section class="wrap hero2" id="courses">
@@ -192,13 +194,13 @@ ${landing(COURSES, ic)}
   </div>
 </div></section>
 <section class="sec alt" id="games"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all fifteen courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
+  <div class="sec-head"><span class="eyebrow">Games</span><h2>Studying that feels like playing</h2><p>Streaks, XP, levels, badges and games built for each course. Plus pets: earn a mystery egg for every 25 questions you answer, hatch it with correct answers, and collect hundreds of original creatures across all sixteen courses, from Common all the way up to a 1-in-2,000 Supreme Mythical.</p></div>
   <div class="gamechips">${GAMES.map(([k,n])=>`<span class="gamechip"><span>${ic(k)}</span>${n}</span>`).join("")}</div>
 </div></section>
 <section class="sec" id="how"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">How it works</span><h2>Ten minutes a day to exam-ready</h2></div>
   <div class="steps">
-    <div><h3>Pick a course</h3><p>Fifteen courses, from Macro to Marketing. Take a quick diagnostic and see your weak units right away.</p></div>
+    <div><h3>Pick a course</h3><p>Sixteen courses, from Macro to Marketing. Take a quick diagnostic and see your weak units right away.</p></div>
     <div><h3>Plan</h3><p>Set your exam date. Get a week-by-week plan or a 30-day sprint.</p></div>
     <div><h3>Practice daily</h3><p>Walk the quest map with your pet, climb the 2-week season pass and race your weekly league.</p></div>
     <div><h3>Prove it</h3><p>Beat every unit boss and ace a practice exam. Then go earn the credit.</p></div>
@@ -708,12 +710,42 @@ ${sample.map((x,k)=>qBlock(x,k+1)).join("")}
 <aside><div class="panel"><h3>Practice ${esc(u.name.split(":")[0])} free</h3><p class="muted small">${hgqsFor(u.id).length} questions, flashcards, a boss battle, free-response practice and a study plan built around your weak spots.</p><a class="btn" href="../app.html?course=aphug">Start studying</a></div>
 <div class="panel flat"><span class="eyebrow">All Human Geography units</span>${HGU.map(v=>`<a href="${path.basename(hgGuideLinks.find(l=>l.u.id===v.id)?hgGuideLinks.find(l=>l.u.id===v.id).file:"")||"#"}" style="${v.id===u.id?"font-weight:800;color:var(--ink)":""}">${esc(v.name)}</a>`).join("")}</div></aside></main>`}));
 });
+/* ---------- Precalculus guide pages (AP and CLEP) ---------- */
+const PCQ = WPC.CS_QUESTIONS_RAW, PCU = WPC.CS_UNITS;
+const pcqsFor = u => PCQ.map((q,i)=>({q,i,F:null})).filter(x=>x.q[0]===u);
+const pcGuideLinks = [];
+PCU.forEach(u => {
+  const file = `guides/precalculus-unit-${u.id}-${slug(u.name.replace(/^Unit \d+:\s*/,""))}.html`; pcGuideLinks.push({file, u});
+  const sample = pcqsFor(u.id).filter((_,k)=>k%7===0).slice(0,5), cards = WPC.CS_CARDS_RAW.filter(c=>c[0]===u.id);
+  const fig = WPC.CS_FIGS && WPC.CS_FIGS[u.graph] ? WPC.CS_FIGS[u.graph](0) : "";
+  out(file, page({depth:1, canon:"/"+file,
+    title:`AP® Precalculus ${u.name.split(":")[0]}: ${u.short} Study Guide | Credit Sprint`,
+    desc:`Free study guide for AP Precalculus and CLEP Precalculus ${u.name}: key ideas, formulas, exam traps, key terms and practice questions with explanations.`,
+    ld:{"@context":"https://schema.org","@type":"LearningResource","name":`AP Precalculus ${u.name}`,"educationalLevel":"High school","provider":{"@type":"Organization","name":"Credit Sprint","url":SITE}},
+    body:`<main class="wrap doc"><article>
+<p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Study guides</a> / Precalculus ${esc(u.name.split(":")[0])}</p>
+<h1>Credit Sprint's Guide to AP® Precalculus, ${esc(u.name)}</h1>
+<div class="row-wrap"><span class="tag good">AP® ${u.wAP ? "weight " + u.ap : "not on the exam"}</span><span class="tag">CLEP® ${esc(u.clep)}</span></div>
+<p style="font-size:1.08rem">${esc(u.summary)}</p>
+${fig ? `<div class="figure" style="max-width:460px">${fig}</div>` : ""}
+<h2>What you need to know</h2><ul>${u.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+${u.formulas && u.formulas.length ? `<h2>Formulas</h2><ul>${u.formulas.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+<h2>Exam traps</h2>${u.traps.map(t=>`<div class="trap"><b>Watch for</b>${esc(t)}</div>`).join("")}
+<h2>Key terms</h2><ul>${cards.slice(0,16).map(c=>`<li><b>${esc(c[1])}:</b> ${esc(c[2])}</li>`).join("")}</ul>
+<h2>Practice questions</h2><p class="muted">Five of the ${pcqsFor(u.id).length} ${esc(u.name.split(":")[0])} questions in Credit Sprint. Every choice is explained in the app.</p>
+${sample.map((x,k)=>qBlock(x,k+1)).join("")}
+</article>
+<aside><div class="panel"><h3>Practice ${esc(u.name.split(":")[0])} free</h3><p class="muted small">${pcqsFor(u.id).length} questions, flashcards, a boss battle, free-response practice and a study plan built around your weak spots.</p><a class="btn" href="../app.html?course=precalc">Start studying</a></div>
+<div class="panel flat"><span class="eyebrow">All Precalculus units</span>${PCU.map(v=>`<a href="${path.basename(`guides/precalculus-unit-${v.id}-${slug(v.name.replace(/^Unit \d+:\s*/,""))}.html`)}" style="${v.id===u.id?"font-weight:800;color:var(--ink)":""}">${esc(v.name)}</a>`).join("")}</div></aside></main>`}));
+});
 /* guides hub */
 out("guides/index.html", page({depth:1, canon:"/guides/index.html",
-  title:"Free AP® and CLEP® Study Guides for 15 Subjects | Credit Sprint",
-  desc:"Free unit-by-unit study guides for Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology, Statistics, Calculus AB and BC, Human Geography, English Literature and English Language, with key ideas, exam traps and practice questions.",
+  title:"Free AP® and CLEP® Study Guides for 16 Subjects | Credit Sprint",
+  desc:"Free unit-by-unit study guides for Macroeconomics, Microeconomics, Biology, Chemistry, Marketing, U.S. History, World History, U.S. Government, Psychology, Statistics, Calculus AB and BC, Precalculus, Human Geography, English Literature and English Language, with key ideas, exam traps and practice questions.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Study guides</p>
-<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for all 15 Credit Sprint courses.</p>
+<h1>Study guides</h1><p class="muted" style="max-width:60ch">One guide per unit, matched to the AP® courses and CLEP® exams for all 16 Credit Sprint courses.</p>
+<h2>Precalculus</h2>
+<div class="linkgrid">${pcGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>${esc(u.name)}</b><span>${u.wAP ? "AP® " + esc(u.ap) + " · " : ""}CLEP® ${esc(u.clep)}</span></a>`).join("")}</div>
 <h2>Human Geography</h2>
 <div class="linkgrid">${hgGuideLinks.map(({file,u})=>`<a href="${path.basename(file)}"><b>${esc(u.name)}</b><span>AP® ${esc(u.ap)}</span></a>`).join("")}</div>
 <h2>English Literature</h2>
@@ -865,6 +897,20 @@ HGPRACTICE.forEach(([k,name]) => {
 ${probs.map((c,i)=>`<div class="q"><b>Problem ${i+1}.</b><p>${esc(c.q)}</p><details><summary>Show answer</summary><p>${esc(c.work)}</p></details></div>`).join("")}</article>
 <aside><div class="panel"><h3>Unlimited geography math</h3><p class="muted small">Fresh numbers every time, plus the Number Crunch game.</p><a class="btn" href="../app.html?course=aphug">Practice in the app</a></div></aside></main>`}));
 });
+const PCPRACTICE = [["arc","Average rate of change"],["remainder","Remainder theorem"],["binom","Binomial coefficients"],["logs","Evaluate logarithms"],["compound","Compound interest"],["halflife","Half-life and doubling"],["period","Period, amplitude, midline"],["det","Determinants and dot products"]];
+const pcpLinks = [];
+PCPRACTICE.forEach(([k,name]) => {
+  const d = WPC.CS_DRILLS.find(x=>x.k===k); if (!d) return;
+  const file = `practice/precalculus-${slug(name)}-practice-problems.html`; pcpLinks.push({file,name,u:d.u});
+  const probs = Array.from({length:6}, () => d.gen());
+  out(file, page({depth:1, canon:"/"+file,
+    title:`${name} Practice (AP® Precalculus) | Credit Sprint`,
+    desc:`Six worked ${name.toLowerCase()} practice problems for AP and CLEP Precalculus, with answers. Unlimited new problems in the Credit Sprint app.`,
+    body:`<main class="wrap doc"><article><p class="crumbs"><a href="../index.html">Credit Sprint</a> / <a href="index.html">Practice problems</a> / ${esc(name)}</p>
+<h1>${esc(name)}: practice</h1><p class="muted">Precalculus Unit ${d.u}. Try each one, then open the answer. The Credit Sprint app generates unlimited new versions.</p>
+${probs.map((c,i)=>`<div class="q"><b>Problem ${i+1}.</b><p>${esc(c.q)}</p><details><summary>Show answer</summary><p>${esc(c.work)}</p></details></div>`).join("")}</article>
+<aside><div class="panel"><h3>Unlimited precalculus practice</h3><p class="muted small">Fresh numbers every time, plus the Number Crunch game.</p><a class="btn" href="../app.html?course=precalc">Practice in the app</a></div></aside></main>`}));
+});
 const GPRACTICE = [["override","Veto override votes"],["elec","State electoral votes"],["turnout","Turnout percent"],["moe","Margin of error range"]];
 const gpLinks = [];
 GPRACTICE.forEach(([k,name]) => {
@@ -927,6 +973,7 @@ out("practice/index.html", page({depth:1, canon:"/practice/index.html",
   desc:"Free worked practice problems for Hardy-Weinberg, chi-square, water potential, elasticity, costs, profit, multipliers, money creation, inflation, real GDP and more.",
   body:`<main class="wrap" style="padding-block:44px 64px;display:flex;flex-direction:column;gap:24px"><p class="crumbs"><a href="../index.html">Credit Sprint</a> / Practice problems</p>
 <h1>Practice problems</h1><p class="muted" style="max-width:60ch">Worked problems with step-by-step answers for every Credit Sprint subject, from economics and science formulas to history and government skills.</p>
+<h2>Precalculus</h2><div class="linkgrid">${pcpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Precalculus Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
 <h2>Calculus</h2><div class="linkgrid">${calcPLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Calculus${l.bc ? " BC" : ""} · 6 worked problems</span></a>`).join("")}</div>
 <h2>Statistics</h2><div class="linkgrid">${spLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Statistics · 6 worked problems</span></a>`).join("")}</div>
 <h2>Human Geography</h2><div class="linkgrid">${hgpLinks.map(l=>`<a href="${path.basename(l.file)}"><b>${esc(l.name)}</b><span>Human Geography Unit ${l.u} · 6 worked problems</span></a>`).join("")}</div>
@@ -1002,8 +1049,16 @@ urls.push("/app.html");
 fs.writeFileSync(path.join(ROOT,"sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 /* question counts for the app's course cards, course picker, onboarding and sign-up (other courses' data isn't loaded in the app) */
 const stat = w => ({q:w.CS_QUESTIONS_RAW.length, f:w.CS_FRQS.length, c:w.CS_CARDS_RAW.length, u:w.CS_UNITS.length});
-fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. */\nwindow.CS_COURSE_STATS = ${JSON.stringify({macro:stat(W), micro:stat(WM), bio:stat(WB), chem:stat(WC), mkt:stat(WK), apush:stat(WH), apworld:stat(WW), apgov:stat(WG), appsych:stat(WY), apstat:stat(WS), aplit:stat(WL), aplang:stat(WN), calcab:stat(WCA), calcbc:stat(WCB), aphug:stat(WHG)})};\n`);
+fs.writeFileSync(path.join(ROOT,"assets/js/course-stats.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. */\nwindow.CS_COURSE_STATS = ${JSON.stringify({macro:stat(W), micro:stat(WM), bio:stat(WB), chem:stat(WC), mkt:stat(WK), apush:stat(WH), apworld:stat(WW), apgov:stat(WG), appsych:stat(WY), apstat:stat(WS), aplit:stat(WL), aplang:stat(WN), calcab:stat(WCA), calcbc:stat(WCB), aphug:stat(WHG), precalc:stat(WPC)})};\n`);
 fs.writeFileSync(path.join(ROOT,"assets/js/team.js"), founder.appFile());
+/* free guide and practice pages for the app's Learn tab: {course: {g: {unit: "guides/….html"}, p: [[name, "practice/….html", unit, bcOnly]]}} */
+{ const G = (links, max) => Object.fromEntries(links.filter(l => !max || l.u.id <= max).map(l => [l.u.id, l.file]));
+  const PR = links => links.map(l => [l.name, l.file, l.u || 0, l.bc ? 1 : 0]);
+  const map = {macro:{g:G(guideLinks), p:PR(pLinks)}, micro:{g:G(mGuideLinks), p:PR(mpLinks)}, bio:{g:G(bGuideLinks), p:PR(bpLinks)}, chem:{g:G(cGuideLinks), p:PR(cpLinks)}, mkt:{g:G(kGuideLinks), p:PR(kpLinks)},
+    apush:{g:G(hGuideLinks), p:PR(hpLinks)}, apworld:{g:G(wGuideLinks), p:PR(wpLinks)}, apgov:{g:G(gGuideLinks), p:PR(gpLinks)}, appsych:{g:G(yGuideLinks), p:PR(ypLinks)}, apstat:{g:G(sGuideLinks), p:PR(spLinks)},
+    aplit:{g:G(litGuideLinks), p:[]}, aplang:{g:G(langGuideLinks), p:[]}, calcab:{g:G(calcGuideLinks, 8), p:PR(calcPLinks.filter(l => !l.bc))}, calcbc:{g:G(calcGuideLinks), p:PR(calcPLinks)},
+    aphug:{g:G(hgGuideLinks), p:PR(hgpLinks)}, precalc:{g:G(pcGuideLinks), p:PR(pcpLinks)}};
+  fs.writeFileSync(path.join(ROOT,"assets/js/guide-links.js"), `/* Generated by scripts/build-site.js. Do not edit by hand. Free study guide and practice pages for each course, shown in the app's Learn tab. */\nwindow.CS_GUIDES = ${JSON.stringify(map)};\n`); }
 fs.writeFileSync(path.join(ROOT,"robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
 /* stamp the same version into app.html's CSS and script links */
 const appPath = path.join(ROOT, "app.html");

@@ -471,7 +471,38 @@ const HUGP = [
  {id:"hg_dragon", body:"dragon", n:"Monsoon Dragon", u:5, r:"mythical", p:0.35, c1:"#E0F2FE", c2:"#1D4ED8", custom:"geo", bio:"Brings the summer rains that feed half the world's rice."},
  {id:"hg_cartographer", body:"cartographer", n:"The Grand Cartographer", u:0, r:"supreme", p:0.05, c1:"#14532D", c2:"#FDE047", custom:"geo", bio:"Has mapped every place, region and scale on Earth."}
 ];
-CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}, calc:{name:"Calculus", pets:CALCP}, aphug:{name:"Human Geography", pets:HUGP}};
+const PCP = [
+ {id:"pc_parab", body:"parab", n:"Parabola Pup", u:1, r:"common", p:6, c1:"#6366F1", c2:"#E0E7FF", custom:"pc", bio:"Opens upward with a positive leading coefficient. Loves its vertex."},
+ {id:"pc_cubic", body:"cubic", n:"Cubic Critter", u:1, r:"common", p:6, c1:"#0EA5E9", c2:"#FDE047", custom:"pc", bio:"Odd degree, so its ends always point in opposite directions."},
+ {id:"pc_wave", body:"wave", n:"Sine Wiggler", u:3, r:"common", p:6, c1:"#22C55E", c2:"#BBF7D0", custom:"pc", bio:"Repeats every 2\u03c0. Never higher than 1, never lower than \u22121."},
+ {id:"pc_pi", body:"pi", n:"Pi Pal", u:3, r:"common", p:6, c1:"#F97316", c2:"#FFEDD5", custom:"pc", bio:"About 3.14159, and it never stops or repeats."},
+ {id:"pc_logbody", body:"logbody", n:"Log Lizard", u:2, r:"common", p:6, c1:"#B45309", c2:"#FDE68A", custom:"pc", bio:"Asks one question all day: what exponent do I need?"},
+ {id:"pc_expo", body:"expo", n:"Exponent Sprout", u:2, r:"common", p:6, c1:"#16A34A", c2:"#FDBA74", custom:"pc", bio:"Its leaves double every week. Constant ratio, never constant difference."},
+ {id:"pc_circle", body:"circle", n:"Unit Circle Bean", u:3, r:"common", p:6, c1:"#3B82F6", c2:"#FDE047", custom:"pc", bio:"Radius 1. Every point on it is (cos \u03b8, sin \u03b8)."},
+ {id:"pc_arrow", body:"arrow", n:"Vector Arrow", u:4, r:"common", p:6, c1:"#EF4444", c2:"#FEE2E2", custom:"pc", bio:"Has a magnitude and a direction, and always knows which way it's pointing."},
+ {id:"pc_asym", body:"asym", n:"Asymptote Ghost", u:1, r:"uncommon", p:4, c1:"#A78BFA", c2:"#6D28D9", custom:"pc", bio:"Gets closer and closer to the line but never quite touches it."},
+ {id:"pc_hole", body:"hole", n:"Hole-in-One Donut", u:1, r:"uncommon", p:4, c1:"#F472B6", c2:"#7C2D12", custom:"pc", bio:"A removable discontinuity with sprinkles. Cancel the common factor to find it."},
+ {id:"pc_seq", body:"seq", n:"Sequence Snail", u:2, r:"uncommon", p:4, c1:"#FBBF24", c2:"#A16207", custom:"pc", bio:"Each loop of its shell is a constant ratio bigger than the last."},
+ {id:"pc_radian", body:"radian", n:"Radian Slice", u:3, r:"uncommon", p:4, c1:"#DC2626", c2:"#FDE68A", custom:"pc", bio:"Its crust is exactly as long as its edge: one radian."},
+ {id:"pc_matrix", body:"matrix", n:"Matrix Bot", u:4, r:"uncommon", p:4, c1:"#475569", c2:"#E2E8F0", custom:"pc", bio:"Rotates, reflects and stretches anything you multiply it by."},
+ {id:"pc_tan", body:"tan", n:"Tangent Tiger", u:3, r:"uncommon", p:4, c1:"#F59E0B", c2:"#FEF3C7", custom:"pc", bio:"Period \u03c0, and it bolts off to infinity at every asymptote."},
+ {id:"pc_pascal", body:"pascal", n:"Pascal's Pyramid", u:1, r:"uncommon", p:4, c1:"#0D9488", c2:"#F59E0B", custom:"pc", bio:"Every number is the sum of the two above it. Ask it to expand (a + b)\u207f."},
+ {id:"pc_spiral", body:"spiral", n:"Polar Spiral", u:3, r:"rare", p:3, c1:"#7C3AED", c2:"#EDE9FE", custom:"pc", bio:"r grows as \u03b8 turns, so it keeps moving away from the pole."},
+ {id:"pc_rose", body:"rose", n:"Polar Rose", u:3, r:"rare", p:3, c1:"#E11D48", c2:"#FDE047", custom:"pc", bio:"r = cos(3\u03b8): three petals, because 3 is odd."},
+ {id:"pc_ellipse", body:"ellipse", n:"Ellipse Egg", u:4, r:"rare", p:3, c1:"#14B8A6", c2:"#FDE047", custom:"pc", bio:"Two foci inside, and the distances to them always add to the same number."},
+ {id:"pc_euler", body:"euler", n:"Euler Owl", u:2, r:"rare", p:3, c1:"#92400E", c2:"#FDE68A", custom:"pc", bio:"Knows e \u2248 2.718 by heart. The base of all continuous growth."},
+ {id:"pc_protractor", body:"protractor", n:"Protractor Crab", u:3, r:"rare", p:3, c1:"#2563EB", c2:"#FDE047", custom:"pc", bio:"Measures every angle from 0\u00b0 to 180\u00b0, and converts to radians for fun."},
+ {id:"pc_hyper", body:"hyper", n:"Hyperbola Butterfly", u:4, r:"epic", p:2, c1:"#8B5CF6", c2:"#F0ABFC", custom:"pc", bio:"Two wings, two branches and two asymptotes it flies along."},
+ {id:"pc_cardioid", body:"cardioid", n:"Cardioid Heart", u:3, r:"epic", p:2, c1:"#EC4899", c2:"#FBCFE8", custom:"pc", bio:"r = 2 + 2 sin \u03b8. Polar math, shaped like a heart."},
+ {id:"pc_slide", body:"slide", n:"Slide Rule Serpent", u:2, r:"epic", p:2, c1:"#65A30D", c2:"#1F2937", custom:"pc", bio:"Multiplies by adding logarithms, the way engineers did before calculators."},
+ {id:"pc_graphcalc", body:"graphcalc", n:"Graphing Golem", u:1, r:"legendary", p:1.1, c1:"#1E293B", c2:"#94A3B8", custom:"pc", bio:"Finds zeros, extrema and intersections. Required for Part B."},
+ {id:"pc_nautilus", body:"nautilus", n:"Golden Nautilus", u:2, r:"legendary", p:0.9, c1:"#F59E0B", c2:"#7C2D12", custom:"pc", bio:"Its shell grows by the same ratio every turn: a living exponential."},
+ {id:"pc_phoenix", body:"phoenix", n:"Sinusoid Phoenix", u:3, r:"mythical", p:0.6, c1:"#F97316", c2:"#FDE047", custom:"pc", bio:"Rises and falls forever, one period after another."},
+ {id:"pc_fractal", body:"fractal", n:"Fractal Dragon", u:2, r:"mythical", p:0.5, c1:"#7C3AED", c2:"#C4B5FD", custom:"pc", bio:"Every scale holds a smaller copy of itself, all the way down."},
+ {id:"pc_hydraf", body:"hydraf", n:"Function Hydra", u:1, r:"mythical", p:0.35, c1:"#0F766E", c2:"#FDE047", custom:"pc", bio:"Three heads, f, g and h. Compose them in the wrong order and watch out."},
+ {id:"pc_sage", body:"sage", n:"The Function Sage", u:0, r:"supreme", p:0.05, c1:"#312E81", c2:"#FDE047", custom:"pc", bio:"Has graphed every function, polynomial to polar."}
+];
+CS.PET_SETS = {macro:{name:"Macroeconomics", pets:MACRO}, micro:{name:"Microeconomics", pets:MICRO}, bio:{name:"Biology", pets:BIO}, chem:{name:"Chemistry", pets:CHEM}, mkt:{name:"Marketing", pets:MKT}, apush:{name:"U.S. History", pets:APUSHP}, apworld:{name:"World History", pets:APWORLDP}, apgov:{name:"U.S. Government", pets:APGOVP}, appsych:{name:"Psychology", pets:APPSYP}, apstat:{name:"Statistics", pets:APSTATP}, aplit:{name:"English Literature", pets:APLITP}, aplang:{name:"English Language", pets:APLANGP}, calc:{name:"Calculus", pets:CALCP}, aphug:{name:"Human Geography", pets:HUGP}, precalc:{name:"Precalculus", pets:PCP}};
 /* AB and BC share one pet set */
 CS.PET_SET_KEY = k => ({calcab:"calc", calcbc:"calc"})[k] || k;
 const SET = CS.PET_SETS[CS.PET_SET_KEY(CS.COURSE)] ? CS.PET_SETS[CS.PET_SET_KEY(CS.COURSE)].pets : MACRO;
@@ -480,7 +511,7 @@ const SECRET = [
  {id:"rahul", n:"Rahul", u:0, r:"secret", p:0, c1:"#9A6338", c2:"#14110F", custom:"rahul", bio:"The tall, skinny study legend in the suit who never goes anywhere without his biology textbook. Secret pet. Only friends of Credit Sprint get one."}
 ];
 CS.SECRET_PETS = SECRET;
-CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, CALCP, HUGP, SECRET).map(p=>[p.id,p]));
+CS.PET = Object.fromEntries(MACRO.concat(MICRO, BIO, CHEM, MKT, APUSHP, APWORLDP, APGOVP, APPSYP, APSTATP, APLITP, APLANGP, CALCP, HUGP, PCP, SECRET).map(p=>[p.id,p]));
 
 /* ---------- state ---------- */
 function st(){ const s = S(); if (!s.pets) s.pets = {eggs:[], owned:{}, active:null, lastEgg:"", hatched:0};
@@ -779,7 +810,7 @@ const EYE = (x, y, r=4.5, glow) => `<circle cx="${x}" cy="${y}" r="${r}" fill="$
 const CROWN = (y, col="#FBBF24") => `<path d="M46 ${y} L49 ${y-9} L55 ${y-3} L60 ${y-12} L65 ${y-3} L71 ${y-9} L74 ${y}Z" fill="${col}" stroke="#B45309" stroke-width="1.2"/><circle cx="60" cy="${y-12}" r="2" fill="#F43F5E"/>`;
 const SCL = (s, k, cx=60, cy=64) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${s}</g>`;
 /* course art files load on demand: the current course's art is in the page already, the others load the first time they're needed */
-const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart", CS_CALCART:"calcart", CS_GEOART:"geoart"};
+const ART_FILE = {CS_BIOART:"bioart", CS_CHEMART:"chemart", CS_MKTART:"marketart", CS_HISTART:"histart", CS_WORLDART:"worldart", CS_GOVART:"govart", CS_PSYART:"psyart", CS_STATART:"statart", CS_LITART:"litart", CS_LANGART:"langart", CS_CALCART:"calcart", CS_GEOART:"geoart", CS_PCART:"precalcart"};
 const artLoading = {};
 let artTimer = 0;
 CS.loadArt = g => { if (artLoading[g]) return; artLoading[g] = 1; const sc = document.createElement("script"); sc.src = "assets/js/" + ART_FILE[g] + ".js" + (window.CS_V ? "?v=" + window.CS_V : "");
@@ -823,6 +854,7 @@ const CUSTOM = {
   lang: (p, stage, mood) => artDraw("CS_LANGART", p, stage, mood),
   calc: (p, stage, mood) => artDraw("CS_CALCART", p, stage, mood),
   geo: (p, stage, mood) => artDraw("CS_GEOART", p, stage, mood),
+  pc: (p, stage, mood) => artDraw("CS_PCART", p, stage, mood),
   hist: (p, stage, mood) => artDraw(p.id.indexOf("w_") === 0 ? "CS_WORLDART" : "CS_HISTART", p, stage, mood),
   hydra: (p, stage, mood) => {
     const head = (x, y, r, i) => `<path d="M${x-r*.6} ${y-r*.8} L${x-r*.9} ${y-r*1.7} L${x-r*.15} ${y-r*.95}Z M${x+r*.6} ${y-r*.8} L${x+r*.9} ${y-r*1.7} L${x+r*.15} ${y-r*.95}Z" fill="#FBBF24"/>

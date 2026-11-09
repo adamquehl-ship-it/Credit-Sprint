@@ -18,6 +18,7 @@ const APHUG = ["cards.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js
 const CALC_AB_FILES = ["cards.js","c1.js","c2.js","g1.js","g2.js","g3.js","g4.js","g5.js","g6.js","g7.js","g8.js","content.js","content2.js","frqs.js","drills.js","games.js"];
 const CALCAB = CALC_AB_FILES.map(f=>"assets/data/calc/"+f);
 const CALCBC = CALCAB.concat(["cards.js","c1.js","g9.js","g10.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/calc/bc/"+f));
+const PRECALC = ["cards.js","c1.js","g1.js","g2.js","g3.js","g4.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/precalc/"+f);
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     bosses:{1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"}, key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
@@ -145,11 +146,21 @@ const C = window.CS_COURSES = {
     chainDesc:"Put the steps in order: limits, related rates, integration by parts, Euler's method, polar area and interval of convergence.",
     crunchDesc:"Two minutes of calculus calculations: derivatives, integrals, Euler's method, series sums, Taylor coefficients, parametric slopes and polar areas. Type the number.",
     drillDesc:"Do the calculations: derivatives, integrals, Euler's method, geometric series, radius of convergence, Taylor coefficients, parametric and polar. Fresh numbers every time.",
-    planGames:["Derivative Dash","Tangent Shot","Integral Sprint","Series Court","Sprint","True or False"]}
+    planGames:["Derivative Dash","Tangent Shot","Integral Sprint","Series Court","Sprint","True or False"]},
+  precalc:{k:"precalc", name:"Precalculus", short:"Precalc", ap:"AP\u00AE Precalculus", clep:"CLEP\u00AE Precalculus", clepShort:"CLEP\u00AE Precalculus",
+    key:"creditsprint.precalc.v1", col:"#0E7490", soft:"#ECFEFF", apFmt:"42 multiple choice and 4 free-response questions in 2 hours 55 minutes", clepFmt:"About 48 questions in 90 minutes", blurb:"Polynomial and rational functions, exponential and logarithmic functions, trigonometric and polar functions, plus parametric equations, vectors and matrices. AP\u00AE Precalculus and CLEP\u00AE Precalculus.", icon:"chart", data:PRECALC, nUnits:4, cat:"Math & statistics",
+    graphs:false, unitWord:"Unit", clepQ:"about 48", frqHead:"AP\u00AE Section II \u00B7 4 questions \u00B7 70 minutes",
+    apExamText:"The real exam is hybrid digital: 42 multiple-choice questions in 1 hour 45 minutes (29 without a calculator, then 13 with a graphing calculator), worth 62.5% of your score, then 4 free-response questions in 70 minutes (2 with a calculator, 2 without), worth 37.5%, handwritten on paper. Units 1 to 3 are tested; Unit 4 is not. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:42, min:105, name:"Full-length AP\u00AE multiple choice"}, mini:{n:15, min:38, name:"Mini exam"}}, clep:{full:{n:48, min:90, name:"Full-length CLEP\u00AE"}, mini:{n:20, min:38, name:"Mini exam"}}},
+    bosses:{1:"The Asymptote Phantom",2:"The Logarithm Lich",3:"The Sinusoid Siren",4:"The Matrix Minotaur"},
+    chainDesc:"Put the steps in order: graphing a rational function, solving with logs, building a sinusoidal model and finding a matrix inverse.",
+    crunchDesc:"Two minutes of precalculus calculations: rates of change, remainders, logs, sequences, interest, periods and determinants. Type the number.",
+    drillDesc:"Do the calculations: average rates of change, the remainder theorem, binomial coefficients, logs, compound interest, half-life, sinusoids and polar points. Fresh numbers every time.",
+    planGames:["Function Family Sort","Transformation Match","Unit Circle Sprint","Log Rules","Sprint","True or False"]}
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

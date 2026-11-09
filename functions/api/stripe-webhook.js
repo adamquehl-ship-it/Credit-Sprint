@@ -21,6 +21,16 @@ async function subscriptionForCharge(env, ch) {
     return s ? (typeof s === "string" ? s : s.id) : null;
   } catch (e) { console.error("refund lookup failed:", e && e.message); return null; }
 }
+async function stopMonthly(env, customer, user) {
+  try {
+    const subs = await stripe(env, "subscriptions?status=active&limit=20&customer=" + encodeURIComponent(customer));
+    for (const sub of (subs && subs.data) || []) {
+      if (sub.cancel_at_period_end) continue;
+      if (sub.metadata && sub.metadata.user && sub.metadata.user !== user) continue;
+      await stripe(env, "subscriptions/" + encodeURIComponent(sub.id), {cancel_at_period_end: "true"});
+    }
+  } catch (e) { console.error("stopping monthly plan failed:", e && e.message); }
+}
 export async function onRequestPost({request, env}) {
   if (!env.DB) return json({error: "No database."}, 503);
   const raw = await request.text();
@@ -42,6 +52,9 @@ export async function onRequestPost({request, env}) {
       /* "no_payment_required" = a 100%-off promotion code: nothing was charged, but the student still gets the plan */
       if (o.mode === "payment" && (o.payment_status === "paid" || o.payment_status === "no_payment_required")) put(o.payment_intent || o.id, user, m.plan, m.course, passUntil(m.plan, (o.created || now / 1000) * 1000));
       if (o.mode === "subscription" && o.subscription) put(o.subscription, user, m.plan, m.course, now + 31 * DAY + GRACE);   // one month; refined by subscription events
+      /* an All-Class Exam Pass covers everything a monthly plan does, so stop the student's monthly plans from renewing.
+         They keep the month they already paid for (cancel at period end, no refund). A Stripe error never blocks the pass. */
+      if (m.plan === "examall" && o.mode === "payment" && o.customer && env.STRIPE_SECRET_KEY) await stopMonthly(env, o.customer, user);
     }
   } else if (ev.type.startsWith("customer.subscription.")) {
     const item = (o.items && o.items.data && o.items.data[0]) || {};

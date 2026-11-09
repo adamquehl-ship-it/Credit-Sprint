@@ -116,6 +116,11 @@ const B = {
   5:{g:"f",sk:"#FDE68A",o:"rags",oc:"#A16207",ac:"#84CC16",hair:"bob",hc:"#713F12",hat:"straw",f:["glow"],p:"trident",ey:"#84CC16"},
   6:{g:"f",sk:"#E5E7EB",o:"hood",oc:"#374151",ac:"#FB923C",f:["glow","fade"],x:["aura","smoke"],p:"key",ey:"#FB923C"},
   7:{g:"m",sk:"#FDBA74",o:"suit",oc:"#111827",ac:"#FBBF24",hair:"none",hat:"tophat",f:["monocle","horns"],x:["smoke"],p:"coins"}},
+ precalc:{
+  1:{g:"m",sk:"#E0E7FF",o:"hood",oc:"#312E81",ac:"#A5B4FC",f:["glow","fade"],x:["aura"],p:"infinity",ey:"#A5B4FC"},
+  2:{g:"f",sk:"#D9F99D",o:"robe",oc:"#365314",ac:"#FDE047",hair:"long",hc:"#1A2E05",hat:"crown",f:["sunken","glow"],x:["smoke"],p:"orb",ey:"#FDE047"},
+  3:{g:"f",sk:"#99F6E4",o:"gown",oc:"#0E7490",ac:"#F0ABFC",hair:"tentacles",hc:"#164E63",f:["scales","fins"],x:["tail"],p:"trident",ey:"#F0ABFC"},
+  4:{g:"m",sk:"#D6D3D1",o:"armor",oc:"#44403C",ac:"#22D3EE",hair:"none",f:["horns","glow"],x:["chains"],p:"hammer",ey:"#22D3EE"}},
  mkt:{
   1:{g:"f",sk:"#BBF7D0",o:"hood",oc:"#15803D",ac:"#A3E635",f:["glow"],x:["aura"],p:"flask",ey:"#BEF264"},
   2:{g:"m",sk:"#FCD34D",o:"suit",oc:"#9D174D",ac:"#FDE047",hair:"slick",hc:"#1F2937",f:["bowtie","grin"],p:"box"},

@@ -310,11 +310,19 @@ render.learn = (o) => {
           <button class="btn ghost" id="learn-cards">${I("cards")}Unit ${u.id} flashcards</button>
           <button class="btn ghost" data-go="games" data-game="boss" data-unit="${u.id}">${I("sword")}Fight the Unit ${u.id} boss</button>
           ${u.lab?`<button class="btn ghost" data-go="learn" data-lab="${u.lab}">${I("chart")}Open in Graph Lab</button>`:""}
-          ${(window.CS_EXPLAINERS||[]).filter(x=>x.u===u.id).map(x=>`<button class="btn ghost" data-go="learn" data-mode="vid" data-game="${x.id}">${I("spark")}Watch: ${esc(x.title)}</button>`).join("")}</div>
+          ${(window.CS_EXPLAINERS||[]).filter(x=>x.u===u.id).map(x=>`<button class="btn ghost" data-go="learn" data-mode="vid" data-game="${x.id}">${I("spark")}Watch: ${esc(x.title)}</button>`).join("")}${learnLinks(u.id)}</div>
       </div>
     </div>`;
   $("#learn-cards").onclick = () => { CS.cardFilter = u.id; CS.go("cards"); };
 };
+/* the free study guide page and worked practice pages for a unit (written by scripts/build-site.js into guide-links.js) */
+function learnLinks(id){
+  const G = (window.CS_GUIDES || {})[CS.COURSE]; if (!G) return "";
+  const g = G.g && G.g[id], pr = (G.p || []).filter(x => x[2] === id);
+  if (!g && !pr.length) return "";
+  return `<div class="stack learn-links" style="gap:6px;margin-top:6px">${g ? `<a class="btn ghost" href="${esc(g)}" target="_blank" rel="noopener" style="text-decoration:none">${I("ext")}Printable study guide</a>` : ""}
+    ${pr.length ? `<span class="eyebrow" style="margin-top:6px">Worked practice problems</span>${pr.map(x => `<a class="small" href="${esc(x[1])}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">${esc(x[0])} →</a>`).join("")}` : ""}</div>`;
+}
 function describeMove(m, e0, e1){
   if (!e0 || !e1) return "";
   const w = (d, name) => Math.abs(d) < .5 ? `${name} unchanged` : `${name} ${d>0?"↑":"↓"}`;
