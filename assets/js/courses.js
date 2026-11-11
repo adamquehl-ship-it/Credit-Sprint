@@ -6,7 +6,8 @@ const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
-const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","content.js","content2.js","frqs2.js","frqs3.js","drills.js"].map(f => "assets/data/mkt/"+f);
+/* n1–n10 (set 2 questions) and vocab2.js load after the originals so existing question and card ids never change */
+const MKT = ["m1.js","m2.js","m3.js","m4.js","m5.js","m6.js","m7.js","m8.js","m9.js","m10.js","n1.js","n2.js","n3.js","n4.js","n5.js","n6.js","n7.js","n8.js","n9.js","n10.js","content.js","vocab2.js","content2.js","frqs2.js","frqs3.js","drills.js"].map(f => "assets/data/mkt/"+f);
 const APPSYCH = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/appsych/"+f);
 const APSTAT = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","g1.js","g2.js","g3.js","g4.js","g5.js","s1.js","s3.js","s4.js","s5.js","content.js","content2.js","frqs2.js","drills.js","games.js"].map(f=>"assets/data/apstat/"+f);
 const APGOV = ["cards.js","cards2.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","p9.js","p10.js","p11.js","p12.js","p13.js","p14.js","p15.js","p16.js","p17.js","p18.js","p19.js","p20.js","p21.js","content.js","content2.js","frqs2.js","frqs4.js","drills.js","games.js"].map(f=>"assets/data/apgov/"+f);
@@ -126,7 +127,8 @@ const C = window.CS_COURSES = {
     chainDesc:"Put the marketing steps in order: from a research problem to a decision, from awareness to purchase, from a product idea to the market.",
     crunchDesc:"Two minutes of marketing math: markup, margin, break-even, market share, elasticity of demand and reach. Type the number.",
     drillDesc:"Markups, margins, break-even, market share, elasticity and channel math: fresh numbers every time.",
-    planGames:["Mix Master","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]},
+    mocks:3, clepAreas:[{n:"Marketing in society", w:"8–13%", units:[1]}, {n:"Marketing in the organization", w:"17–24%", units:[2,3]}, {n:"Target marketing", w:"22–27%", units:[4,5,6]}, {n:"The marketing mix", w:"40–50%", units:[7,8,9,10]}],
+    planGames:["Mix Master","Segment Sniper","Lifecycle Ladder","Pricing Pick","Promo Mix Match","Sprint","Match-up","Chain Reaction","Number Crunch","True or False"]},
   calcab:{k:"calcab", name:"Calculus AB", short:"Calc AB", ap:"AP\u00AE Calculus AB", clep:"CLEP\u00AE Calculus", clepShort:"CLEP\u00AE Calculus",
     key:"creditsprint.calcab.v1", col:"#65A30D", soft:"#F7FEE7", apFmt:"42 multiple choice and 6 free-response questions in 3 hours 10 minutes", clepFmt:"About 44 multiple choice in 90 minutes", blurb:"Limits, derivatives and their applications, integrals and the Fundamental Theorem, differential equations, and area and volume. AP\u00AE Calculus AB and CLEP\u00AE Calculus.", icon:"integral", data:CALCAB, nUnits:8, cat:"Math & statistics",
     graphs:false, unitWord:"Unit", frqHead:"AP\u00AE Section II \u00B7 6 questions \u00B7 90 minutes",

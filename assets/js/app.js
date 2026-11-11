@@ -43,11 +43,12 @@ render.team = () => {
 #v-team .tm-scores b{color:var(--ink);margin-left:3px}#v-team .tm-link{color:var(--accent);font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:4px}#v-team .tm-link .ico{width:14px;height:14px}
 #v-team .tm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
 #v-team .tm-lead{display:flex;gap:22px;align-items:flex-start;flex-direction:row}@media(max-width:640px){#v-team .tm-lead{flex-direction:column}}
-#v-team .tm-mate{flex-direction:row;align-items:flex-start;gap:14px}</style>
+#v-team .tm-mate{flex-direction:row;align-items:flex-start;gap:14px}
+#v-team .tm-now{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--accent-soft);font-size:.92rem;line-height:1.45}#v-team .tm-now b{color:var(--accent);display:inline-flex;align-items:center;gap:5px}#v-team .tm-now .ico{width:16px;height:16px}</style>
   <div class="stack" style="gap:4px"><span class="eyebrow">Who's behind Credit Sprint</span><h2 style="margin:0">Meet the team</h2>
     <p class="muted" style="margin:0">Students who have taken the exams they build these courses for.</p></div>
   ${f ? `<div class="panel tm-lead">${pic(f.photo, f.name, 150)}<div class="stack" style="gap:10px;min-width:0"><div><b style="font-size:1.2rem">${esc(f.name)}</b><div class="small muted">${esc(f.role)}</div></div>
-    ${f.story ? `<p style="margin:0;line-height:1.6">${esc(f.story)}</p>` : ""}<div class="stack" style="gap:6px"><span class="eyebrow">${esc(f.name.split(" ")[0])}'s AP® scores</span>${scores(f.exams)}</div>${link(f.profile, f.name, f.profileLabel)}</div></div>` : ""}
+    ${f.story ? `<p style="margin:0;line-height:1.6">${esc(f.story)}</p>` : ""}${f.studying ? `<div class="tm-now"><b>${I("book")}Now studying</b><span>${esc(f.studying)}</span>${CS.CARDS && window.CS_COURSES.mkt ? `<button class="linklike small" data-course="mkt">Study CLEP® Marketing with me →</button>` : ""}</div>` : ""}<div class="stack" style="gap:6px"><span class="eyebrow">${esc(f.name.split(" ")[0])}'s AP® scores</span>${scores(f.exams)}</div>${link(f.profile, f.name, f.profileLabel)}</div></div>` : ""}
   ${T.team.length ? `<div class="tm-grid">${T.team.map(t => `<div class="panel tm-mate">${pic(t.photo, t.name, 64)}<div class="stack" style="gap:6px;min-width:0"><div><b>${esc(t.name)}</b><div class="small muted">${esc(t.role)}</div></div>
     ${t.blurb ? `<p class="small" style="margin:0">${esc(t.blurb)}</p>` : ""}${scores(t.exams)}${link(t.profile, t.name)}</div></div>`).join("")}</div>` : ""}`;
 };
@@ -236,6 +237,7 @@ render.home = () => {
       <div class="kpi"><span class="eyebrow">Level ${lv.lv}</span><span class="v">${s.xp.toLocaleString()}<small> XP</small></span>${meter(lv.into/lv.need)}<span class="muted tiny">${lv.need-lv.into} XP to level ${lv.lv+1}</span></div>
       <div class="kpi"><span class="eyebrow">This week</span><div class="week">${week.map(w=>`<div title="${w.xp} XP"><i class="${w.xp>=s.goal||w.frozen?"on":""}" style="height:${Math.max(6,Math.round(w.xp/maxW*44))}px"></i><span>${esc(w.label)}</span></div>`).join("")}</div></div>
     </div>
+    ${CS.scoreCard ? CS.scoreCard() : ""}
     ${CS.upgradeCard ? CS.upgradeCard() : ""}
     ${CS.petCard ? CS.petCard() : ""}
     ${CS.dqCard ? CS.dqCard() : ""}${CS.whyCard ? CS.whyCard() : ""}
@@ -412,6 +414,8 @@ const EXAMS = CS.C.exams || { ap:{full:{n:60, min:70, name:"Full AP® Section I"
 const MODES = [
   {k:"unit", ic:"book", e:"By unit", n:"Unit quiz", d:CS.hasPassages ? "About 10 questions in full passage sets, with an explanation for every choice." : "10 questions with an explanation for every choice."},
   {k:"mixed", ic:"spark", e:"Adaptive", n:"Smart review", d:(CS.hasPassages ? "About 15" : "15") + " questions, weighted toward your weakest units."},
+  {k:"weak", ic:"target", e:"Adaptive", n:"Weak-spot drill", d:"Rounds of 10 from your lowest units, missed questions first, until every unit reaches your goal."},
+  ...(CS.C.mocks ? [{k:"mock", ic:"pen", e:"CLEP\u00AE screen", n:"Practice tests", d:`${CS.C.mocks} fixed full-length tests that look and work like the real CLEP\u00AE screen, reviewed by topic.`}] : []),
   {k:"mistakes", ic:"target", e:"Notebook", n:"Mistakes", d:"Every miss lands here until you get it right twice.", pro:true},
   {k:"exam", ic:"pen", e:"Timed", n:"Practice exam", d:"Full length, real timing, scored like the exam."},
   {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:CS.C.drillDesc || (CS.COURSE==="micro" ? "Elasticity, costs, profit, surplus: fresh numbers every time." : "Multipliers, CPI, money creation: fresh numbers every time."), pro:true},
@@ -421,15 +425,17 @@ const MODES = [
 if (!CS.hasGraphs()) for (let i = MODES.length - 1; i >= 0; i--) if (["graphs","draw"].includes(MODES[i].k)) MODES.splice(i, 1);
 if (!(CS.DRILLS && CS.DRILLS.length)) for (let i = MODES.length - 1; i >= 0; i--) if (MODES[i].k === "drills") MODES.splice(i, 1);
 render.practice = (o) => {
-  if (o.mode) { pMode = o.mode; run = null; drill = null; drawRun = null; }
+  if (o.mode) { pMode = o.mode; run = null; drill = null; drawRun = null; mockRes = null; }
   if (o.keepRun) { /* run prepared by caller */ }
   if (o.unit) { pUnit = o.unit; if (o.mode === "unit") run = null; }
   if (exam && !exam.done) return renderExam();
+  if (S().mockRun && !S().mockRun.paused && S().mockRun.ids.every(id => CS.QBYID[id])) { pMode = "mock"; return renderMock(); }
+  if (pMode === "mock" && mockRes) return renderMockResults();
   const v = $("#v-practice"), nm = Object.keys(S().mistakes).length, ex = EXAMS[S().exam];
   v.innerHTML = `
     <div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">${esc(examName())}</span><h1>Practice</h1><p class="muted">${CS.QS.length} original multiple-choice questions, ${CS.SHIFTS.length ? `${CS.SHIFTS.length} graph scenarios and ` : ""}unlimited calculation drills.</p>${CS.hasAccess()?"":`<span class="tag" style="align-self:flex-start">${CS.roundsLeft()} of ${CS.FREE_ROUNDS} free quizzes left today · <button class="linklike" data-up="open">unlimited with a plan</button></span>`}</div>
       <button class="btn ghost" data-go="practice" data-mode="diagnostic">${I("target")}${S().diag?"Retake diagnostic":"Take the diagnostic"}</button></div>
-    <div class="modes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${MODES.map(m=>`<button class="mode" aria-pressed="${pMode===m.k}" data-m="${m.k}"><span class="m-ico">${I(m.ic)}</span>${m.pro?CS.proTag():""}<span class="eyebrow">${m.k==="mistakes"?`${CS.mistakesDue().length} due · ${nm} saved`:m.e}</span><h3>${m.n}</h3><span class="muted small">${m.k==="exam"?`${ex.full.n} questions in ${ex.full.min} minutes, like the real ${examShort()} exam.`:m.d}</span></button>`).join("")}</div>
+    <div class="modes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${MODES.map(m=>`<button class="mode" aria-pressed="${pMode===m.k}" data-m="${m.k}"><span class="m-ico">${I(m.ic)}</span>${m.pro?CS.proTag():""}<span class="eyebrow">${m.k==="mistakes"?`${CS.mistakesDue().length} due · ${nm} saved`:m.k==="weak"?`Goal ${Math.round(unitGoal()*100)}% · ${weakUnits().length} weak`:m.k==="mock"?`${CS.mockList().length}/${CS.C.mocks} taken`:m.e}</span><h3>${m.n}</h3><span class="muted small">${m.k==="exam"?`${ex.full.n} questions in ${ex.full.min} minutes, like the real ${examShort()} exam.`:m.d}</span></button>`).join("")}</div>
     <div id="p-body" class="stack" style="gap:16px"></div>`;
   $$("#v-practice .mode").forEach(b => b.onclick = () => { pMode = b.dataset.m; run = null; drill = null; drawRun = null; render.practice({keepScroll:true}); $("#p-body").scrollIntoView({behavior:"smooth", block:"start"}); });
   const body = $("#p-body");
@@ -461,6 +467,8 @@ render.practice = (o) => {
     if (!run) run = {qs: CS.setOrder(CS.shuffle(ids).slice(0,15).map(id=>CS.QBYID[id]).filter(Boolean)).map(CS.prepQ), i:0, score:0, picked:null, kind:"mistakes"};
     return quiz($("#p-run"));
   }
+  if (pMode === "weak") return weakMode(body, limit);
+  if (pMode === "mock") return mockList(body);
   if (pMode === "drills") return drills(body);
   if (pMode === "draw") return drawMode(body);
   if (pMode === "exam") {
@@ -479,12 +487,13 @@ render.practice = (o) => {
 function quiz(p){
   const r = run, qs = r.qs;
   if (r.i >= qs.length) {
+    if (r.kind === "weak") { const wh = $("#weak-head"); if (wh) wh.remove(); }
     if (!r.finished) { r.finished = true; markTask("quiz"); if (r.kind==="mistakes") markTask("mist"); CS.addXP(10 + (r.score===qs.length?20:0)); CS.refresh(); if (r.score===qs.length) CS.toast("Perfect round! +20 bonus XP"); if (CS.milestone) setTimeout(() => CS.milestone("quiz"), 2500); }
     const u = r.unit ? CS.UNITS[r.unit-1] : null;
-    p.innerHTML = `<span class="eyebrow">${u?`Unit ${u.id} complete`:r.kind==="mistakes"?"Notebook review complete":r.kind==="graphs"?"Graph round complete":"Smart review complete"}</span>
+    p.innerHTML = `<span class="eyebrow">${u?`Unit ${u.id} complete`:r.kind==="weak"?"Weak-spot round complete":r.kind==="mistakes"?"Notebook review complete":r.kind==="graphs"?"Graph round complete":"Smart review complete"}</span>
       <div class="result-big">${r.score}/${qs.length}</div>
-      <p class="muted">${u?`Unit mastery is now ${CS.pct(CS.mastery(u.id))}.`:`${Object.keys(S().mistakes).length} questions left in your mistakes notebook.`}</p>
-      <div class="row-wrap"><button class="btn" id="q-again">Go again</button>${u?`<button class="btn ghost" data-go="games" data-game="boss" data-unit="${u.id}">Fight the boss</button><button class="btn ghost" data-go="learn" data-unit="${u.id}">Review the guide</button>`:""}<button class="btn ghost" data-go="home">Dashboard</button></div>`;
+      ${r.kind==="weak" ? `<p class="muted">${weakUnits().length ? `${weakUnits().length} unit${weakUnits().length===1?"":"s"} still below your goal. Here's where this round's units stand:` : "Every unit is at your goal. Time for a practice test."}</p>${weakRows(r.focus)}` : `<p class="muted">${u?`Unit mastery is now ${CS.pct(CS.mastery(u.id))}.`:`${Object.keys(S().mistakes).length} questions left in your mistakes notebook.`}</p>`}
+      <div class="row-wrap"><button class="btn" id="q-again">${r.kind==="weak"?"Keep drilling":"Go again"}</button>${u?`<button class="btn ghost" data-go="games" data-game="boss" data-unit="${u.id}">Fight the boss</button><button class="btn ghost" data-go="learn" data-unit="${u.id}">Review the guide</button>`:""}<button class="btn ghost" data-go="home">Dashboard</button></div>`;
     $("#q-again").onclick = () => { run = null; render.practice({keepScroll:true}); };
     return;
   }
@@ -506,6 +515,7 @@ function quiz(p){
 }
 document.addEventListener("keydown", e => {
   if (current !== "practice" || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || $(".modal-wrap")) return;
+  if (S().mockRun && $(".clep-shell")) { if (CS.mockKey(e) && /^Arrow/.test(e.key)) e.preventDefault(); return; }
   if (exam && !exam.done) { if (["1","2","3","4","5"].includes(e.key)) { exam.ans[exam.i] = +e.key-1; renderExam(); } return; }
   if (run && run.key && !run.finished && $("#p-run")) run.key(e);
 });
@@ -658,8 +668,10 @@ CS.cardFilter = "due"; let flipped = false;
 const cs = id => S().cards[id] || {due:0, int:0, ease:2.5, reps:0};
 function cardList(){
   const now = Date.now(), f = CS.cardFilter;
-  let pool = CS.CARDS.filter(c => f==="due" || f==="all" || c.u===f);
+  let pool = CS.CARDS.filter(c => ["due","all","missed","new"].includes(f) || c.u===f);
   if (f === "due") pool = pool.filter(c => cs(c.id).due <= now);
+  else if (f === "missed") pool = pool.filter(c => (cs(c.id).lapses||0) > 0 && cs(c.id).int < 7);
+  else if (f === "new") pool = pool.filter(c => !S().cards[c.id]);
   else pool = pool.filter(c=>cs(c.id).due<=now).concat(pool.filter(c=>cs(c.id).due>now));
   return pool.sort((a,b)=>cs(a.id).due-cs(b.id).due);
 }
@@ -672,22 +684,23 @@ function nextInt(st, g){
 }
 const fmtInt = d => d===0 ? "<1 min" : d===1 ? "1 day" : d<30 ? d+" days" : Math.round(d/30)+" mo";
 render.cards = () => {
-  const v = $("#v-cards"), opts = [["due","Due now"],["all","All cards"]].concat(CS.UNITS.map(u=>[u.id,"Unit "+u.id]));
+  const v = $("#v-cards"), opts = [["due","Due now"],["missed","Missed terms"],["new","New terms"],["all","All cards"]].concat(CS.UNITS.map(u=>[u.id,"Unit "+u.id]));
   const list = cardList(), c = list[0], now = Date.now();
-  const due = CS.CARDS.filter(x=>cs(x.id).due<=now).length, learned = CS.CARDS.filter(x=>cs(x.id).int>=1).length, mature = CS.CARDS.filter(x=>cs(x.id).int>=21).length;
+  const due = CS.CARDS.filter(x=>cs(x.id).due<=now).length, learned = CS.CARDS.filter(x=>cs(x.id).int>=1).length, mature = CS.CARDS.filter(x=>cs(x.id).int>=7).length;
   v.innerHTML = `<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">Spaced repetition</span><h1>Flashcards</h1><p class="muted">${CS.CARDS.length} key terms. Rate each card honestly and the deck schedules itself, showing hard cards often and easy ones rarely.</p></div></div>
     <div class="chips">${opts.map(([k,t])=>`<button class="chip" aria-pressed="${k===CS.cardFilter}" data-v="${k}">${t}</button>`).join("")}</div>
     <div class="deck"><div class="stack" id="card-stage"></div>
       <aside class="panel"><span class="eyebrow">Your deck</span>
         <div class="stat"><span>Due now</span><b>${due}</b></div>
         <div class="stat"><span>Learned</span><b>${learned} / ${CS.CARDS.length}</b></div>
-        <div class="stat"><span>Mastered (21+ days)</span><b>${mature}</b></div>
+        <div class="stat"><span>Mastered (7+ days)</span><b>${mature}</b></div>
         <div class="stat"><span>Total reviews</span><b>${S().reviews}</b></div>
         ${meter(learned/CS.CARDS.length,"mint")}
-        <p class="muted small"><span class="kbd">Space</span> flips the card. <span class="kbd">1</span>–<span class="kbd">4</span> rate it.</p></aside></div>`;
+        <p class="muted small"><span class="kbd">Space</span> flips the card. <span class="kbd">1</span>–<span class="kbd">4</span> rate it.</p><button class="linklike small" id="vm-jump" style="align-self:flex-start">See vocab mastery ↓</button></aside></div>` + vocabBlock();
+  $("#vm-jump").onclick = () => $("#vocab").scrollIntoView({behavior:"smooth", block:"start"});
   $$("#v-cards [data-v]").forEach(b => b.onclick = () => { const k = b.dataset.v; CS.cardFilter = isNaN(+k) ? k : +k; flipped = false; render.cards(); });
   const stage = $("#card-stage");
-  if (!c) { stage.innerHTML = `<div class="panel"><h3>All caught up.</h3><p class="muted">No cards are due. Pick a unit above to study ahead, or play Match-up.</p><div><button class="btn sm" data-go="games" data-game="match">Play Match-up</button></div></div>`; return; }
+  if (!c) { stage.innerHTML = `<div class="panel"><h3>${CS.cardFilter==="missed"?"No missed terms right now.":CS.cardFilter==="new"?"No new terms left.":"All caught up."}</h3><p class="muted">No cards are due. Pick a unit above to study ahead, or play Match-up.</p><div><button class="btn sm" data-go="games" data-game="match">Play Match-up</button></div></div>`; return; }
   const st = cs(c.id);
   stage.innerHTML = `<button class="card ${flipped?"flipped":""}" id="card" aria-label="Flashcard. ${flipped?"Showing definition":"Showing term"}. Press to flip.">
       <div class="card-inner"><div class="face"><span class="eyebrow">Unit ${c.u} · term</span><div class="term">${esc(c.front)}</div><span class="faint small">Tap or press space to flip</span></div>
@@ -697,7 +710,7 @@ render.cards = () => {
   $("#card").onclick = () => { flipped = !flipped; render.cards(); };
   $$(".rate button", stage).forEach(b => b.onclick = () => {
     const g = +b.dataset.g, d = nextInt(st, g);
-    S().cards[c.id] = {...st, int:d, reps:g===0?0:st.reps+1, ease:Math.max(1.3, st.ease+[-0.2,-0.15,0,0.15][g]), due: d===0 ? Date.now()+60e3 : Date.now()+d*CS.DAY};
+    S().cards[c.id] = {...st, lapses:(st.lapses||0)+(g===0?1:0), int:d, reps:g===0?0:st.reps+1, ease:Math.max(1.3, st.ease+[-0.2,-0.15,0,0.15][g]), due: d===0 ? Date.now()+60e3 : Date.now()+d*CS.DAY};
     S().reviews++; CS.addXP(3);
     const tk = S().tasks[CS.today()] || (S().tasks[CS.today()] = {}); tk.rev = (tk.rev||0)+1;
     const left = CS.CARDS.filter(x=>cs(x.id).due<=Date.now()).length;
@@ -710,6 +723,234 @@ document.addEventListener("keydown", e => {
   if (e.code === "Space") { e.preventDefault(); flipped = !flipped; render.cards(); }
   if (flipped && ["1","2","3","4","5"].includes(e.key)) { const b = $(`.rate button[data-g="${+e.key-1}"]`); if (b) b.click(); }
 });
+
+/* ---------- CLEP® prep: topic areas, projected score with a goal, weak-spot drill, CLEP®-style practice tests, vocab mastery ---------- */
+const wkey = () => S().exam === "ap" ? "wAP" : "wCLEP";
+const AREAS = () => CS.C.clepAreas || CS.UNITS.map(u => ({n:u.short || u.name, w:S().exam === "ap" ? u.ap : u.clep, units:[u.id]}));
+const UBY = id => CS.UNITS.find(u => u.id === id);
+const areaW = a => a.units.reduce((s, id) => s + (UBY(id)[wkey()] || 0), 0);
+const areaOf = uid => AREAS().find(a => a.units.includes(uid));
+function areaMastery(a){ let num = 0, den = 0; a.units.forEach(id => { const m = CS.mastery(id); if (m != null) { const w = UBY(id)[wkey()] || 1; num += w*m; den += w; } }); return den ? num/den : null; }
+CS.target = () => Math.max(20, Math.min(80, Math.round(+S().target || 50)));
+const unitGoal = () => Math.min(0.9, Math.max(0.7, CS.needP(CS.target()) + 0.1));
+const vStat = c => { const st = S().cards[c.id]; return !st ? "new" : st.int >= 7 ? "mastered" : "learning"; };
+CS.vocabPct = () => CS.CARDS.length ? CS.CARDS.filter(c => vStat(c) === "mastered").length / CS.CARDS.length : 0;
+function projection(){
+  const pr = CS.predict(); if (!pr.ready) return {ready:false, pr};
+  const s = S(), mocks = CS.mockList().slice(-2).length, n = Math.min(CS.answeredCount(), 200) + 100*mocks;
+  const p = pr.p, unstarted = CS.UNITS.filter(u => !(s.answers[u.id] || []).length).length, sc = CS.scaled(p);
+  const half = Math.min(9, Math.max(2, Math.round(60*1.96*Math.sqrt(Math.max(p*(1-p), 0.04)/Math.max(n, 20))) + Math.min(4, unstarted)));
+  return {ready:true, p, score:sc, lo:Math.max(20, sc-half), hi:Math.min(80, sc+half), pr};
+}
+/* semicircle gauge, 20 on the left to 80 on the right */
+function gauge(pj, target){
+  const cx = 130, cy = 124, r = 100, pt = (v, rr = r) => { const a = Math.PI*(1 - (v-20)/60); return [cx + rr*Math.cos(a), cy - rr*Math.sin(a)]; };
+  const arc = (a, b, rr = r) => { const p1 = pt(a, rr), p2 = pt(b, rr); return `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} A${rr} ${rr} 0 0 1 ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`; };
+  const tick = (v, lab, col, up) => { const a = pt(v, r+14), b = pt(v, r-14), t = pt(v, r + (up ? 30 : 26)); return `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${col}" stroke-width="3" stroke-linecap="round"/><text x="${t[0].toFixed(1)}" y="${t[1].toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${col}">${lab}</text>`; };
+  const on = pj.ready, sc = on ? pj.score : 20, ok = on && sc >= target, nd = pt(sc, r-26), ns = pt(sc, 46);
+  return `<svg viewBox="0 0 260 150" class="sc-svg" role="img" aria-label="${on ? `Projected score ${sc}, likely ${pj.lo} to ${pj.hi}. Pass line 50. Goal ${target}.` : "Projected score not ready yet"}">
+    <path d="${arc(20, 50)}" fill="none" stroke="var(--surface-2)" stroke-width="18"/>
+    <path d="${arc(50, 80)}" fill="none" stroke="var(--good-bg)" stroke-width="18"/>
+    ${on ? `<path d="${arc(pj.lo, Math.max(pj.lo + 0.4, pj.hi))}" fill="none" stroke="var(--accent)" stroke-opacity=".35" stroke-width="18"/>` : ""}
+    ${tick(50, "50", "var(--good)")}${target !== 50 ? tick(target, "Goal " + target, "var(--accent)", true) : ""}
+    ${on ? `<line x1="${ns[0].toFixed(1)}" y1="${ns[1].toFixed(1)}" x2="${nd[0].toFixed(1)}" y2="${nd[1].toFixed(1)}" stroke="var(--ink)" stroke-width="4" stroke-linecap="round" class="sc-needle"/>` : ""}
+    <text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="34" font-weight="800" fill="${ok ? "var(--good)" : "var(--ink)"}" font-family="Manrope, sans-serif">${on ? sc : "?"}</text>
+    <text x="22" y="146" font-size="10" fill="var(--muted)">20</text><text x="238" y="146" text-anchor="end" font-size="10" fill="var(--muted)">80</text></svg>`;
+}
+CS.scoreCard = () => {
+  if (S().exam !== "clep") return "";
+  const pj = projection(), T = CS.target(), need = CS.needP(T), areas = AREAS(), totW = areas.reduce((s, a) => s + areaW(a), 0) || 1;
+  const rows = areas.map(a => { const m = areaMastery(a), mm = m == null ? 0.35 : m, gain = 60*(areaW(a)/totW)*Math.max(0, need - mm); return {a, m, gain}; });
+  const top = rows.slice().sort((x, y) => y.gain - x.gain)[0];
+  const mocks = CS.mockList(), last = mocks[mocks.length-1];
+  let msg;
+  if (!pj.ready) msg = `<b>Answer ${pj.pr.need > 0 ? `${pj.pr.need} more questions` : `questions in ${pj.pr.units} more units`}</b> across at least 4 units, or take a practice test, and your projected CLEP® score appears here.`;
+  else if (pj.score >= T) msg = `<b>You're projected at ${pj.score}, at or above your goal of ${T}.</b> Likely range ${pj.lo}–${pj.hi}. Keep it there: one practice test a week and a few minutes of weak-spot drills.`;
+  else msg = `<b>You're ${T - pj.score} point${T - pj.score === 1 ? "" : "s"} short of ${T}.</b> Likely range ${pj.lo}–${pj.hi}. A ${T} takes about ${Math.round(need*100)}% of questions right; you're at about ${Math.round(pj.p*100)}%.${top && top.gain >= 0.5 ? ` The fastest points are in <b>${esc(top.a.n)}</b>.` : ""}`;
+  return `<div class="panel sc-card" id="sc-card">
+    <div class="spread" style="align-items:flex-start;gap:12px;flex-wrap:wrap"><div class="stack" style="gap:2px"><span class="eyebrow">Projected CLEP® score</span><h2 style="margin:0">${pj.ready ? `${pj.score} <span class="muted" style="font-size:.95rem;font-weight:700">likely ${pj.lo}–${pj.hi}</span>` : "Not enough data yet"}</h2></div>
+      <div class="sc-goal"><label for="sc-target" class="small"><b>Score I need</b></label><div class="row-wrap" style="gap:6px"><input type="number" id="sc-target" min="20" max="80" step="1" value="${T}" inputmode="numeric" aria-describedby="sc-goal-help">${[50,60,65,70].map(v => `<button class="chip" data-target="${v}" aria-pressed="${v===T}">${v}</button>`).join("")}</div><span class="tiny muted" id="sc-goal-help">Most colleges give credit at 50. Check yours.</span></div></div>
+    <div class="sc-grid"><div class="sc-gauge">${gauge(pj, T)}<div class="tiny muted sc-legend"><span><i style="background:var(--good)"></i>Pass line (50)</span>${T !== 50 ? `<span><i style="background:var(--accent)"></i>Your goal (${T})</span>` : ""}${pj.ready ? `<span><i style="background:var(--accent);opacity:.35"></i>Likely range</span>` : ""}</div></div>
+      <div class="stack" style="gap:12px;min-width:0"><p class="small" style="margin:0">${msg}</p>
+        <div class="stack" style="gap:9px">${rows.map(r => `<div class="sc-area"><div class="spread small" style="gap:8px"><span style="min-width:0"><b>${esc(r.a.n)}</b> <span class="muted">· ${esc(r.a.w)}</span></span><span>${r.m == null ? `<span class="muted">not started</span>` : `<b>${CS.pct(r.m)}</b>`}${r.gain >= 0.5 ? ` <span class="tag acc">+${r.gain.toFixed(1)} pts</span>` : r.m != null && r.m >= need ? ` <span class="tag good">on goal</span>` : ""}</span></div>
+          <div class="sc-bar" aria-hidden="true"><i style="width:${Math.round((r.m || 0)*100)}%"></i><b style="left:${Math.round(need*100)}%" title="Needed for ${T}"></b></div></div>`).join("")}</div>
+        <span class="tiny muted">The marker on each bar is the share you need for ${T}. "+pts" is about how much your score rises if that area reaches it. Based on your last 20 answers per unit${mocks.length ? " and your last practice tests" : ""}, weighted like the real exam. A rough guide, not an official score.</span></div></div>
+    <div class="spread" style="flex-wrap:wrap;gap:10px"><div class="row-wrap small" style="gap:16px"><span>Vocab mastered <b>${Math.round(CS.vocabPct()*100)}%</b></span><span>Practice tests <b>${mocks.length}</b>${last ? ` · last <b>${last.scaled}</b>` : ""}</span></div>
+      <div class="row-wrap"><button class="btn sm" data-go="practice" data-mode="weak">${I("target")}Drill my weak spots</button>${CS.C.mocks ? `<button class="btn sm ghost" data-go="practice" data-mode="mock">Take a practice test</button>` : ""}<button class="btn sm ghost" data-go="cards">Vocab mastery</button></div></div></div>`;
+};
+function setTarget(v){ v = Math.round(+v); if (!v || v < 20 || v > 80) return; S().target = v; CS.save(); if (current === "home") CS.go("home", {keepScroll:true}); else if (current === "practice") render.practice({keepScroll:true}); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-target]"); if (b) setTarget(b.dataset.target); });
+document.addEventListener("change", e => { if (e.target && e.target.id === "sc-target") setTarget(e.target.value); });
+document.addEventListener("keydown", e => { if (e.target && e.target.id === "sc-target" && e.key === "Enter") { e.preventDefault(); setTarget(e.target.value); } });
+
+/* weak-spot drill: rounds of 10 from the units furthest below the goal, weighted by exam weight; missed and unseen questions first */
+function weakUnits(){
+  const g = unitGoal();
+  return CS.UNITS.map(u => { const n = (S().answers[u.id] || []).length, m = CS.mastery(u.id); const gap = n < 5 ? Math.max(g - (m ?? 0.35), 0.15) : g - m; return {u, m, n, gap, score:gap*(u[wkey()] || 1)}; })
+    .filter(x => x.gap > 0).sort((a, b) => b.score - a.score);
+}
+function weakDeck(n){
+  const focus = weakUnits().slice(0, 3); if (!focus.length) return null;
+  const qok = S().qok || {}, tot = focus.reduce((s, x) => s + x.score, 0), out = [], used = new Set();
+  const rank = q => (qok[q.id] === 0 ? 0 : qok[q.id] == null ? 1 : 2) + Math.random()*0.9;
+  focus.forEach(x => { const k = Math.max(2, Math.round(n*x.score/tot)); CS.QS.filter(q => q.u === x.u.id).sort((a, b) => rank(a) - rank(b)).slice(0, k).forEach(q => { if (!used.has(q.id)) { used.add(q.id); out.push(q); } }); });
+  return {focus, qs:CS.setOrder(CS.shuffle(out).slice(0, n)).map(CS.prepQ)};
+}
+function weakRows(ids){
+  const g = unitGoal();
+  return `<div class="stack" style="gap:8px">${ids.map(id => { const u = UBY(id), m = CS.mastery(id); return `<div class="sc-area"><div class="spread small"><span>Unit ${u.id} · ${esc(u.short)}</span><span><b>${CS.pct(m)}</b> <span class="muted">/ ${Math.round(g*100)}%</span>${m != null && m >= g ? ` <span class="tag good">fixed</span>` : ""}</span></div><div class="sc-bar"><i style="width:${Math.round((m || 0)*100)}%"></i><b style="left:${Math.round(g*100)}%"></b></div></div>`; }).join("")}</div>`;
+}
+function weakMode(body, limit){
+  const g = unitGoal(), wu = weakUnits();
+  if (!wu.length) { body.innerHTML = `<div class="panel"><span class="eyebrow">Weak-spot drill</span><h3>No weak spots right now.</h3><p class="muted">Every unit is at ${Math.round(g*100)}% or better over your last 20 answers, the level that fits your goal of ${CS.target()}. Lock it in with a full practice test.</p><div class="row-wrap">${CS.C.mocks ? `<button class="btn" data-go="practice" data-mode="mock">Take a practice test</button>` : `<button class="btn" data-go="practice" data-mode="exam">Take a practice exam</button>`}<button class="btn ghost" data-go="practice" data-mode="mixed">Smart review</button></div></div>`; return; }
+  if (!run) { if (!CS.takeRound()) { body.innerHTML = `<div class="panel" id="p-run"></div>`; return limit($("#p-run")); } const d = weakDeck(10); run = {qs:d.qs, i:0, score:0, picked:null, kind:"weak", focus:d.focus.map(x => x.u.id)}; }
+  body.innerHTML = `<div class="panel flat" id="weak-head" style="gap:10px"><div class="spread" style="flex-wrap:wrap;gap:8px"><span class="eyebrow">Weak-spot drill · goal ${Math.round(g*100)}% per unit</span><span class="tiny muted">${wu.length} unit${wu.length === 1 ? "" : "s"} below goal · set from your target score of ${CS.target()}</span></div>${weakRows(run.focus)}<span class="tiny muted">Missed questions come first, then ones you haven't seen. Keep going round after round until every bar passes its marker.</span></div><div class="panel" id="p-run"></div>`;
+  return quiz($("#p-run"));
+}
+
+/* CLEP®-style practice tests: fixed sets, no overlap between tests, drawn by the official weights */
+const NMOCK = CS.C.mocks || 0;
+let mockTimer = null, mockRes = null, mockFilter = "missed";
+function mockIds(k){
+  const n = EXAMS.clep.full.n, tot = CS.UNITS.reduce((s, u) => s + u.wCLEP, 0); let ids = [], spare = [];
+  CS.UNITS.forEach(u => { const quota = Math.round(n*u.wCLEP/tot), rnd = CS.seeded("mock-" + CS.COURSE + "-u" + u.id);
+    const pool = CS.QS.filter(q => q.u === u.id).map(q => [rnd(), q.id]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+    let sl = pool.slice((k-1)*quota, k*quota); if (sl.length < quota) sl = sl.concat(pool.filter(id => !sl.includes(id)).slice(0, quota - sl.length));
+    ids = ids.concat(sl); spare = spare.concat(pool.filter(id => !sl.includes(id))); });
+  const r2 = CS.seeded("mock-order-" + CS.COURSE + "-" + k); while (ids.length < n && spare.length) ids.push(spare.splice(Math.floor(r2()*spare.length), 1)[0]);
+  return ids.map(id => [r2(), id]).sort((a, b) => a[0] - b[0]).map(x => x[1]).slice(0, n);
+}
+const mockQ = (m, idx) => { const q = CS.QBYID[m.ids[idx]], o = m.ord[idx]; return {...q, opts:o.map(j => q.opts[j])}; };
+function startMock(k){
+  const ids = mockIds(k), ex = EXAMS.clep.full;
+  S().mockRun = {k, ids, ord:ids.map(id => CS.shuffle(CS.QBYID[id].opts.map((_, j) => j))), ans:{}, flags:{}, i:0, end:Date.now() + ex.min*60e3, start:Date.now(), hide:false, review:false};
+  CS.save(); renderMock();
+}
+function mockLeft(m){ return m.paused ? m.paused : m.end - Date.now(); }
+function mockTick(){
+  const m = S().mockRun; if (!m || !$(".clep-shell")) { clearInterval(mockTimer); mockTimer = null; return; }
+  const left = mockLeft(m), el = $("#mk-timer");
+  if (left < 5*60e3 && m.hide) { m.hide = false; renderMock(); return; }
+  if (el) { el.textContent = m.hide ? "Time hidden" : fmt(left); el.classList.toggle("low", left < 5*60e3); }
+  if (left <= 0) submitMock();
+}
+function renderMock(){
+  const m = S().mockRun, v = $("#v-practice"), n = m.ids.length;
+  if (m.paused) { m.end = Date.now() + m.paused; m.paused = 0; CS.save(); }
+  const nAns = Object.keys(m.ans).length, nFlag = Object.values(m.flags).filter(Boolean).length;
+  const top = `<div class="clep-top"><div class="clep-title">${esc(CS.C.clep)} · Practice Test ${m.k}</div><div class="clep-tools"><span class="clep-time" id="mk-timer">${m.hide ? "Time hidden" : fmt(mockLeft(m))}</span><button class="clep-btn" id="mk-hide">${m.hide ? "Show Time" : "Hide Time"}</button></div></div>`;
+  if (m.review) {
+    v.innerHTML = `<div class="clep-shell">${top}<div class="clep-sub"><span><b>Review</b> · ${nAns} answered · ${n - nAns} not answered · ${nFlag} marked</span></div>
+      <div class="clep-body"><p class="small">Select a question number to go to it. Marked questions have a flag; unanswered questions are empty.</p>
+      <div class="clep-grid">${m.ids.map((_, i) => `<button data-i="${i}" class="${m.ans[i] != null ? "ans" : ""} ${m.flags[i] ? "flag" : ""}" aria-label="Question ${i+1}${m.ans[i] != null ? ", answered" : ", not answered"}${m.flags[i] ? ", marked" : ""}">${i+1}</button>`).join("")}</div></div>
+      <div class="clep-bot"><button class="clep-btn ghost" id="mk-exit">Save &amp; exit</button><span class="grow"></span>${nFlag ? `<button class="clep-btn" id="mk-rmark">Review Marked</button>` : ""}${n - nAns ? `<button class="clep-btn" id="mk-runans">Review Unanswered</button>` : ""}<button class="clep-btn" id="mk-ret">Return to Question</button><button class="clep-btn primary" id="mk-end">Finish Test</button></div></div>`;
+    $$(".clep-grid button", v).forEach(b => b.onclick = () => { m.i = +b.dataset.i; m.review = false; CS.save(); renderMock(); });
+    const go = f => { const i = m.ids.findIndex((_, j) => f(j)); if (i >= 0) { m.i = i; m.review = false; CS.save(); renderMock(); } };
+    if ($("#mk-rmark")) $("#mk-rmark").onclick = () => go(j => m.flags[j]);
+    if ($("#mk-runans")) $("#mk-runans").onclick = () => go(j => m.ans[j] == null);
+    $("#mk-ret").onclick = () => { m.review = false; CS.save(); renderMock(); };
+    $("#mk-end").onclick = () => { const b = $("#mk-end"); if (b.dataset.c !== "1" && n - nAns) { b.dataset.c = "1"; b.textContent = `${n - nAns} unanswered. Finish anyway?`; return; } submitMock(); };
+  } else {
+    const q = mockQ(m, m.i);
+    v.innerHTML = `<div class="clep-shell">${top}<div class="clep-sub"><span>Question <b>${m.i+1}</b> of ${n}</span><label class="clep-mark"><input type="checkbox" id="mk-mark" ${m.flags[m.i] ? "checked" : ""}> Mark for review</label></div>
+      <div class="clep-body"><p class="clep-q">${esc(q.q)}</p><div class="clep-opts" role="radiogroup" aria-label="Answer choices">${q.opts.map((o, j) => `<label class="clep-opt ${m.ans[m.i] === j ? "sel" : ""}"><input type="radio" name="mk-opt" value="${j}" ${m.ans[m.i] === j ? "checked" : ""}><span class="clep-l">${L[j]}</span><span>${esc(o.t)}</span></label>`).join("")}</div></div>
+      <div class="clep-bot"><button class="clep-btn ghost" id="mk-exit">Save &amp; exit</button><span class="grow"></span><button class="clep-btn" id="mk-rev">Review</button><button class="clep-btn" id="mk-back" ${m.i === 0 ? "disabled" : ""}>Back</button><button class="clep-btn primary" id="mk-next">${m.i === n-1 ? "Review" : "Next"}</button></div></div>
+      <p class="tiny muted" style="margin:8px 2px 0">Keys: <span class="kbd">1</span>–<span class="kbd">${q.opts.length}</span> answer · <span class="kbd">←</span> <span class="kbd">→</span> move · <span class="kbd">M</span> mark. No feedback until you finish, just like the real exam.</p>`;
+    $$(".clep-opt input", v).forEach(r => r.onchange = () => { m.ans[m.i] = +r.value; CS.save(); renderMock(); });
+    $("#mk-mark").onchange = e => { m.flags[m.i] = e.target.checked; CS.save(); };
+    $("#mk-rev").onclick = () => { m.review = true; CS.save(); renderMock(); };
+    $("#mk-back").onclick = () => { if (m.i > 0) { m.i--; CS.save(); renderMock(); } };
+    $("#mk-next").onclick = () => { if (m.i < n-1) m.i++; else m.review = true; CS.save(); renderMock(); };
+  }
+  $("#mk-hide").onclick = () => { m.hide = !m.hide; CS.save(); renderMock(); };
+  $("#mk-exit").onclick = () => { m.paused = Math.max(1000, m.end - Date.now()); CS.save(); clearInterval(mockTimer); mockTimer = null; pMode = "mock"; render.practice({}); };
+  if (!mockTimer) mockTimer = setInterval(mockTick, 1000);
+}
+CS.mockKey = e => {
+  const m = S().mockRun; if (!m || !$(".clep-shell") || m.review) return false;
+  const n = m.ids.length, k = e.key;
+  if (/^[1-5]$/.test(k) && +k <= m.ord[m.i].length) { m.ans[m.i] = +k - 1; CS.save(); renderMock(); }
+  else if (k === "ArrowRight") { if (m.i < n-1) { m.i++; CS.save(); renderMock(); } }
+  else if (k === "ArrowLeft") { if (m.i > 0) { m.i--; CS.save(); renderMock(); } }
+  else if (k === "m" || k === "M") { m.flags[m.i] = !m.flags[m.i]; CS.save(); renderMock(); }
+  return true;
+};
+function submitMock(){
+  const m = S().mockRun; if (!m) return; clearInterval(mockTimer); mockTimer = null;
+  let score = 0; const by = {};
+  const items = m.ids.map((id, i) => { const q = mockQ(m, i), a = m.ans[i], ok = a != null && q.opts[a].ok; if (ok) score++; const b = by[q.u] || (by[q.u] = [0, 0]); b[1]++; if (ok) b[0]++; CS.record(q, ok, false); return {i, q, a, ok, flag:!!m.flags[i]}; });
+  const n = m.ids.length, scaled = CS.scaled(score/n), used = Math.min(EXAMS.clep.full.min*60e3, Date.now() - m.start), prev = S().mocks[m.k];
+  S().mocks[m.k] = {at:Date.now(), score, n, scaled, used, by, best:Math.max(scaled, (prev && prev.best) || 0), tries:((prev && prev.tries) || 0) + 1};
+  S().exams.push({at:Date.now(), exam:"clep", score, n, mock:m.k});
+  S().mockLast = {k:m.k, ids:m.ids, ord:m.ord, ans:m.ans, flags:m.flags};
+  delete S().mockRun;
+  CS.addXP(score*8 + 60); markTask("quiz"); CS.refresh();
+  mockRes = {k:m.k, items, score, n, scaled, by, used}; mockFilter = "missed"; renderMockResults();
+}
+function mockFromLast(){
+  const L0 = S().mockLast; if (!L0) return null; const m = {...L0}, rec = S().mocks[m.k];
+  if (!rec || m.ids.some(id => !CS.QBYID[id])) return null;
+  const items = m.ids.map((id, i) => { const q = mockQ(m, i), a = m.ans[i]; return {i, q, a, ok:a != null && q.opts[a].ok, flag:!!(m.flags || {})[i]}; });
+  return {k:m.k, items, score:rec.score, n:rec.n, scaled:rec.scaled, by:rec.by, used:rec.used};
+}
+function renderMockResults(){
+  const r = mockRes, v = $("#v-practice"), T = CS.target(), need = CS.needP(T), pass = r.scaled >= 50, goal = r.scaled >= T;
+  const mins = Math.round(r.used/60e3), areas = AREAS();
+  const aStats = areas.map(a => { let c = 0, t = 0; a.units.forEach(id => { const b = r.by[id]; if (b) { c += b[0]; t += b[1]; } }); return {a, c, t}; });
+  const worst = aStats.filter(x => x.t).sort((x, y) => x.c/x.t - y.c/y.t)[0];
+  const list = r.items.filter(x => mockFilter === "all" ? true : mockFilter === "marked" ? x.flag : !x.ok);
+  const order = (x, y) => { const ax = areas.indexOf(areaOf(x.q.u)), ay = areas.indexOf(areaOf(y.q.u)); return ax - ay || x.q.u - y.q.u || x.i - y.i; };
+  let lastU = null;
+  const rev = list.sort(order).map(x => { const u = UBY(x.q.u), head = u.id !== lastU ? `<h3 class="mk-uhead">${esc(areaOf(u.id).n)} · Unit ${u.id}: ${esc(u.name)}</h3>` : ""; lastU = u.id; const c = x.q.opts.find(o => o.ok);
+    return head + `<div class="panel" style="gap:8px"><div class="spread"><span class="eyebrow">Question ${x.i+1}</span><span class="row-wrap" style="gap:6px">${x.flag ? `<span class="tag warn">Marked</span>` : ""}<span class="tag ${x.ok ? "good" : "bad"}">${x.ok ? "Correct" : x.a == null ? "Blank" : "Missed"}</span></span></div>
+      <p style="margin:0">${esc(x.q.q)}</p>${!x.ok && x.a != null ? `<p style="margin:0;color:var(--bad)">You chose: ${esc(x.q.opts[x.a].t)}. ${esc(x.q.opts[x.a].w)}</p>` : ""}<p style="margin:0;color:var(--good)">Answer: ${esc(c.t)}. ${esc(c.w)}</p>
+      <details class="small"><summary class="muted">Why the other choices are wrong</summary><ul style="margin:8px 0 0;padding-left:1.2em">${x.q.opts.filter((o, j) => !o.ok && j !== x.a).map(o => `<li><b>${esc(o.t)}:</b> ${esc(o.w)}</li>`).join("")}</ul></details></div>`; }).join("");
+  v.innerHTML = `<div class="panel"><span class="eyebrow">Practice Test ${r.k} · results</span>
+    <div class="row-wrap" style="gap:28px;align-items:center"><div class="stack" style="gap:0"><div class="result-big">${r.scaled}</div><span class="small muted">scaled score (20–80)</span></div>
+      <div class="stack" style="gap:6px"><div class="row-wrap" style="gap:6px"><span class="tag ${pass ? "good" : "bad"}">${pass ? "Above the usual credit score of 50" : "Below the usual credit score of 50"}</span>${T !== 50 ? `<span class="tag ${goal ? "good" : "warn"}">${goal ? `Goal of ${T} reached` : `${T - r.scaled} short of your goal of ${T}`}</span>` : ""}</div>
+      <span class="small">${r.score} of ${r.n} correct (${Math.round(r.score/r.n*100)}%) in ${mins} minute${mins === 1 ? "" : "s"}. You earned ${r.score*8+60} XP.</span><span class="tiny muted">Estimated with a simple linear scale; real CLEP® scaling varies by test form.</span></div></div>
+    <div class="stack" style="gap:10px"><span class="eyebrow">By exam topic</span>${aStats.filter(x => x.t).map(x => `<div class="sc-area"><div class="spread small"><span><b>${esc(x.a.n)}</b> <span class="muted">· ${esc(x.a.w)} of the exam</span></span><span><b>${x.c}/${x.t}</b> · ${Math.round(x.c/x.t*100)}%</span></div><div class="sc-bar"><i style="width:${Math.round(x.c/x.t*100)}%"></i><b style="left:${Math.round(need*100)}%" title="Needed for ${T}"></b></div></div>`).join("")}</div>
+    <details class="small"><summary class="muted">By unit</summary><div class="rows" style="margin-top:10px">${CS.UNITS.filter(u => r.by[u.id]).map(u => `<div class="row"><span>${u.id}. ${esc(u.name)}</span>${meter(r.by[u.id][0]/r.by[u.id][1])}<span><b>${r.by[u.id][0]}/${r.by[u.id][1]}</b></span></div>`).join("")}</div></details>
+    ${worst ? `<div class="feedback bad"><b>Biggest gap: ${esc(worst.a.n)} (${Math.round(worst.c/worst.t*100)}%).</b> The weak-spot drill now targets it, since these answers count toward your mastery.</div>` : ""}
+    <div class="row-wrap"><button class="btn" data-go="practice" data-mode="weak">Drill my weak spots</button><button class="btn ghost" id="mk-list">All practice tests</button><button class="btn ghost" data-go="home">Dashboard</button></div></div>
+    <div class="stack" style="gap:12px"><div class="spread" style="flex-wrap:wrap;gap:8px"><h2 style="margin:0">Review by topic</h2><div class="chips">${[["missed","Missed & blank"],["marked","Marked"],["all","All 100"]].map(([k, t]) => `<button class="chip" data-mf="${k}" aria-pressed="${mockFilter === k}">${t}</button>`).join("")}</div></div>
+      ${rev || `<div class="panel"><p class="muted" style="margin:0">${mockFilter === "marked" ? "You didn't mark any questions." : "Nothing missed. Perfect test."}</p></div>`}</div>`;
+  $("#mk-list").onclick = () => { mockRes = null; pMode = "mock"; render.practice({}); };
+  $$("[data-mf]", v).forEach(b => b.onclick = () => { mockFilter = b.dataset.mf; renderMockResults(); });
+}
+function mockList(body){
+  const m = S().mockRun;
+  body.innerHTML = `<div class="panel"><h3>CLEP®-style practice tests</h3>
+    <p class="muted" style="max-width:72ch;margin:0">${NMOCK} fixed tests of ${EXAMS.clep.full.n} questions in ${EXAMS.clep.full.min} minutes, drawn in proportion to the official topic weights with no repeats between tests. They work like the real CLEP® screen: one question at a time, Mark for review, a Review screen, and a clock you can hide. No feedback until you finish, then a full review sorted by topic.</p>
+    <div class="mk-cards">${Array.from({length:NMOCK}, (_, j) => { const k = j+1, r = S().mocks[k], live = m && m.k === k;
+      return `<div class="mk-card"><span class="eyebrow">Practice test ${k}</span>${r ? `<div class="mk-score ${r.scaled >= CS.target() ? "ok" : ""}">${r.scaled}</div><span class="tiny muted">Last ${r.score}/${r.n} · best ${r.best} · ${r.tries} attempt${r.tries === 1 ? "" : "s"}</span>` : `<div class="mk-score muted">—</div><span class="tiny muted">Not taken yet</span>`}
+        <div class="row-wrap" style="gap:6px">${live ? `<button class="btn sm" data-mk="resume">Resume · ${fmt(mockLeft(m))} left</button>` : `<button class="btn sm ${r ? "ghost" : ""}" data-mk="${k}">${CS.hasAccess() ? "" : I("lock")}${r ? "Retake" : "Start"}</button>`}${r && S().mockLast && S().mockLast.k === k ? `<button class="btn sm ghost" data-mk="rev">Review</button>` : ""}</div></div>`; }).join("")}</div>
+    <div class="stack" style="gap:4px"><span class="eyebrow">How to use them</span><ul class="small" style="margin:0;padding-left:1.2em;line-height:1.6"><li>Take Test 1 early as a baseline, Test 2 at the halfway point, and Test 3 about a week before exam day.</li><li>Pace: 90 minutes for 100 questions is 54 seconds each. Mark anything slow and come back from the Review screen.</li><li>There's no penalty for guessing. Never leave a question blank.</li><li>After each test, drill the weak spots it found. Every answer counts toward your projected score.</li></ul></div></div>`;
+  $$("[data-mk]", body).forEach(b => b.onclick = () => { const x = b.dataset.mk;
+    if (x === "resume") return renderMock();
+    if (x === "rev") { mockRes = mockFromLast(); if (mockRes) { mockFilter = "missed"; renderMockResults(); } return; }
+    if (!CS.hasAccess()) return CS.openUpgrade("exam");
+    if (m && b.dataset.c !== "1") { b.dataset.c = "1"; b.textContent = `Discard Test ${m.k} in progress?`; return; }
+    startMock(+x); });
+}
+
+/* vocab mastery: every key term is New, Learning (reviewed, interval under 7 days) or Mastered (7+ days) */
+CS.vocabOpen = CS.vocabOpen || {};
+function vocabBlock(){
+  const all = CS.CARDS, cnt = {new:0, learning:0, mastered:0}; all.forEach(c => cnt[vStat(c)]++);
+  const now = Date.now(), due = all.filter(c => cs(c.id).due <= now).length, missed = all.filter(c => (cs(c.id).lapses || 0) > 0 && cs(c.id).int < 7).length;
+  const bar = (o, t) => `<div class="vm-bar" aria-hidden="true"><i class="m" style="width:${o.mastered/t*100}%"></i><i class="l" style="width:${o.learning/t*100}%"></i></div>`;
+  return `<div class="panel vm" id="vocab">
+    <div class="spread" style="flex-wrap:wrap;gap:10px"><div class="stack" style="gap:2px"><span class="eyebrow">Vocab mastery</span><h2 style="margin:0">${Math.round(cnt.mastered/all.length*100)}% mastered <span class="muted" style="font-size:.95rem;font-weight:700">${cnt.mastered} of ${all.length} terms</span></h2></div>
+      <div class="row-wrap" style="gap:6px"><button class="btn sm" data-v="due">${due} due now</button><button class="btn sm ghost" data-v="missed">${missed} missed recently</button><button class="btn sm ghost" data-v="new">Learn new terms</button></div></div>
+    ${bar(cnt, all.length)}
+    <div class="row-wrap tiny" style="gap:14px"><span><i class="vm-dot m"></i>Mastered ${cnt.mastered}</span><span><i class="vm-dot l"></i>Learning ${cnt.learning}</span><span><i class="vm-dot n"></i>New ${cnt.new}</span><span class="muted">A term is mastered when it's scheduled 7+ days out. Miss it and it comes back the same day.</span></div>
+    <div class="stack" style="gap:6px">${CS.UNITS.map(u => { const cs0 = all.filter(c => c.u === u.id); if (!cs0.length) return ""; const o = {new:0, learning:0, mastered:0}; cs0.forEach(c => o[vStat(c)]++);
+      return `<details class="vm-unit" data-vu="${u.id}" ${CS.vocabOpen[u.id] ? "open" : ""}><summary><span class="vm-name">Unit ${u.id} · ${esc(u.short)}</span>${bar(o, cs0.length)}<span class="vm-pct"><b>${Math.round(o.mastered/cs0.length*100)}%</b></span></summary>
+        <div class="vm-terms">${cs0.map(c => { const st = vStat(c), lp = cs(c.id).lapses || 0; return `<details class="vt ${st}${lp >= 2 && st !== "mastered" ? " shaky" : ""}"><summary>${esc(c.front)}</summary><p>${esc(c.back)}</p></details>`; }).join("")}</div>
+        <div><button class="btn sm ghost" data-v="${u.id}">Study Unit ${u.id} cards</button></div></details>`; }).join("")}</div></div>`;
+}
+document.addEventListener("toggle", e => { const d = e.target; if (d && d.classList && d.classList.contains("vm-unit")) CS.vocabOpen[d.dataset.vu] = d.open; }, true);
 
 /* ---------- FRQ ---------- */
 let frqId = null, frqClock = null, frqTick = 0;

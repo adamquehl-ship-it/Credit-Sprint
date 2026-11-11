@@ -115,7 +115,8 @@ CS.SHARED = ["xp","days","frozen","freezes","freezeAwarded","goal","theme","acce
 const fresh = () => ({v:3, exam:COURSE.clepOnly ? "clep" : "ap", onboarded:false, goal:60, theme:"system", dateSet:false,
   accent:"indigo", cram:{}, remind:"19:00", name:"",
   answers:{}, mistakes:{}, diag:null, cards:{}, reviews:0, frq:{}, plan:{date:CS.defaultDate(COURSE.clepOnly ? "clep" : "ap")},
-  xp:0, days:{}, frozen:{}, freezes:0, freezeAwarded:{}, best:{}, badges:{}, exams:[], tasks:{}, daily:{}, bosses:{}, games:0});
+  xp:0, days:{}, frozen:{}, freezes:0, freezeAwarded:{}, best:{}, badges:{}, exams:[], tasks:{}, daily:{}, bosses:{}, games:0,
+  qok:{}, mocks:{}, target:50});
 let S = fresh();
 const readJSON = k => { try { const r = window.CS_STORE.get(k); return r ? JSON.parse(r) : null; } catch(e) { return null; } };
 try {
@@ -174,6 +175,7 @@ CS.record = (q, ok, xp=true) => {
   if (q.u) { const a = S.answers[q.u] || (S.answers[q.u] = []); a.push(ok?1:0); if (a.length > 20) a.shift(); }
   if (q.p) S.psgAns = (S.psgAns || 0) + 1;
   if (q.id && q.id[0] === "q") {
+    (S.qok || (S.qok = {}))[q.id] = ok ? 1 : 0; /* last result per question, for the weak-spot drill and fresh-question picks */
     if (!ok) S.mistakes[q.id] = {n:0, due:Date.now() + CS.DAY};
     else if (q.id in S.mistakes) { const m = S.mistakes[q.id]; m.n++; if (m.n >= 3) delete S.mistakes[q.id]; else m.due = Date.now() + [1,3,7][m.n]*CS.DAY; }
   }
@@ -187,14 +189,29 @@ CS.medal = m => m==null ? null : m>=0.85 ? "g" : m>=0.7 ? "s" : m>=0.5 ? "b" : n
 CS.predict = () => {
   const covered = CS.UNITS.filter(u => (S.answers[u.id]||[]).length >= 3);
   const n = CS.answeredCount();
-  if (covered.length < 4 || n < 20) return {ready:false, need:Math.max(0, 20-n), units:Math.max(0,4-covered.length)};
+  if (covered.length < 4 || n < 20) {
+    if (S.exam === "clep" && CS.mockList && CS.mockList().length) { const pb = CS.blendMocks(null), sc = CS.scaled(pb); return {ready:true, p:pb, label:String(sc), sub:"Estimated CLEP® score", pass:sc>=50}; }
+    return {ready:false, need:Math.max(0, 20-n), units:Math.max(0,4-covered.length)};
+  }
   const wk = S.exam === "ap" ? "wAP" : "wCLEP";
   let num = 0, den = 0;
   CS.UNITS.forEach(u => { const m = CS.mastery(u.id); const w = u[wk]; den += w; num += w * (m==null ? 0.35 : m); });
   const p = num/den;
   if (S.exam === "ap") { const score = p>=0.72?5 : p>=0.58?4 : p>=0.45?3 : p>=0.32?2 : 1; return {ready:true, p, label:String(score), sub:"Estimated AP® score", pass:score>=3}; }
-  const scaled = Math.max(20, Math.min(80, Math.round(20 + 60*p)));
-  return {ready:true, p, label:String(scaled), sub:"Estimated CLEP® score", pass:scaled>=50};
+  const pb = CS.blendMocks(p);
+  const scaled = CS.scaled(pb);
+  return {ready:true, p:pb, label:String(scaled), sub:"Estimated CLEP® score", pass:scaled>=50};
+};
+/* CLEP® scale: 20–80, roughly linear in percent correct (50 ≈ half right). A rough guide, not an official conversion. */
+CS.scaled = p => Math.max(20, Math.min(80, Math.round(20 + 60*p)));
+CS.needP = score => Math.max(0, Math.min(1, (score - 20) / 60));
+/* the last two CLEP® practice tests (if any) count for half of the estimate */
+CS.mockList = () => Object.entries(S.mocks || {}).map(([k, m]) => ({k:+k, ...m})).filter(m => m.n).sort((a, b) => a.at - b.at);
+CS.blendMocks = p => {
+  if (S.exam !== "clep") return p;
+  const ms = CS.mockList().slice(-2); if (!ms.length) return p;
+  const pm = ms.reduce((s, m) => s + m.score / m.n, 0) / ms.length;
+  return p == null ? pm : 0.5 * p + 0.5 * pm;
 };
 
 /* ---------- XP, levels, streaks, freezes ---------- */

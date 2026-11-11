@@ -20,6 +20,11 @@ const GAMES = [
   ...(CS.COURSE==="chem" ? [{k:"periodic", n:"Periodic Hunt", ic:"flask", d:"Clues lead you to an element. Tap it on the periodic table: groups, valence electrons, trends and atomic numbers.", best:()=>S().best.periodic!=null?`Best: ${S().best.periodic}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"mix", n:"Mix Master", ic:"cards", d:"60 seconds. Sort each marketing move into the right P: Product, Price, Place or Promotion. A mistake costs 3 seconds.", best:()=>S().best.mix!=null?`Best: ${S().best.mix} sorted`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="mkt" ? [
+    {k:"segs", n:"Segment Sniper", ic:"target", d:"60 seconds. Each scenario uses one segmentation base: geographic, demographic, psychographic or behavioral. Shoot the right one; a mistake costs 3 seconds.", best:()=>S().best.segs!=null?`Best: ${S().best.segs} sorted`:"Not played yet", isNew:true},
+    {k:"plc", n:"Lifecycle Ladder", ic:"chart", d:"A clue about sales, profits, rivals or strategy appears. Name the stage of the product life cycle: introduction, growth, maturity or decline.", best:()=>S().best.plc!=null?`Best: ${S().best.plc}/8`:"Not played yet", isNew:true},
+    {k:"pricepick", n:"Pricing Pick", ic:"calc", d:"A pricing move appears. Pick the strategy: skimming, penetration, prestige, captive, bundle, loss leader, EDLP, dynamic and every discount on the exam.", best:()=>S().best.pricepick!=null?`Best: ${S().best.pricepick}/8`:"Not played yet", isNew:true},
+    {k:"promomix", n:"Promo Mix Match", ic:"bolt", d:"60 seconds. Sort each move into advertising, personal selling, sales promotion, public relations or direct and digital marketing. A mistake costs 3 seconds.", best:()=>S().best.promomix!=null?`Best: ${S().best.promomix} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="mkt" ? [{k:"position", n:"Perceptual Map", ic:"chart", d:"Read the brand description, then tap the quadrant of the perceptual map where it sits. Positioning, fast.", best:()=>S().best.position!=null?`Best: ${S().best.position}/8`:"Not played yet", isNew:true}] : []),
   ...((CS.COURSE==="apush"||CS.COURSE==="apworld") ? [{k:"timeline", n:"Timeline Sort", ic:"link", d:"Four events appear out of order. Tap them from earliest to latest. Chronological reasoning is the heart of AP® history.", best:()=>S().best.timeline!=null?`Best: ${S().best.timeline}/8`:"Not played yet", isNew:true}] : []),
   ...((CS.COURSE==="apush"||CS.COURSE==="apworld"||CS.COURSE==="apgov") ? [{k:"source", n:"Source Match", ic:"cards", d:"Read a short original excerpt in the style of an exam source, then pick the event, movement or person it comes from.", best:()=>S().best.source!=null?`Best: ${S().best.source}/8`:"Not played yet", isNew:true}] : []),
@@ -91,7 +96,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort, famsort, transform, ucircle, logrules})[active]($("#g-area"));
+  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, segs:segsniper, plc:plcladder, pricepick, promomix, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort, famsort, transform, ucircle, logrules})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -937,6 +942,195 @@ function position(area){
     $("#pm-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(MAPS.slice()); round(); };
   }
 }
+
+/* ---------- Marketing (CLEP®) games, set 2: Segment Sniper, Lifecycle Ladder, Pricing Pick, Promo Mix Match ----------
+   Two small engines: sortRun (60-second bucket sort, a miss costs 3 seconds) and pickRun (8 rounds, explain every answer). */
+function sortRun(area, cfg){
+  let time = 60, score = 0, miss = 0, timer = null, items = [];
+  const keys = cfg.buckets.length;
+  area.innerHTML = `<p style="max-width:62ch">${esc(cfg.intro)} Tap a button, or press 1 to ${keys}. A mistake costs 3 seconds.</p><div><button class="btn accent" id="sr-go">Start</button></div>`;
+  $("#sr-go").onclick = start;
+  function start(){ time = 60; score = 0; miss = 0; items = CS.shuffle(cfg.items.slice()); show(); clearInterval(timer); timer = every(() => { time--; const t = $("#sr-t"); if (t) t.textContent = Math.max(0, time); if (time <= 0) end(); }, 1000); }
+  function show(msg){
+    if (!items.length) items = CS.shuffle(cfg.items.slice());
+    const it = items[0];
+    area.innerHTML = `<div class="hud"><span>Time <b id="sr-t">${Math.max(0,time)}</b></span><span>Sorted <b>${score}</b></span><span>Misses <b>${miss}</b></span></div>
+      <div class="so-card">${esc(it[0])}</div>
+      <div class="mx-btns" style="grid-template-columns:repeat(${keys > 4 ? 3 : 2},minmax(0,1fr))">${cfg.buckets.map((n, i) => `<button class="btn big" data-b="${i}">${i+1} · ${esc(n)}</button>`).join("")}</div><div id="sr-fb" class="small" style="min-height:2.8em">${msg || ""}</div>`;
+    $$(".mx-btns .btn", area).forEach(x => x.onclick = () => choose(+x.dataset.b));
+    area._key = e => { const n = +e.key; if (n >= 1 && n <= keys) choose(n - 1); };
+  }
+  function choose(b){ if (time <= 0) return; const it = items.shift(), ok = b === it[1]; CS.record({u:cfg.unit}, ok, false);
+    if (ok) { score++; show(); } else { miss++; time -= 3; if (time <= 0) return end(); show(`<span style="color:var(--bad)"><b>${esc(cfg.buckets[it[1]])}.</b></span> ${esc(it[2] || "")}`); } }
+  function end(){
+    clearInterval(timer); area._key = null; const nb = CS.setBest(cfg.k, score); finish(score*8);
+    area.innerHTML = `<span class="eyebrow">${esc(cfg.name)} · results</span><div class="result-big">${score}</div><p class="muted">sorted, ${miss} missed${nb?" · new personal best":""}. ${esc(score >= 22 ? cfg.win : cfg.tip)}</p>
+      <div class="row-wrap"><button class="btn" id="sr-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="${cfg.unit}">Review Unit ${cfg.unit}</button></div>`;
+    $("#sr-again").onclick = start;
+  }
+}
+function pickRun(area, cfg){
+  const ROUNDS = 8; let i = 0, right = 0, pool = [];
+  area.innerHTML = `<p style="max-width:62ch">${esc(cfg.intro)} Eight rounds per game.</p><div><button class="btn accent" id="pr-go">Start · ${ROUNDS} rounds</button></div>`;
+  $("#pr-go").onclick = () => { i = 0; right = 0; pool = CS.shuffle(cfg.items.slice()); round(); };
+  function round(){
+    if (i >= ROUNDS) return end();
+    const it = pool[i], opts = cfg.options(it);
+    area.innerHTML = `<div class="hud"><span>Round <b>${i+1}</b>/${ROUNDS}</span><span>Correct <b>${right}</b></span></div>${cfg.art ? cfg.art(it, null) : ""}<p class="qtext">${esc(it[0])}</p>
+      <div class="opts">${opts.map((o, j) => `<button class="opt" data-j="${j}"><span class="k">${CS.L[j]}</span><span>${esc(o)}</span></button>`).join("")}</div><div id="pr-fb"></div>`;
+    let done = false;
+    const pick = j => { if (done) return; done = true; const ok = opts[j] === cfg.answer(it); CS.record({u:cfg.unit}, ok, false); if (ok) right++;
+      $$(".opt", area).forEach((b, k) => { b.disabled = true; if (opts[k] === cfg.answer(it)) b.classList.add("right"); else if (k === j) b.classList.add("wrong"); });
+      if (cfg.art) { const a = $(".pr-art", area); if (a) a.outerHTML = cfg.art(it, cfg.answer(it)); }
+      $("#pr-fb").innerHTML = `<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct.":`Answer: ${esc(cfg.answer(it))}.`}</b> ${esc(it[2])}</div><div style="margin-top:10px"><button class="btn" id="pr-next">${i+1<ROUNDS?"Next":"See results"}</button></div>`;
+      $("#pr-next").onclick = () => { i++; round(); }; $("#pr-next").focus({preventScroll:true}); area._key = e => { if (e.key==="Enter") $("#pr-next").click(); }; };
+    $$(".opt", area).forEach(b => b.onclick = () => pick(+b.dataset.j));
+    area._key = e => { const n = +e.key; if (n >= 1 && n <= opts.length) pick(n - 1); };
+  }
+  function end(){
+    area._key = null; const nb = CS.setBest(cfg.k, right); finish(right*12);
+    area.innerHTML = `<span class="eyebrow">${esc(cfg.name)} · results</span><div class="result-big">${right}/${ROUNDS}</div><p class="muted">${nb?"New personal best. ":""}${esc(right >= 7 ? cfg.win : cfg.tip)}</p>
+      <div class="row-wrap"><button class="btn" id="pr-again">Play again</button><button class="btn ghost" data-go="learn" data-unit="${cfg.unit}">Review Unit ${cfg.unit}</button></div>`;
+    $("#pr-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(cfg.items.slice()); round(); };
+  }
+}
+
+/* Segment Sniper: [scenario, bucket, why]. 0 geographic, 1 demographic, 2 psychographic, 3 behavioral */
+const SEGS = [
+ ["A snow-blower ad runs only in Minnesota and Maine",0,"Targeting by region and climate is geographic."],
+ ["A burger chain adds spicy items only in its Texas stores",0,"Different offers by region are geographic segmentation."],
+ ["A sunscreen brand spends most of its budget in coastal cities",0,"Location is the basis, so it is geographic."],
+ ["A bank opens rural branches with farm-loan specialists",0,"Rural versus urban location is geographic."],
+ ["A grocery chain stocks smaller packs in dense city stores",0,"City size and density are geographic bases."],
+ ["A retirement community advertises to people over 60",1,"Age is a demographic base."],
+ ["A razor brand designs a line for women",1,"Gender is demographic."],
+ ["A luxury car targets households earning $250,000 or more",1,"Income is demographic."],
+ ["A toy maker targets families with children under 5",1,"Family size and life stage are demographic."],
+ ["A college savings plan targets parents with a bachelor's degree",1,"Education is a demographic base."],
+ ["A magazine targets readers aged 18 to 24",1,"An age range is demographic."],
+ ["A yoga studio targets people who value mindfulness and balance",2,"Values and lifestyle are psychographic."],
+ ["A camping brand targets adventurous, outdoorsy people",2,"Personality and lifestyle are psychographic."],
+ ["A brand targets status-seekers who love showing off new gadgets",2,"Status-seeking is a personality and lifestyle trait."],
+ ["An electric car targets eco-minded buyers who want to cut their footprint",2,"Environmental values are psychographic."],
+ ["A thrift app targets people whose hobby is hunting for vintage finds",2,"Interests and hobbies are psychographic."],
+ ["A meal kit targets health-conscious foodies who love to cook",2,"Interests and attitudes are psychographic."],
+ ["An airline rewards travelers who fly 50+ times a year",3,"Usage rate (heavy users) is behavioral."],
+ ["A toothpaste is sold to people who want whiter teeth",3,"Benefits sought are a behavioral base."],
+ ["A candy brand runs a big Halloween campaign",3,"The purchase occasion is behavioral."],
+ ["A coffee chain sends offers to customers who haven't visited in 60 days",3,"Purchase behavior and loyalty status are behavioral."],
+ ["A gym targets people who have never had a membership",3,"User status (nonusers) is behavioral."],
+ ["A phone carrier offers deals to customers who often switch brands",3,"Loyalty status (switchers) is behavioral."],
+ ["A florist targets Valentine's Day and Mother's Day shoppers",3,"Occasion segmentation is behavioral."],
+ ["A shampoo brand targets buyers who want dandruff relief",3,"The benefit sought is the basis."],
+ ["A streaming service targets people in the Pacific time zone with live sports times",0,"Time zone is a location factor."],
+ ["A skincare line targets teens and people in their early twenties",1,"Age is demographic."],
+ ["A watch brand targets thrill-seekers who skydive and climb",2,"Lifestyle and activities are psychographic."]
+];
+const PLC_ST = ["Introduction","Growth","Maturity","Decline"];
+/* Lifecycle Ladder: [clue, stage index, why] */
+const PLC = [
+ ["Sales are low, few people know the product, and the firm is losing money on heavy promotion.",0,"Introduction: build awareness and trial; profits are usually negative."],
+ ["The firm uses free samples and ads that explain what this new kind of product even does.",0,"Introduction: informative promotion builds primary demand."],
+ ["Only a few stores carry it yet, and early buyers are mostly innovators.",0,"Introduction: limited distribution and innovator buyers."],
+ ["There is only one brand on the market, and the price is high to recover research costs.",0,"Introduction: skimming prices and little competition are common."],
+ ["Sales are climbing fast, and new competitors are rushing in with copycat versions.",1,"Growth: rapid sales growth attracts rivals."],
+ ["Profits are rising, and the firm adds new models and more stores to keep up with demand.",1,"Growth: expand features and distribution while demand rises."],
+ ["The early majority is starting to buy, and word of mouth is spreading quickly.",1,"Growth: adoption spreads from early adopters to the early majority."],
+ ["Ads switch from explaining the product to saying why our brand is better than the new rivals.",1,"Growth: promotion shifts to building selective (brand) demand."],
+ ["Sales have leveled off, and most people who want the product already own one.",2,"Maturity: the market is saturated and growth slows."],
+ ["Competition is fierce, and brands fight with price cuts, coupons and small feature changes.",2,"Maturity: defend share through price, promotion and modification."],
+ ["A cereal brand looks for new uses, such as baking recipes, to keep sales from slipping.",2,"Maturity: modify the market with new users or uses to extend the stage."],
+ ["This is the longest stage, and weaker competitors are starting to drop out.",2,"Maturity: usually the longest stage, with a shakeout of weaker firms."],
+ ["Reminder ads keep a well-known brand in mind among loyal buyers.",2,"Maturity: reminder advertising suits well-known products."],
+ ["Sales and profits are falling as a newer technology replaces the product.",3,"Decline: substitutes pull buyers away."],
+ ["The firm cuts promotion to almost zero and keeps selling to milk the remaining profit.",3,"Decline: harvesting reduces costs to collect remaining profit."],
+ ["Several makers have dropped the product, and the rest sell to a small group of laggards.",3,"Decline: few firms and a shrinking, loyal base remain."],
+ ["The company is deciding whether to discontinue the product or sell the brand to another firm.",3,"Decline: firms choose to maintain, harvest or drop the product."],
+ ["Stores cut shelf space for DVD players as streaming takes over.",3,"Decline: distribution shrinks as sales fall."],
+ ["The product reaches peak sales and the most competitors at the same time.",2,"Maturity: sales peak and competition is greatest."],
+ ["Promotion spending as a share of sales is the highest it will ever be.",0,"Introduction: high spending on low sales."]
+];
+function plcArt(it, ans){
+  const hi = ans == null ? -1 : PLC_ST.indexOf(ans), xs = [[10,70],[70,150],[150,240],[240,300]];
+  return `<svg class="pr-art" viewBox="0 0 310 120" style="width:100%;max-width:420px;display:block" role="img" aria-label="Product life cycle curve">
+    ${xs.map(([a,b],k) => `<rect x="${a}" y="8" width="${b-a}" height="92" fill="${k===hi?"var(--mint-soft)":"transparent"}" stroke="var(--rule)" stroke-dasharray="3 3"/>`).join("")}
+    <path d="M10 98 C 40 97, 55 90, 70 80 S 120 30, 150 22 S 220 14, 240 24 S 285 70, 300 86" fill="none" stroke="var(--accent)" stroke-width="3"/>
+    ${xs.map(([a,b],k) => `<text x="${(a+b)/2}" y="114" text-anchor="middle" font-size="10" font-weight="700" fill="${k===hi?"var(--good)":"var(--muted)"}">${PLC_ST[k]}</text>`).join("")}
+    <text x="14" y="18" font-size="9" fill="var(--muted)">Sales</text></svg>`;
+}
+/* Pricing Pick: [scenario, strategy, why] */
+const PRICES = [
+ ["A new tablet launches at $1,099 for eager fans, then drops to $799 a year later.","Price skimming","Start high for buyers who will pay more, then lower the price over time."],
+ ["A new meal-kit service starts at half the price of rivals to sign up customers fast.","Penetration pricing","A low launch price wins market share quickly."],
+ ["A perfume is priced at $350 because a lower price would hurt its exclusive image.","Prestige pricing","High prices signal quality and status."],
+ ["A store prices a lamp at $49.99 instead of $50.","Odd (psychological) pricing","Prices just under a round number seem lower."],
+ ["A shop sells all of its sneakers at $60, $90 or $130.","Price lining","A few clear price points within a product line."],
+ ["A game console is sold near cost, but the games for it carry high margins.","Captive-product pricing","The main product is cheap; the required add-ons earn the profit."],
+ ["A cable company sells TV, internet and phone together for less than the three separately.","Bundle pricing","Combining products at one lower price."],
+ ["A grocery store sells eggs below cost so shoppers come in and buy other things.","Loss-leader pricing","A below-cost item builds store traffic."],
+ ["A giant retailer promises steady low prices instead of weekly sales.","Everyday low pricing (EDLP)","Consistently low prices with few promotions."],
+ ["A department store keeps regular prices high but holds a big sale almost every weekend.","High-low pricing","High regular prices plus frequent discounts."],
+ ["Hotel rates jump automatically when a big concert comes to town.","Dynamic pricing","Prices change in real time with demand."],
+ ["A museum charges less for students and seniors.","Segmented pricing","Different prices for different customer groups."],
+ ["A contractor adds 20% to the cost of materials and labor to set the price.","Cost-plus pricing","Price = cost + a markup."],
+ ["A software firm prices its tool based on how much time it saves customers.","Value-based pricing","The price starts from the value buyers perceive."],
+ ["A corner gas station charges whatever the station across the street charges.","Going-rate pricing","Pricing to match the market."],
+ ["A phone plan charges a monthly fee plus a fee for each gigabyte over the limit.","Two-part pricing","A fixed fee plus a variable usage fee."],
+ ["A freight seller charges every customer the same delivered price regardless of distance.","Uniform delivered pricing","One delivered price for all locations."],
+ ["The buyer pays shipping from the factory, and title passes when the goods are loaded.","FOB origin pricing","The buyer takes title at the shipping point and pays freight."],
+ ["A supplier gives 2% off if the invoice is paid within 10 days.","Cash discount","A discount for paying quickly."],
+ ["A paper maker gives a lower unit price on orders of 1,000 boxes or more.","Quantity discount","Lower prices for buying more."],
+ ["A swimsuit maker offers retailers a discount for ordering in November.","Seasonal discount","A discount for buying off-season."],
+ ["A car dealer gives $3,000 credit for the buyer's old car toward a new one.","Trade-in allowance","Credit for an old item reduces the price of a new one."],
+ ["A shopper mails in a form after buying a printer and gets $25 back.","Rebate","A partial refund after purchase."],
+ ["A rideshare app charges a set fee to join its premium tier, then lower prices per ride.","Two-part pricing","A fixed fee plus a per-use charge."],
+ ["A chain prices far below cost in one town until the local rival closes, then raises prices.","Predatory pricing (illegal)","Below-cost pricing meant to destroy competition."],
+ ["An airline sells the last few seats on a flight for much more than the early seats.","Dynamic pricing","Prices respond to remaining capacity and demand."]
+];
+const PRICE_NAMES = [...new Set(PRICES.map(p => p[1]))];
+/* Promo Mix Match: [move, bucket, why]. 0 advertising, 1 personal selling, 2 sales promotion, 3 public relations, 4 direct and digital */
+const PROMO = [
+ ["A 30-second TV spot during a playoff game",0,"Paid, nonpersonal mass media from a named sponsor is advertising."],
+ ["A full-page ad in a fashion magazine",0,"Paid mass-media space is advertising."],
+ ["A billboard on the interstate",0,"Out-of-home ads are advertising."],
+ ["A radio jingle for a local car dealer",0,"Paid broadcast messages are advertising."],
+ ["A sales rep demonstrates software to a company's IT team",1,"Face-to-face persuasion is personal selling."],
+ ["A store clerk helps a customer choose a laptop",1,"Two-way, in-person selling is personal selling."],
+ ["A rep handles a buyer's objections and closes a big order",1,"Handling objections and closing are steps of personal selling."],
+ ["A sales team meets hospital buyers at their offices",1,"Direct, person-to-person selling."],
+ ["A buy-one-get-one-free coupon",2,"Short-term incentives to buy now are sales promotion."],
+ ["A $20 mail-in rebate",2,"Rebates are a consumer sales promotion."],
+ ["Free samples handed out at a grocery store",2,"Sampling is sales promotion."],
+ ["A sweepstakes to win a trip",2,"Contests and sweepstakes are sales promotion."],
+ ["Slotting allowances paid to a supermarket",2,"Trade allowances are sales promotion aimed at resellers."],
+ ["A booth at an industry trade show",2,"Trade shows are a form of trade promotion."],
+ ["A punch card: buy nine, get the tenth free",2,"Loyalty rewards are sales promotion."],
+ ["A press release about a new factory creating 500 jobs",3,"Press releases seek publicity, part of public relations."],
+ ["Sponsoring a charity 5K run",3,"Sponsorships build goodwill, a public relations tool."],
+ ["The CEO apologizes on the news after a recall",3,"Crisis communication is public relations."],
+ ["A newspaper writes a story about the brand's founder",3,"Unpaid media coverage is publicity."],
+ ["A company publishes an annual community-impact report",3,"Building goodwill with publics is PR."],
+ ["A personalized email with a birthday offer",4,"Messages sent straight to one person and inviting a response are direct marketing."],
+ ["A catalog mailed to past customers",4,"Direct mail is direct marketing."],
+ ["A retargeting ad shown to a past site visitor",4,"Targeted digital ads to known individuals are direct and digital marketing."],
+ ["A text message alert about a flash sale",4,"Mobile messages to opted-in customers are direct marketing."],
+ ["An infomercial with a phone number to order now",4,"Direct-response TV asks for an immediate order."],
+ ["A brand's Instagram post answering customer questions",4,"Interactive social media is digital marketing."],
+ ["A telemarketing call offering a new plan",4,"Telemarketing is direct marketing."]
+];
+function segsniper(area){ sortRun(area, {k:"segs", name:"Segment Sniper", unit:5, items:SEGS, buckets:["Geographic","Demographic","Psychographic","Behavioral"],
+  intro:"You have 60 seconds. Each scenario uses one segmentation base. Sniper rule: ask what the marketer is grouping buyers by.",
+  win:"Sharp shooting. You can spot a segmentation base instantly.", tip:"Where they live is geographic, measurable traits are demographic, lifestyle and values are psychographic, and how they buy or use is behavioral."}); }
+function plcladder(area){ pickRun(area, {k:"plc", name:"Lifecycle Ladder", unit:7, items:PLC, options:() => PLC_ST, answer:it => PLC_ST[it[1]], art:plcArt,
+  intro:"Each clue describes a product's sales, profits, competitors or strategy. Climb the ladder: name its stage in the product life cycle.",
+  win:"You read a product life cycle like a pro.", tip:"Introduction: low sales and losses. Growth: fast sales and new rivals. Maturity: flat sales and fierce competition. Decline: falling sales."}); }
+function pricepick(area){ pickRun(area, {k:"pricepick", name:"Pricing Pick", unit:8, items:PRICES,
+  options:it => CS.shuffle([it[1]].concat(CS.shuffle(PRICE_NAMES.filter(n => n !== it[1])).slice(0, 3))), answer:it => it[1],
+  intro:"A pricing move appears. Pick the strategy or discount it uses.",
+  win:"Pricing is the only P that brings in revenue, and you've got it down.", tip:"Ask what the price is trying to do: win share (penetration), signal status (prestige), cover cost (cost-plus), build traffic (loss leader) or follow demand (dynamic)."}); }
+function promomix(area){ sortRun(area, {k:"promomix", name:"Promo Mix Match", unit:10, items:PROMO, buckets:["Advertising","Personal selling","Sales promotion","Public relations","Direct & digital"],
+  intro:"You have 60 seconds. Sort each move into the right part of the promotion mix.",
+  win:"Your integrated marketing communications are perfectly coordinated.", tip:"Paid mass media is advertising, face to face is personal selling, a short-term reason to buy now is sales promotion, goodwill and publicity are PR, and one-to-one messages asking for a response are direct marketing."}); }
 
 /* ---------- Timeline Sort (U.S. History): tap four events from earliest to latest ---------- */
 function timeline(area){
