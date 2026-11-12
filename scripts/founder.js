@@ -21,6 +21,8 @@ const TEAM = [
   {name:"Armaan Pathak", role:"Chemistry Course Designer", photo:"assets/img/team-armaan.jpg",
    exams:[["Chemistry", 5], ["U.S. Government", 5], ["Computer Science Principles", 5], ["Biology", 4], ["U.S. History", 4], ["Psychology", 4], ["Macroeconomics", 4], ["Microeconomics", 4], ["Computer Science A", 3], ["Calculus AB", 3]],
    blurb:"Armaan is a driven student with aspirations to have a career in pharmacology.", profile:"https://www.linkedin.com/in/armaanpathak1/"},
+  {name:"Samir Taliwal", role:"Biology Course Developer", photo:"assets/img/team-samir.jpg",
+   exams:[["Biology", 5]], blurb:"", profile:""},
 ];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
