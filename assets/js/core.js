@@ -102,6 +102,7 @@ CS.numOK = (input, ans) => {
 
 /* ---------- exam dates ---------- */
 CS.defaultDate = exam => {
+  if (window.CS_COURSE && window.CS_COURSE.osu) { const t = new Date(), y = t.getFullYear(), autumn = new Date(y + "-12-20T12:00:00"), spring = new Date(y + "-04-30T12:00:00"); return t <= spring ? y + "-04-30" : t <= autumn ? y + "-12-15" : (y + 1) + "-04-30"; }
   if (exam === "ap") { const t = new Date(), y = (t.getMonth() > 4 || (t.getMonth()===4 && t.getDate()>1)) ? t.getFullYear()+1 : t.getFullYear(); return y+"-05-01"; }
   return CS.addDays(CS.today(), 60);
 };

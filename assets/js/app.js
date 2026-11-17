@@ -4,7 +4,7 @@
 const CS = window.CS, $ = CS.$, $$ = CS.$$, esc = CS.esc, L = CS.L, I = CS.icon;
 const S = () => CS.S();
 const examName = () => S().exam === "ap" ? CS.C.ap : CS.C.clep;
-const examShort = () => S().exam === "ap" ? "AP®" : "CLEP®";
+const examShort = () => CS.C.osu ? "Exam" : S().exam === "ap" ? "AP®" : "CLEP®";
 const fmtDate = k => new Date(k+"T12:00:00").toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"});
 const meter = (m, cls="") => `<div class="meter ${cls}" aria-hidden="true"><i style="width:${m==null?0:Math.round(Math.max(0,Math.min(1,m))*100)}%"></i></div>`;
 
@@ -14,6 +14,7 @@ const NAV = [
   {k:"cards", n:"Flashcards", ic:"cards"}, {k:"games", n:"Games", ic:"game"}, {k:"pets", n:"Pets & badges", ic:"paw"}, {k:"store", n:"Store", ic:"bag"}, {k:"frq", n:"Free response", ic:"pen"}, {k:"plan", n:"Study plan", ic:"cal"}, {k:"team", n:"Team", ic:"users"}
 ];
 const TITLES = {home:"Dashboard", learn:"Learn", practice:"Practice", cards:"Flashcards", games:"Games", pets:"Pets & badges", store:"Store", frq:"Free response", plan:"Study plan", team:"Team"};
+if (CS.C.osu) { const p = NAV.findIndex(n => n.k === "pets"); NAV[p] = {k:"pets", n:"Career", ic:"star"}; NAV.splice(NAV.findIndex(n => n.k === "store"), 1); TITLES.pets = "Career"; }
 const VIEWS = NAV.map(n=>n.k);
 let current = "home";
 CS.view = () => current;
@@ -61,9 +62,9 @@ CS.chrome = () => {
   if (CS.petFlush) setTimeout(CS.petFlush, 300);
   const s = S(), st = CS.streak(), today = s.days[CS.today()]||0, lv = CS.level(), nm = Object.keys(s.mistakes).length, due = dueCount();
   $("#nav").innerHTML = NAV.map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n}</span>${n.k==="practice"&&nm?`<span class="count">${nm}</span>`:n.k==="cards"&&due?`<span class="count">${due}</span>`:""}</button>`).join("");
-  $("#tabbar").innerHTML = NAV.filter(n=>["home","learn","practice","games","pets"].includes(n.k)).map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n==="Dashboard"?"Home":n.n==="Flashcards"?"Cards":n.k==="pets"?"Pets":n.n}</span></button>`).join("");
+  $("#tabbar").innerHTML = NAV.filter(n=>["home","learn","practice","games","pets"].includes(n.k)).map(n => `<button data-go="${n.k}" aria-current="${n.k===current?"page":"false"}">${I(n.ic)}<span>${n.n==="Dashboard"?"Home":n.n==="Flashcards"?"Cards":n.k==="pets"?(CS.C.osu?"Career":"Pets"):n.n}</span></button>`).join("");
   $("#title").textContent = TITLES[current];
-  $("#course-pill").innerHTML = `<span class="cpill-ico" style="background:${CS.C.col}">${I(CS.C.icon||"book")}</span><span class="cpill-txt"><small>Course</small><b>${esc(CS.C.short)}<span class="hide-sm">${S().exam==="clep"?" · CLEP®":" · AP®"}</span></b></span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>`;
+  $("#course-pill").innerHTML = `<span class="cpill-ico" style="background:${CS.C.col}">${I(CS.C.icon||"book")}</span><span class="cpill-txt"><small>Course</small><b>${esc(CS.C.short)}<span class="hide-sm">${CS.C.osu?"":S().exam==="clep"?" · CLEP®":" · AP®"}</span></b></span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>`;
   $("#chips").innerHTML = `
     <span class="chip-stat ${st?"flame":"dim"}" title="${st}-day streak${s.freezes?` · ${s.freezes} streak freeze${s.freezes>1?"s":""}`:""}">${I("flame")}${st}${s.freezes?`<span class="tiny faint" style="margin-left:2px">+${s.freezes}${I("shield","ico")}</span>`:""}</span>
     <span class="chip-stat hide-sm" title="Today's goal: ${today}/${s.goal} XP">${ring(today/s.goal)}${today}/${s.goal}</span>
@@ -104,11 +105,11 @@ function onboarding(){
   const s = S(), style = obStyle(); let ex = s.exam, goal = s.goal, date = s.plan.date, step = 0, tabM = "setup";
   const w = modal(""); const m = $(".modal", w);
   m.classList.add("ob", "ob-" + style);
-  function courses(){ return `<div class="ob-courses">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><span class="ob-ci" style="background:${c.col}">${I(c.icon||"book")}</span><span class="ob-cn"><b>${esc(c.name)}</b><small>${c.apOnly?"AP®":c.clepOnly?"CLEP®":"AP® · CLEP®"}</small></span></button>`).join("")}</div>`; }
+  function courses(){ return `<div class="ob-courses">${CS.trackCourses().map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}" style="--cc:${c.col}"><span class="ob-ci" style="background:${c.col}">${I(c.icon||"book")}</span><span class="ob-cn"><b>${esc(c.name)}</b><small>${c.osu?"Ohio State":c.apOnly?"AP®":c.clepOnly?"CLEP®":"AP® · CLEP®"}</small></span></button>`).join("")}</div>`; }
   function examRow(){ return `<div class="ob-row">
       <div class="stack" style="gap:6px;flex:1;min-width:200px"><span class="eyebrow">Exam</span><div class="seg ob-seg">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${ex==="ap"}">${esc(CS.C.ap)}</button>`}${CS.C.apOnly ? "" : `<button data-ex="clep" aria-pressed="${ex==="clep"}">${esc(CS.C.clepShort)}</button>`}</div></div>
-      <div class="stack" style="gap:6px"><label class="eyebrow" for="ob-date">Exam date</label><input type="date" id="ob-date" value="${esc(date)}"></div></div>
-      <span class="muted tiny">${ex==="ap"?"We'll assume May 1 until you set your school's AP® date.":"CLEP® can be taken any time. Pick a target date."}</span>`; }
+      <div class="stack" style="gap:6px"><label class="eyebrow" for="ob-date">${CS.C.osu?"Final exam date":"Exam date"}</label><input type="date" id="ob-date" value="${esc(date)}"></div></div>
+      <span class="muted tiny">${CS.C.osu?"Set this to your final exam date from your syllabus. You can change it any time.":ex==="ap"?"We'll assume May 1 until you set your school's AP® date.":"CLEP® can be taken any time. Pick a target date."}</span>`; }
   function goals(){ return `<div class="stack" style="gap:6px"><span class="eyebrow">Daily goal</span><div class="ob-goals">${GOALS.map(([v,n,d])=>`<button data-goal="${v}" aria-pressed="${goal===v}"><b>${n}</b><small>${d.replace("About ","~").replace(" a day","/day")}</small></button>`).join("")}</div></div>`; }
   const head = (t) => `<div class="ob-head">${CS.logo("mark")}<div><span class="eyebrow">Welcome to Credit Sprint</span><h2>${t}</h2></div></div>`;
   const actions = `<div class="row-wrap ob-actions"><button class="btn lg" id="ob-diag">Start the ${Math.round(CS.UNITS.length*1.6)}-minute diagnostic</button><button class="btn ghost" id="ob-skip">Explore first</button></div>`;
@@ -156,7 +157,7 @@ function settings(){
   draw();
   function draw(){
     m.innerHTML = `<div class="spread"><h2>Settings</h2><button class="btn ghost sm" id="st-x">Done</button></div>
-      <div class="stack"><span class="eyebrow">Course</span><div class="opt-grid">${Object.values(window.CS_COURSES).map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}"><b>${esc(c.name)}</b></button>`).join("")}</div></div>
+      <div class="stack"><span class="eyebrow">Course</span><div class="opt-grid">${CS.trackCourses().map(c=>`<button data-crs="${c.k}" aria-pressed="${c.k===CS.COURSE}"><b>${esc(c.name)}</b></button>`).join("")}</div></div>
       <div class="stack"><span class="eyebrow">Exam</span><div class="opt-grid">${CS.C.clepOnly ? "" : `<button data-ex="ap" aria-pressed="${s.exam==="ap"}"><b>${esc(CS.C.ap)}</b></button>`}${CS.C.apOnly ? "" : `<button data-ex="clep" aria-pressed="${s.exam==="clep"}"><b>${esc(CS.C.clepShort)}</b></button>`}</div></div>
       <div class="stack"><label class="eyebrow" for="st-date">Exam date</label><input type="date" id="st-date" value="${esc(s.plan.date)}" style="max-width:220px"></div>
       <div class="stack"><span class="eyebrow">Daily goal</span><div class="opt-grid">${GOALS.map(([v,n])=>`<button data-goal="${v}" aria-pressed="${s.goal===v}"><b>${n} · ${v} XP</b></button>`).join("")}</div></div>
@@ -298,7 +299,7 @@ render.learn = (o) => {
   if (learnUnit === "res") return renderRes();
   const u = CS.UNITS[learnUnit-1], m = CS.mastery(u.id);
   $("#learn-body").innerHTML = `
-    <div class="row-wrap">${CS.C.clepOnly ? "" : `<span class="tag acc">AP® ${u.ap}</span>`}${CS.C.apOnly ? "" : `<span class="${CS.C.clepOnly ? "tag acc" : "tag"}">CLEP® ${u.clep}</span>`}<span class="tag">Your mastery ${CS.pct(m)}</span></div>
+    <div class="row-wrap">${CS.C.clepOnly || CS.C.osu ? "" : `<span class="tag acc">AP® ${u.ap}</span>`}${CS.C.apOnly ? "" : `<span class="${CS.C.clepOnly ? "tag acc" : "tag"}">CLEP® ${u.clep}</span>`}<span class="tag">Your mastery ${CS.pct(m)}</span></div>
     <h2>${CS.C.unitWord||"Unit"} ${u.id}: ${esc(u.name)}</h2>
     <div class="guide">
       <div class="stack" style="gap:18px">
@@ -418,7 +419,7 @@ const MODES = [
   ...(CS.C.mocks ? [{k:"mock", ic:"pen", e:"CLEP\u00AE screen", n:"Practice tests", d:`${CS.C.mocks} fixed full-length tests that look and work like the real CLEP\u00AE screen, reviewed by topic.`}] : []),
   {k:"mistakes", ic:"target", e:"Notebook", n:"Mistakes", d:"Every miss lands here until you get it right twice.", pro:true},
   {k:"exam", ic:"pen", e:"Timed", n:"Practice exam", d:"Full length, real timing, scored like the exam."},
-  {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:CS.C.drillDesc || (CS.COURSE==="micro" ? "Elasticity, costs, profit, surplus: fresh numbers every time." : "Multipliers, CPI, money creation: fresh numbers every time."), pro:true},
+  {k:"drills", ic:"calc", e:"Unlimited", n:"Calculation drills", d:CS.C.drillDesc || (((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001") ? "Elasticity, costs, profit, surplus: fresh numbers every time." : "Multipliers, CPI, money creation: fresh numbers every time."), pro:true},
   {k:"graphs", ic:"chart", e:"Visual", n:"Graph questions", d:"Read the scenario, pick the curve that shifts."},
   {k:"draw", ic:"pen", e:"Hands-on", n:"Draw the graph", d:"Drag the curves yourself, like the FRQ section asks you to.", pro:true}
 ];
@@ -1051,7 +1052,7 @@ render.plan = () => {
   else if (slots >= NU) { for (let i=0;i<slots;i++) items.push(i<NU ? {units:[order[i].u]} : {units:[order[(i-NU)%NU].u], second:true}); }
   else { const per = Math.ceil(NU/slots); for (let i=0;i<slots;i++){ const g = order.slice(i*per, i*per+per).map(x=>x.u); if (g.length) items.push({units:g}); } }
   if (weeks > 1) items.push({final:true, units:[]});
-  const games = CS.C.planGames || (CS.COURSE === "micro" ? ["Shift It","Profit Max","Sprint","Nash Hunt","Match-up","Chain Reaction","Number Crunch"] : ["Shift It","Sprint","Match-up","Fed Chair","Chain Reaction","Number Crunch"]);
+  const games = CS.C.planGames || (((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001") ? ["Shift It","Profit Max","Sprint","Nash Hunt","Match-up","Chain Reaction","Number Crunch"] : ["Shift It","Sprint","Match-up","Fed Chair","Chain Reaction","Number Crunch"]);
   ul.innerHTML = items.map((it,i)=>{
     const start = new Date(today.getTime()+i*7*CS.DAY), end = new Date(Math.min(examD.getTime(), start.getTime()+6*CS.DAY));
     const when = `Week ${i+1}<br>${start.toLocaleDateString(undefined,{month:"short",day:"numeric"})}–${end.toLocaleDateString(undefined,{month:"short",day:"numeric"})}`;
@@ -1087,14 +1088,14 @@ function renderCram(days){
 
 /* ---------- courses: switcher + dashboard bar ---------- */
 function courseLine(sm){
-  const c = window.CS_COURSES[sm.k], ex = sm.exam === "clep" ? "CLEP®" : "AP®";
-  if (!sm.started) return c.clepOnly ? "CLEP® · not started" : c.apOnly ? "AP® · not started" : `${ex} or CLEP® · not started`;
+  const c = window.CS_COURSES[sm.k], ex = c.osu ? "Ohio State" : sm.exam === "clep" ? "CLEP®" : "AP®";
+  if (!sm.started) return c.osu ? "Ohio State · not started" : c.clepOnly ? "CLEP® · not started" : c.apOnly ? "AP® · not started" : `${ex} or CLEP® · not started`;
   return `${ex} · ${sm.answered} answered${sm.avg!=null?` · ${CS.pct(sm.avg)} avg mastery`:""}${sm.days!=null&&sm.days>=0?` · ${sm.days} days to go`:""}`;
 }
 CS.coursesBar = () => {
-  const all = Object.values(window.CS_COURSES).map(c => ({c, sm:CS.courseSummary(c.k)}));
+  const all = CS.trackCourses().map(c => ({c, sm:CS.courseSummary(c.k)}));
   const list = all.filter(({c, sm}) => sm.answered > 0 || c.k === CS.COURSE), more = all.length - list.length;
-  return `<section class="courses-bar" aria-label="My courses"><div class="spread"><h2>My courses</h2><span class="muted small">Streak, XP and pets are shared across courses</span></div>
+  return `<section class="courses-bar" aria-label="My courses"><div class="spread"><h2>My courses</h2><span class="muted small">${CS.C.osu?"Streak and XP are shared across courses":"Streak, XP and pets are shared across courses"}</span></div>
     <div class="course-cards">${list.map(({c, sm}) => { const cur = c.k === CS.COURSE;
       return `<button class="course-card ${cur?"cur":""}" data-course="${c.k}" style="--cc:${c.col};--cs:${c.soft}">
         <span class="cc-ico">${I(c.icon)}</span>
@@ -1109,8 +1110,8 @@ function coursePicker(){
   const mob = window.innerWidth <= 620;
   const sc = document.createElement("div"); sc.id = "course-scrim"; sc.className = "course-scrim"; sc.onclick = closeCoursePicker; document.body.appendChild(sc);
   pop = document.createElement("div"); pop.id = "course-pop"; pop.className = "course-pop cp2" + (mob ? " sheet" : ""); pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Courses");
-  const all = Object.values(window.CS_COURSES);
-  const exams = c => c.apOnly ? "AP®" : c.clepOnly ? "CLEP®" : "AP® · CLEP®";
+  const all = CS.trackCourses();
+  const exams = c => c.osu ? "Ohio State" : c.apOnly ? "AP®" : c.clepOnly ? "CLEP®" : "AP® · CLEP®";
   /* one compact tile per course: icon, name, exams and progress on one line, and a thin mastery bar */
   const tile = c => { const sm = CS.courseSummary(c.k), cur = c.k === CS.COURSE, m = Math.round((sm.avg||0)*100);
     return `<button data-course="${c.k}" class="cp-tile ${cur?"cur":""}" style="--cc:${c.col};--cs:${c.soft}" title="${esc(c.blurb||"")}" data-name="${esc((c.name+" "+(c.short||"")+" "+(c.cat||"")).toLowerCase())}" data-cat="${esc(c.cat||"")}" ${cur?'aria-current="true"':""}>

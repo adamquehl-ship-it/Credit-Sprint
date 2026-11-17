@@ -1,0 +1,22 @@
+window.CS_FRQS = (window.CS_FRQS || []).concat([
+ {id:"o1", title:"Pricing a campus coffee cart", kind:"Short", minutes:15, units:[2,3],
+  prompt:"A campus coffee cart sells 200 cups a day at $3.00. When it raises the price to $3.50, it sells 180 cups a day.",
+  parts:["Calculate total revenue at each price.","Calculate the price elasticity of demand using the midpoint formula.","Is demand elastic or inelastic? Explain what happens to revenue when price rises.","If the cost of coffee beans rises, explain what happens to the cart's marginal cost curve."],
+  rubric:["(a) $600 and $630.","(b) %ΔQ = 20/190 ≈ 10.5%; %ΔP = 0.5/3.25 ≈ 15.4%; elasticity ≈ 0.68.","(c) Inelastic (below 1), so revenue rises when price rises.","(d) MC shifts up because each cup costs more to make."],
+  sample:"(a) $600, $630. (b) About 0.68. (c) Inelastic, revenue rises. (d) MC shifts up."},
+ {id:"o2", title:"A monopoly and its profit", kind:"Short", minutes:15, units:[4],
+  prompt:"A local firm is the only seller of a product. At the profit-maximizing quantity its marginal revenue equals marginal cost at $12, and the demand curve shows a price of $20. Average total cost at that quantity is $15, and quantity is 100.",
+  parts:["State the rule the firm uses to choose quantity.","What price does the firm charge?","Calculate economic profit.","Explain why a perfectly competitive market would produce a different outcome."],
+  rubric:["(a) Produce where MR = MC.","(b) $20, the price on the demand curve at that quantity.","(c) (20 − 15) × 100 = $500.","(d) Competition sets P = MC, giving more output at a lower price and no deadweight loss."],
+  sample:"(a) MR = MC. (b) $20. (c) $500. (d) Competition produces more at a lower price."},
+ {id:"o3", title:"Hiring decision for a distribution center", kind:"Short", minutes:15, units:[5],
+  prompt:"A firm sells output at $10 per unit in a competitive market. The marginal product of the 6th worker is 4 units, the 7th is 3 units and the 8th is 2 units. The wage is $28.",
+  parts:["Find the marginal revenue product of the 6th, 7th and 8th workers.","How many workers will the firm hire?","If the wage rises to $35, how many will it hire?","Explain why labor demand is called a derived demand."],
+  rubric:["(a) $40, $30, $20.","(b) 7 workers (MRP of 7th is $30 ≥ $28).","(c) 6 workers (MRP of 7th is $30 < $35).","(d) The demand for labor comes from the demand for the product."],
+  sample:"(a) $40, $30, $20. (b) 7. (c) 6. (d) It comes from product demand."},
+ {id:"o4", title:"Pollution and a tax", kind:"Short", minutes:15, units:[6],
+  prompt:"A factory produces steel and emits pollution that harms nearby residents. The market produces more steel than is efficient.",
+  parts:["Name the type of market failure.","Explain why the market quantity is too high.","Describe a tax that would fix the problem.","Explain one challenge in setting the tax."],
+  rubric:["(a) Negative externality.","(b) The firm ignores the external cost, so private cost is below social cost.","(c) A per-unit tax equal to the marginal external cost.","(d) The external cost is hard to measure."],
+  sample:"(a) Negative externality. (b) The firm ignores the harm. (c) A per-unit tax equal to the external cost. (d) The harm is hard to measure."}
+]);

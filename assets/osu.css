@@ -1,0 +1,55 @@
+/* Credit Sprint for Ohio State: header tabs + scarlet and gray skin (Ohio State track only). No university logos or marks. */
+.track-tabs{display:inline-flex;gap:2px;padding:3px;border:1.5px solid var(--rule);border-radius:999px;background:var(--surface);flex:none}
+.track-tabs button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:800;font-size:.8rem;padding:5px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.track-tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.track-tabs button:not([aria-pressed="true"]):hover{color:var(--ink)}
+@media (max-width:620px){.track-tabs button{padding:5px 9px;font-size:.74rem}}
+:root.osu{--accent:#BB0000;--accent-2:#990000;--accent-soft:#FDEDED;--accent-ink:#FFFFFF;--mint:#666E75;--mint-soft:#EEF0F2;--curve2:#BB0000}
+:root.osu[data-theme="dark"]{--accent:#E5484D;--accent-2:#FF6B70;--accent-soft:#3A1719;--accent-ink:#0D0F17;--mint:#A8B0B8;--mint-soft:#1F2429}
+@media (prefers-color-scheme:dark){:root.osu:not([data-theme="light"]){--accent:#E5484D;--accent-2:#FF6B70;--accent-soft:#3A1719;--accent-ink:#0D0F17;--mint:#A8B0B8;--mint-soft:#1F2429}}
+.osu .meter.mint i{background:linear-gradient(90deg,#BB0000,#E5484D)}
+/* roadmap */
+.osu-road ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.osu-road li button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--rule);border-radius:var(--r);padding:12px 14px;cursor:pointer}
+.osu-road li.cur button{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.osu-road li.done .n{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.osu-road .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.85rem;border:1.5px solid var(--rule);background:var(--surface-2)}
+.osu-road .n svg{width:16px;height:16px}
+.osu-road .rb{display:block;height:5px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.osu-road .rb i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.osu-road .go{flex:none;font-weight:800;font-size:.78rem;background:var(--accent);color:var(--accent-ink);padding:5px 11px;border-radius:99px}
+/* sprint milestones */
+.osu-ms{list-style:none;margin:0;padding:0;max-height:340px;overflow:auto;display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:var(--r)}
+.osu-ms li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:.9rem}
+.osu-ms li:last-child{border-bottom:0}
+.osu-ms .mn{flex:none;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-weight:800;font-size:.78rem;background:var(--surface-2);color:var(--muted)}
+.osu-ms li.ready .mn{background:var(--accent);color:var(--accent-ink)}
+.osu-ms li.got{opacity:.6}
+/* career */
+.osu-rank{display:flex;flex-direction:column;gap:14px;border-left:5px solid var(--accent)}
+.osu-lv{font-weight:800;font-size:.85rem;background:var(--accent-soft);color:var(--accent-2);padding:5px 12px;border-radius:99px}
+.osu-ladder{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px}
+.osu-ladder li{display:flex;align-items:center;gap:12px;padding:8px 6px;border-radius:10px;color:var(--muted)}
+.osu-ladder li.cur{background:var(--accent-soft);color:var(--ink)}
+.osu-ladder li.done{color:var(--ink)}
+.osu-ladder .dot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:.78rem;font-weight:800;background:var(--surface-2);border:1.5px solid var(--rule)}
+.osu-ladder li.done .dot,.osu-ladder li.cur .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.osu-ladder .dot svg{width:15px;height:15px}
+.osu-table{display:flex;flex-direction:column}
+.osu-row{display:grid;grid-template-columns:62px 1fr 120px 44px 118px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);font-size:.9rem}
+.osu-row:last-child{border-bottom:0}
+.osu-row .un{color:var(--muted);font-weight:700}
+.osu-row .bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.osu-row .bar i{display:block;height:100%;background:var(--accent)}
+.osu-row .pc{text-align:right;font-weight:800}
+@media (max-width:620px){.osu-row{grid-template-columns:1fr 70px 40px}.osu-row .un,.osu-row .tag{display:none}}
+.osu-ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.osu-ach>div{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--rule);border-radius:10px}
+.osu-ach .ai{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-2)}
+.osu-ach .ai svg{width:18px;height:18px}
+/* hide pet-specific chrome on Ohio State courses */
+.osu [data-wallet],.osu .qpet,.osu .sidecard .examseg{display:none!important}
+.osu .cred-chip,.osu #cred-chip{display:none!important}
+.osu .hero-card{background:linear-gradient(135deg,#BB0000 0%,#6E0000 100%)}
+.osu .hero-card .btn{color:#6E0000}
+.osu .qlegend,.osu .courses-bar .muted.small{font-size:.8rem}

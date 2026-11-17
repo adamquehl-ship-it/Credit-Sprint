@@ -3,7 +3,10 @@
 (function(){
 "use strict";
 const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","fifth.js","content.js","content2.js","frqs2.js","drills.js","content3.js","extra.js"].map(f => "assets/data/"+f);
+/* Ohio State track: ECON 2002.01 reuses the original Macroeconomics question bank and adds an Ohio State layer (assets/data/osu/econ2002/) */
+const OSU2002 = MACRO.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2002/"+f));
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
+const OSU2001 = MICRO.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2001/"+f));
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
 /* n1–n10 (set 2 questions) and vocab2.js load after the originals so existing question and card ids never change */
@@ -23,6 +26,20 @@ const PRECALC = ["cards.js","c1.js","g1.js","g2.js","g3.js","g4.js","content.js"
 const C = window.CS_COURSES = {
   macro:{k:"macro", name:"Macroeconomics", short:"Macro", ap:"AP® Macroeconomics", clep:"CLEP® Principles of Macroeconomics", clepShort:"CLEP® Principles of Macro",
     bosses:{1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"}, key:"creditsprint.v3", col:"#4F46E5", soft:"#EEF2FF", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"GDP, inflation, money and banks, fiscal and monetary policy, trade.", icon:"bank", data:MACRO, nUnits:6, cat:"Economics"},
+  osu2002:{k:"osu2002", track:"osu", osu:true, apOnly:true, name:"ECON 2002.01 Macroeconomics", short:"ECON 2002", ap:"ECON 2002.01 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"Unit 1 checkpoint",2:"Unit 2 checkpoint",3:"Unit 3 checkpoint",4:"Unit 4 checkpoint",5:"Unit 5 checkpoint",6:"Unit 6 checkpoint"}, key:"creditsprint.osu2002.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final: mostly multiple choice, with some short problems (format varies by instructor)", clepFmt:"", blurb:"Fisher College of Business: GDP and the business cycle, income and prices, money and banking, fiscal and monetary policy, growth, trade and exchange rates.", icon:"bank", data:OSU2002, nUnits:6, cat:"Fisher College of Business", graphs:true, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: how a rate cut works through the economy, how a recession unfolds, how the multiplier builds.",
+    crunchDesc:"Two minutes of macro math: GDP, growth, inflation, unemployment, multipliers and money creation. Type the number.",
+    drillDesc:"Do the calculations: GDP, real vs nominal, CPI inflation, unemployment, multipliers, money creation, and exchange rates. Fresh numbers every time.",
+    planGames:["Fed Chair","Crisis Desk","Shift It","Number Crunch","True or False"]},
+  osu2001:{k:"osu2001", track:"osu", osu:true, apOnly:true, name:"ECON 2001.01 Microeconomics", short:"ECON 2001", ap:"ECON 2001.01 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"Unit 1 checkpoint",2:"Unit 2 checkpoint",3:"Unit 3 checkpoint",4:"Unit 4 checkpoint",5:"Unit 5 checkpoint",6:"Unit 6 checkpoint"}, key:"creditsprint.osu2001.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final: mostly multiple choice, with some short problems (format varies by instructor)", clepFmt:"", blurb:"Fisher College of Business: markets and prices, consumer choice, costs and profit, competition and monopoly, labor markets and market failure.", icon:"chart", data:OSU2001, nUnits:6, cat:"Fisher College of Business", graphs:true, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.",
+    crunchDesc:"Two minutes of business math: elasticity, costs, profit, surplus and wages. Type the number.",
+    drillDesc:"Elasticity, costs, profit, surplus: fresh numbers every time.",
+    planGames:["Shift It","Profit Max","Sprint","Nash Hunt","Match-up","Chain Reaction","Number Crunch"]},
   micro:{k:"micro", name:"Microeconomics", short:"Micro", ap:"AP® Microeconomics", clep:"CLEP® Principles of Microeconomics", clepShort:"CLEP® Principles of Micro",
     bosses:{1:"The Scarcity Specter",2:"The Elasticity Eel",3:"The Marginal Cost Golem",4:"The Monopoly Overlord",5:"The Wage Warden",6:"The Externality Ooze"}, key:"creditsprint.micro.v1", col:"#059669", soft:"#ECFDF5", apFmt:"60 multiple choice + 3 free response in 2 hours 10 minutes", clepFmt:"About 80 multiple choice in 90 minutes", blurb:"Supply and demand, costs, perfect competition, monopoly, labor markets, market failure.", icon:"chart", data:MICRO, nUnits:6, cat:"Economics"},
   bio:{k:"bio", name:"Biology", short:"Bio", ap:"AP® Biology", clep:"CLEP® Biology", clepShort:"CLEP® Biology",
@@ -162,14 +179,18 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}
 /* "500 practice questions · 20 FRQs" for any course (counts come from course-stats.js) */
 window.CS_STATLINE = (k, long) => { const s = (window.CS_COURSE_STATS || {})[k]; if (!s) return ""; return long ? `${s.q} practice questions · ${s.f} free-response · ${s.c} flashcards` : `${s.q} questions · ${s.f} FRQs`; };
+/* tracks: "AP & CLEP" (default) and "Ohio State". The header tab switches between them and remembers the last course used in each. */
+window.CS_TRACKS = [{k:"ap", n:"AP & CLEP"}, {k:"osu", n:"Ohio State"}];
+window.CS_TRACK_OF = c => (c && c.track) || "ap";
 window.CS_COURSE_PICKED = !!(k && C[k]);
 window.CS_COURSE = C[k] || C.macro;
+try { localStorage.setItem("creditsprint.track."+window.CS_TRACK_OF(window.CS_COURSE), window.CS_COURSE.k); } catch(e) {}
 /* where progress is saved. Signed-in students: this browser's localStorage (and the cloud).
    Guests: sessionStorage only, so progress lasts until the tab closes and carries into a new account.
    Falls back to localStorage when accounts aren't available (opened as a file, or no database yet). */

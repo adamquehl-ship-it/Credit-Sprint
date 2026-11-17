@@ -14,8 +14,8 @@ const GAMES = [
   {k:"boss", n:"Boss Battle", ic:"sword", d:"Take on a unit boss. Every correct answer deals damage; three misses and you're out.", best:()=>{ const n = Object.values(S().bosses).filter(Boolean).length; return `${n}/${CS.UNITS.length} bosses beaten`; }},
   ...(CS.hasGraphs() ? [{k:"shift", n:"Shift It", ic:"chart", d:"A headline hits the economy. Shift the right curve the right way before the clock runs out.", best:()=>S().best.shift!=null?`Best: ${S().best.shift}/10`:"Not played yet"}] : []),
   ...(CS.COURSE==="bio" ? [{k:"cross", n:"Cross It", ic:"dna", d:"Genetics at speed: Punnett squares, dihybrid ratios, sex-linked traits and blood types. Predict the offspring before time runs out.", best:()=>S().best.cross!=null?`Best: ${S().best.cross}/8`:"Not played yet", isNew:true}] : []),
-  ...(CS.COURSE==="macro" ? [{k:"crisis", n:"Crisis Desk", ic:"bank", d:"A headline breaks. Call what happens to real GDP, the price level and unemployment in the short run.", best:()=>S().best.crisis!=null?`Best: ${S().best.crisis}/24`:"Not played yet", isNew:true}] : []),
-  ...(CS.COURSE==="micro" ? [{k:"elastic", n:"Elasticity Sprint", ic:"chart", d:"Read the price and quantity data, then call the elasticity and what happens to total revenue.", best:()=>S().best.elastic!=null?`Best: ${S().best.elastic}/10`:"Not played yet", isNew:true}] : []),
+  ...((CS.COURSE==="macro"||CS.COURSE==="osu2002") ? [{k:"crisis", n:"Crisis Desk", ic:"bank", d:"A headline breaks. Call what happens to real GDP, the price level and unemployment in the short run.", best:()=>S().best.crisis!=null?`Best: ${S().best.crisis}/24`:"Not played yet", isNew:true}] : []),
+  ...(((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001") ? [{k:"elastic", n:"Elasticity Sprint", ic:"chart", d:"Read the price and quantity data, then call the elasticity and what happens to total revenue.", best:()=>S().best.elastic!=null?`Best: ${S().best.elastic}/10`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="bio" ? [{k:"sorter", n:"Cell Sorter", ic:"cards", d:"60 seconds. Sort each fact into the right bucket: prokaryote or eukaryote, mitosis or meiosis, DNA or RNA and more.", best:()=>S().best.sorter!=null?`Best: ${S().best.sorter} sorted`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="chem" ? [{k:"periodic", n:"Periodic Hunt", ic:"flask", d:"Clues lead you to an element. Tap it on the periodic table: groups, valence electrons, trends and atomic numbers.", best:()=>S().best.periodic!=null?`Best: ${S().best.periodic}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="chem" ? [{k:"balance", n:"Balance It", ic:"flask", d:"Balance chemical equations at speed. Set the coefficients so every atom is conserved, in the smallest whole numbers.", best:()=>S().best.balance!=null?`Best: ${S().best.balance}/8`:"Not played yet", isNew:true}] : []),
@@ -69,11 +69,11 @@ const GAMES = [
     {k:"claimev", n:"Claim or Evidence?", ic:"cards", d:"60 seconds. Sort each sentence from an argument: claim, evidence, commentary or counterargument. The skill behind every body paragraph.", best:()=>S().best.claimev!=null?`Best: ${S().best.claimev} sorted`:"Not played yet", isNew:true},
     {k:"rhet", n:"Rhetoric Spotter", ic:"speech", d:"A sentence from a speech or essay appears. Name the rhetorical choice: anaphora, antithesis, concession, rhetorical question and more.", best:()=>S().best.rhet!=null?`Best: ${S().best.rhet}/8`:"Not played yet", isNew:true}] : []),
   {k:"sprint", n:"Sprint", ic:"bolt", d:"60 seconds of rapid-fire questions. Streaks multiply your points; misses cost 3 seconds.", best:()=>S().best.sprint!=null?`Best: ${S().best.sprint} pts`:"Not played yet"},
-  {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (CS.COURSE==="micro"?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
+  {k:"chain", n:"Chain Reaction", ic:"link", d:CS.C.chainDesc || (((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001")?"Put the cause-and-effect steps in order, from a market shock to the long-run outcome.":"Put the cause-and-effect steps in order, from the Fed's move to what happens to GDP."), best:()=>S().best.chainRounds!=null?`Best: ${S().best.chainRounds} perfect chains`:"Not played yet", isNew:true},
   {k:"tf", n:"True or False", ic:"tf", d:"45 seconds. Decide if each statement is true or false. Fast and brutal on misconceptions.", best:()=>S().best.tf!=null?`Best: ${S().best.tf} pts`:"Not played yet", isNew:true},
-  ...(CS.DRILLS && CS.DRILLS.length ? [{k:"crunch", n:"Number Crunch", ic:"calc", d:CS.C.crunchDesc || (CS.COURSE==="micro"?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number."), best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true}] : []),
-  ...(CS.COURSE==="macro" ? [{k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"}] : []),
-  ...(CS.COURSE==="micro" ? [
+  ...(CS.DRILLS && CS.DRILLS.length ? [{k:"crunch", n:"Number Crunch", ic:"calc", d:CS.C.crunchDesc || (((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001")?"Two minutes of calculations: elasticity, costs, profit, MRP, surplus. Type the number.":"Two minutes of calculations: multipliers, CPI, money creation, growth. Type the number."), best:()=>S().best.crunch!=null?`Best: ${S().best.crunch} correct`:"Not played yet", isNew:true}] : []),
+  ...((CS.COURSE==="macro"||CS.COURSE==="osu2002") ? [{k:"fed", n:"Fed Chair", ic:"bank", d:"Run the economy for 8 quarters. Keep inflation near 2% and unemployment near 4.5%.", best:()=>S().best.fed!=null?`Best: ${S().best.fed}/100`:"Not played yet"}] : []),
+  ...(((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001") ? [
     {k:"profit", n:"Profit Max", ic:"calc", d:"You run the firm. Read the cost table, find where MR = MC, and pick the output that maximizes profit (or shut down).", best:()=>S().best.profit!=null?`Best: ${S().best.profit}/6`:"Not played yet"},
     {k:"nash", n:"Nash Hunt", ic:"sword", d:"Payoff matrices, fast. Spot dominant strategies and Nash equilibria before your rival does.", best:()=>S().best.nash!=null?`Best: ${S().best.nash}/8`:"Not played yet"}] : []),
   {k:"match", n:"Match-up", ic:"cards", d:"Match six terms to their definitions as fast as you can.", best:()=>S().best.match!=null?`Best: ${S().best.match.toFixed(1)}s`:"Not played yet"}
@@ -137,7 +137,7 @@ function daily(area){
 
 /* ---------- Boss Battle ---------- */
 function boss(area){
-  const BOSSES = CS.C.bosses || (CS.COURSE === "micro" ? {1:"The Scarcity Specter",2:"The Elasticity Eel",3:"The Marginal Cost Golem",4:"The Monopoly Overlord",5:"The Wage Warden",6:"The Externality Ooze"}
+  const BOSSES = CS.C.bosses || (((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001") ? {1:"The Scarcity Specter",2:"The Elasticity Eel",3:"The Marginal Cost Golem",4:"The Monopoly Overlord",5:"The Wage Warden",6:"The Externality Ooze"}
     : {1:"The Opportunity Costumer",2:"The Index Inflator",3:"The Multiplier Monster",4:"The Reserve Wraith",5:"The Phillips Phantom",6:"The Currency Kraken"});
   if (!bossUnit) return choose();
   fight(bossUnit);
@@ -277,7 +277,7 @@ function shift(area){
   intro();
   function intro(){
     area.innerHTML = `<p style="max-width:62ch">Each round shows a news headline and the right graph. Pick the curve that shifts and the direction. You have ${LIMIT} seconds, and faster answers score more.</p>
-      <p class="muted small">Right = increase, left = decrease.${CS.COURSE==="macro"?" In Phillips-curve rounds, right also means up.":" For supply and cost curves, a shift left is the same as a shift up."}</p><div><button class="btn accent" id="s-go">Start · ${ROUNDS} rounds</button></div>`;
+      <p class="muted small">Right = increase, left = decrease.${(CS.COURSE==="macro"||CS.COURSE==="osu2002")?" In Phillips-curve rounds, right also means up.":" For supply and cost curves, a shift left is the same as a shift up."}</p><div><button class="btn accent" id="s-go">Start · ${ROUNDS} rounds</button></div>`;
     $("#s-go").onclick = round;
   }
   function round(){
@@ -313,7 +313,7 @@ function shift(area){
     const nb = CS.setBest("shift", correct); CS.setBest("shiftPts", pts); finish(pts/10);
     area.innerHTML = `<span class="eyebrow">Shift It · results</span><div class="result-big mono">${correct}/${ROUNDS}</div>
       <p class="muted">${pts} points${nb?" · new personal best":""}. ${correct>=9?"You read graphs like an economist.":correct>=6?"Solid. The misses are worth a second look in Graph Lab.":"Open Graph Lab and practice shifting each curve."}</p>
-      <div class="row-wrap"><button class="btn" id="s-again">Play again</button><button class="btn ghost" data-go="learn" data-lab="${CS.COURSE==="micro"?"sd":"adas"}">Open Graph Lab</button></div>`;
+      <div class="row-wrap"><button class="btn" id="s-again">Play again</button><button class="btn ghost" data-go="learn" data-lab="${((CS.COURSE==="micro"||CS.COURSE==="osu2001")||CS.COURSE==="osu2001")?"sd":"adas"}">Open Graph Lab</button></div>`;
     $("#s-again").onclick = () => shift(area);
   }
 }
