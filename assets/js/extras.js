@@ -3,7 +3,7 @@
 (function(){
 "use strict";
 const CS = window.CS, $ = CS.$, esc = CS.esc, S = () => CS.S();
-const COURSE_NAME = {osu2200:"ACCTMIS 2200", osu2300:"ACCTMIS 2300", osu3220:"BUSFIN 3220", osu1151:"MATH 1151", osu1430:"STAT 1430", osu2111:"CSE 2111", osu2001:"ECON 2001.01", osu2002:"ECON 2002.01", macro:"Macroeconomics", micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History", apgov:"U.S. Government", appsych:"Psychology", apstat:"Statistics", aplit:"English Literature", aplang:"English Language", calcab:"Calculus AB", calcbc:"Calculus BC", aphug:"Human Geography", precalc:"Precalculus"};
+const COURSE_NAME = {apbpf:"Business & Personal Finance", osu3230:"BUSOBA 3230", osu3200:"BUSMHR 3200", osu3500:"BUSFIN 3500", osu2200:"ACCTMIS 2200", osu2300:"ACCTMIS 2300", osu3220:"BUSFIN 3220", osu1151:"MATH 1151", osu1430:"STAT 1430", osu2111:"CSE 2111", osu2001:"ECON 2001.01", osu2002:"ECON 2002.01", macro:"Macroeconomics", micro:"Microeconomics", bio:"Biology", chem:"Chemistry", mkt:"Marketing", apush:"U.S. History", apworld:"World History", apgov:"U.S. Government", appsych:"Psychology", apstat:"Statistics", aplit:"English Literature", aplang:"English Language", calcab:"Calculus AB", calcbc:"Calculus BC", aphug:"Human Geography", precalc:"Precalculus"};
 
 /* ---------- share a result (picture + text) ---------- */
 function card(title, big, sub){

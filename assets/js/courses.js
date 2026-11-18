@@ -6,6 +6,10 @@ const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 /* Ohio State track: ECON 2002.01 reuses the original Macroeconomics question bank and adds an Ohio State layer (assets/data/osu/econ2002/) */
 const OSU2002 = MACRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2002/"+f));
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
+const APBPF = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/apbpf/"+f);
+const OSU3230 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/ops3230/"+f);
+const OSU3200 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/ob3200/"+f);
+const OSU3500 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/legal3500/"+f);
 const OSU2200 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2200/"+f);
 const OSU2300 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2300/"+f);
 const OSU3220 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/fin3220/"+f);
@@ -150,6 +154,29 @@ const C = window.CS_COURSES = {
     exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
     chainDesc:"Put the steps in order: evaluating a project, pricing a bond, finding a CAPM return and computing WACC.",
     planGames:["Finance Sorter","Ratio Reader","Sprint","True or False","Chain Reaction"]},
+  apbpf:{k:"apbpf", name:"Business with Personal Finance", short:"Business & Finance", ap:"AP\u00AE Business with Personal Finance", clep:"", clepShort:"", apOnly:true,
+    key:"creditsprint.apbpf.v1", col:"#0F766E", soft:"#F0FDFA", apFmt:"First exam May 4, 2027. Multiple choice and free response; check College Board for the final format", clepFmt:"", blurb:"New for 2026\u201327: business ideas and competition, marketing, saving and borrowing, business finance and accounting, management, and budgeting and investing. Built from the public course framework.", icon:"chart", data:APBPF, nUnits:6, cat:"Business",
+    graphs:false, unitWord:"Unit", frqHead:"Free-response practice",
+    apExamText:"The first AP Business with Personal Finance exam is scheduled for May 4, 2027. The exam format is new, so treat timings as provisional and check College Board for the latest details. Practice the written parts in the Free response tab.",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Mini exam"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Mini exam"}}},
+    bosses:{1:"The Startup Specter",2:"The Brand Banshee",3:"The Interest Imp",4:"The Ledger Lich",5:"The Strategy Sphinx",6:"The Budget Beast"},
+    chainDesc:"Put the steps in order: making a budget, starting a business, setting a SMART goal and doing a SWOT analysis.",
+    planGames:["Sprint","True or False","Chain Reaction","Match-up"]},
+  osu3230:{k:"osu3230", track:"osu", osu:true, apOnly:true, name:"BUSOBA 3230 Operations Management", short:"BUSOBA 3230", ap:"BUSOBA 3230 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Productivity Phantom",2:"The Forecast Fiend",3:"The Bottleneck Behemoth",4:"The Stockout Specter",5:"The Critical Path Colossus"}, key:"creditsprint.osu3230.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Productivity, forecasting, process capacity and bottlenecks, inventory and EOQ, quality, lean and project management.", icon:"chart", data:OSU3230, nUnits:5, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: setting an order quantity, finding the critical path, building a forecast and fixing a bottleneck.",
+    planGames:["Sprint","True or False","Chain Reaction","Match-up"]},
+  osu3200:{k:"osu3200", track:"osu", osu:true, apOnly:true, name:"BUSMHR 3200 Organizational Behavior", short:"BUSMHR 3200", ap:"BUSMHR 3200 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Perception Poltergeist",2:"The Motivation Minotaur",3:"The Groupthink Ghoul",4:"The Power Phantom",5:"The Change Chimera"}, key:"creditsprint.osu3200.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Individual differences and perception, motivation, teams, leadership and power, and communication, conflict and change.", icon:"chart", data:OSU3200, nUnits:5, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: Lewin's change model, Tuckman's team stages, the expectancy chain and the communication process.",
+    planGames:["Sprint","True or False","Chain Reaction","Match-up"]},
+  osu3500:{k:"osu3500", track:"osu", osu:true, apOnly:true, name:"BUSFIN 3500 Legal Environment of Business", short:"BUSFIN 3500", ap:"BUSFIN 3500 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Precedent Poltergeist",2:"The Preemption Phantom",3:"The Negligence Nemesis",4:"The Contract Colossus",5:"The Antitrust Archon"}, key:"creditsprint.osu3500.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Courts and dispute resolution, constitutional and regulatory law, torts, contracts and the UCC, and business organizations, employment and competition law.", icon:"chart", data:OSU3500, nUnits:5, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: negligence elements, forming a contract, a litigation path and choosing a business form.",
+    planGames:["Sprint","True or False","Chain Reaction","Match-up"]},
   apstat:{k:"apstat", name:"Statistics", short:"Statistics", ap:"AP\u00AE Statistics", clep:"", clepShort:"", apOnly:true,
     key:"creditsprint.apstat.v1", col:"#0369A1", soft:"#F0F9FF", apFmt:"42 multiple choice and 4 free-response questions in 3 hours", clepFmt:"", blurb:"Exploring data and collecting data, probability and distributions, inference for proportions and means, and regression: built for the redesigned course and its first exam in May 2027.", icon:"chart", data:APSTAT, nUnits:5, cat:"Math & statistics",
     graphs:false, unitWord:"Unit",
@@ -219,7 +246,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002|osu1151|osu1430|osu2111|osu2200|osu2300|osu3220)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002|osu1151|osu1430|osu2111|osu2200|osu2300|osu3220|osu3230|osu3200|osu3500|apbpf)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}
