@@ -53,6 +53,15 @@ const GAMES = [
     {k:"diffsort", n:"Diffusion Sort", ic:"bolt", d:"60 seconds. Sort each example into relocation, contagious, hierarchical or stimulus diffusion. A mistake costs 3 seconds.", best:()=>S().best.diffsort!=null?`Best: ${S().best.diffsort} sorted`:"Not played yet", isNew:true},
     {k:"pyramid", n:"Pyramid Reader", ic:"chart", d:"A population pyramid appears. Read its shape and name the demographic transition stage, from Stage 1 to Stage 5.", best:()=>S().best.pyramid!=null?`Best: ${S().best.pyramid}/8`:"Not played yet", isNew:true},
     {k:"sectsort", n:"Sector Sort", ic:"cards", d:"60 seconds. Sort each job into the primary, secondary, tertiary, quaternary or quinary sector. A mistake costs 3 seconds.", best:()=>S().best.sectsort!=null?`Best: ${S().best.sectsort} sorted`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="osu2200" ? [
+    {k:"acctsort", n:"Account Sorter", ic:"cards", d:"60 seconds. An account appears; sort it as an asset, liability, equity, revenue or expense. A mistake costs 3 seconds.", best:()=>S().best.acctsort!=null?`Best: ${S().best.acctsort} sorted`:"Not played yet", isNew:true},
+    {k:"entrybuild", n:"Entry Builder", ic:"calc", d:"A transaction appears. Pick the correct journal entry. Eight rounds, every answer explained.", best:()=>S().best.entrybuild!=null?`Best: ${S().best.entrybuild}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="osu2300" ? [
+    {k:"costsort", n:"Cost Sorter", ic:"cards", d:"60 seconds. A cost appears; sort it as direct materials, direct labor, overhead or a period cost. A mistake costs 3 seconds.", best:()=>S().best.costsort!=null?`Best: ${S().best.costsort} sorted`:"Not played yet", isNew:true},
+    {k:"varcall", n:"Variance Call", ic:"calc", d:"A standard cost and an actual result appear. Pick the variance, favorable or unfavorable. Eight rounds.", best:()=>S().best.varcall!=null?`Best: ${S().best.varcall}/8`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="osu3220" ? [
+    {k:"finsort", n:"Finance Sorter", ic:"cards", d:"60 seconds. A finance term or formula appears; sort it into ratios, time value, valuation, risk or capital budgeting. A mistake costs 3 seconds.", best:()=>S().best.finsort!=null?`Best: ${S().best.finsort} sorted`:"Not played yet", isNew:true},
+    {k:"ratiorun", n:"Ratio Reader", ic:"calc", d:"Read a few numbers and compute the ratio or value. Eight rounds, every answer explained.", best:()=>S().best.ratiorun!=null?`Best: ${S().best.ratiorun}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="osu2111" ? [
     {k:"fnsort", n:"Function Sort", ic:"cards", d:"60 seconds. A spreadsheet function appears; sort it into Logical, Lookup, Financial, Text, Date or Math and stats. A mistake costs 3 seconds.", best:()=>S().best.fnsort!=null?`Best: ${S().best.fnsort} sorted`:"Not played yet", isNew:true},
     {k:"fglab", n:"Formula Lab", ic:"calc", d:"A small sheet and a formula appear. Work out the result the cell will show. Eight rounds, with every answer explained.", best:()=>S().best.fglab!=null?`Best: ${S().best.fglab}/8`:"Not played yet", isNew:true}] : []),
@@ -99,7 +108,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({fnsort, fglab, daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, segs:segsniper, plc:plcladder, pricepick, promomix, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort, famsort, transform, ucircle, logrules})[active]($("#g-area"));
+  ({acctsort, entrybuild, costsort, varcall, finsort, ratiorun, fnsort, fglab, daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, segs:segsniper, plc:plcladder, pricepick, promomix, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort, famsort, transform, ucircle, logrules})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -997,6 +1006,82 @@ function pickRun(area, cfg){
     $("#pr-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(cfg.items.slice()); round(); };
   }
 }
+
+/* ACCTMIS 2200 / 2300 and BUSFIN 3220 games */
+const ACCT_B = ["Asset","Liability","Equity","Revenue","Expense"];
+const ACCT = [
+ ["Cash",0,"Cash is an asset."],["Accounts receivable",0,"Money owed to the company is an asset."],["Inventory",0,"Goods held for sale are an asset."],["Equipment",0,"A long-term asset."],["Prepaid insurance",0,"Paid in advance, so an asset."],["Supplies",0,"Supplies on hand are an asset."],["Land",0,"A long-term asset that is not depreciated."],
+ ["Accounts payable",1,"Money the company owes suppliers."],["Salaries payable",1,"Wages owed but not yet paid."],["Notes payable",1,"A debt the company owes."],["Unearned revenue",1,"The company owes goods or services."],["Bonds payable",1,"Long-term debt."],["Interest payable",1,"Interest owed but not yet paid."],
+ ["Common stock",2,"Owners' invested capital."],["Retained earnings",2,"Accumulated profits kept in the business."],["Paid-in capital",2,"Owners' invested capital above par."],["Dividends",2,"A reduction of equity (contra equity)."],
+ ["Service revenue",3,"Revenue earned from services."],["Sales revenue",3,"Revenue from selling goods."],["Interest revenue",3,"Revenue earned on investments."],["Rent revenue",3,"Revenue earned from renting property."],
+ ["Rent expense",4,"The cost of using space."],["Salaries expense",4,"The cost of labor."],["Depreciation expense",4,"The allocated cost of assets used."],["Utilities expense",4,"The cost of services used."],["Advertising expense",4,"The cost of promotion."],["Cost of goods sold",4,"The cost of inventory sold."],["Interest expense",4,"The cost of borrowing."]
+];
+function acctsort(area){ sortRun(area, {k:"acctsort", name:"Account Sorter", unit:2, items:ACCT, buckets:ACCT_B,
+  intro:"An account appears. Decide whether it is an asset, a liability, equity, a revenue or an expense.", win:"You know where every account lives.", tip:"Ask what it is: something owned (asset), owed (liability), owners' stake (equity), earned (revenue) or used up (expense)."}); }
+const ENTRIES = [
+ ["The owner invests $5,000 cash in the business.","Dr Cash; Cr Owner's Capital","Cash and equity both rise.",["Dr Owner's Capital; Cr Cash","Dr Cash; Cr Revenue","Dr Expense; Cr Cash"]],
+ ["The company buys equipment for $2,000 on account.","Dr Equipment; Cr Accounts Payable","An asset and a liability both rise.",["Dr Equipment; Cr Cash","Dr Accounts Payable; Cr Equipment","Dr Expense; Cr Accounts Payable"]],
+ ["The company performs $800 of services on account.","Dr Accounts Receivable; Cr Service Revenue","Revenue is earned before cash is received.",["Dr Cash; Cr Service Revenue","Dr Service Revenue; Cr Accounts Receivable","Dr Accounts Payable; Cr Revenue"]],
+ ["The company pays $1,000 cash for rent.","Dr Rent Expense; Cr Cash","The expense rises and cash falls.",["Dr Cash; Cr Rent Expense","Dr Rent Payable; Cr Cash","Dr Rent Expense; Cr Revenue"]],
+ ["A customer pays $300 on account.","Dr Cash; Cr Accounts Receivable","One asset replaces another.",["Dr Accounts Receivable; Cr Cash","Dr Cash; Cr Revenue","Dr Cash; Cr Accounts Payable"]],
+ ["The company pays a $500 supplier bill (accounts payable).","Dr Accounts Payable; Cr Cash","The liability and cash both fall.",["Dr Cash; Cr Accounts Payable","Dr Expense; Cr Cash","Dr Accounts Receivable; Cr Cash"]],
+ ["A customer pays $900 in advance for services to be done later.","Dr Cash; Cr Unearned Revenue","The company now owes services.",["Dr Cash; Cr Service Revenue","Dr Unearned Revenue; Cr Cash","Dr Accounts Receivable; Cr Unearned Revenue"]],
+ ["At year-end, $2,000 of salaries are earned but unpaid.","Dr Salaries Expense; Cr Salaries Payable","An accrued expense and a liability.",["Dr Salaries Payable; Cr Salaries Expense","Dr Salaries Expense; Cr Cash","Dr Cash; Cr Salaries Payable"]],
+ ["The company records $6,000 of depreciation.","Dr Depreciation Expense; Cr Accumulated Depreciation","The cost is allocated to expense.",["Dr Accumulated Depreciation; Cr Depreciation Expense","Dr Depreciation Expense; Cr Cash","Dr Equipment; Cr Depreciation Expense"]],
+ ["The company declares and pays a $400 cash dividend.","Dr Dividends; Cr Cash","Dividends reduce equity.",["Dr Dividend Expense; Cr Cash","Dr Cash; Cr Dividends","Dr Retained Earnings; Cr Revenue"]],
+ ["The company issues common stock for $10,000 cash.","Dr Cash; Cr Common Stock","Assets and equity rise.",["Dr Common Stock; Cr Cash","Dr Cash; Cr Bonds Payable","Dr Cash; Cr Revenue"]],
+ ["The company borrows $8,000 from a bank.","Dr Cash; Cr Notes Payable","Cash rises and so does a liability.",["Dr Notes Payable; Cr Cash","Dr Cash; Cr Revenue","Dr Cash; Cr Common Stock"]]
+];
+function entrybuild(area){ pickRun(area, {k:"entrybuild", name:"Entry Builder", unit:2, items:ENTRIES,
+  options:it => CS.shuffle([it[1]].concat(it[3])), answer:it => it[1],
+  intro:"A transaction appears. Pick the journal entry that records it.", win:"Your entries balance.", tip:"Say what increases and what decreases, then use debit for assets and expenses and credit for liabilities, equity and revenue."}); }
+const COST_B = ["Direct materials","Direct labor","Manufacturing overhead","Period cost"];
+const COSTS = [
+ ["Steel used to make a machine",0,"It becomes part of the product."],["Wood in a table",0,"Raw material in the product."],["Fabric in a shirt",0,"Raw material in the product."],["Computer chips in a laptop",0,"A part that becomes the product."],
+ ["Wages of an assembly worker",1,"Labor that can be traced to the product."],["Pay of a machine operator making the product",1,"Traceable labor."],["Welder's pay on the line",1,"Traceable labor."],
+ ["Factory rent",2,"A necessary factory cost not traceable to a unit."],["Factory supervisor's salary",2,"Indirect labor is overhead."],["Factory electricity",2,"Indirect factory cost."],["Depreciation on factory equipment",2,"An indirect factory cost."],["Machine lubricant",2,"An indirect material."],
+ ["Sales commissions",3,"Selling costs are period costs."],["Advertising",3,"A selling cost."],["The CEO's salary",3,"An administrative cost."],["Headquarters office rent",3,"An administrative cost."],["Shipping to customers",3,"A selling cost."]
+];
+function costsort(area){ sortRun(area, {k:"costsort", name:"Cost Sorter", unit:1, items:COSTS, buckets:COST_B,
+  intro:"A cost appears. Decide whether it is direct materials, direct labor, manufacturing overhead or a period cost.", win:"You classify costs like a controller.", tip:"Factory costs you can trace to the product are direct; other factory costs are overhead; selling and administrative costs are period costs."}); }
+const VARS = [
+ ["Standard price $5.00. Actual price $5.20 on 1,000 lbs. Materials price variance?","$200 unfavorable","(5.20 − 5.00) × 1,000, and the actual price is higher.",["$200 favorable","$260 unfavorable","$1,000 unfavorable"]],
+ ["Standard price $4.00. Actual price $3.80 on 500 lbs. Materials price variance?","$100 favorable","(3.80 − 4.00) × 500, and the actual price is lower.",["$100 unfavorable","$200 favorable","$76 favorable"]],
+ ["Standard quantity 950 lbs at $5. Actual 1,000 lbs. Quantity variance?","$250 unfavorable","(1,000 − 950) × 5, and more was used.",["$250 favorable","$50 unfavorable","$200 unfavorable"]],
+ ["Standard quantity 400 lbs at $3. Actual 380 lbs. Quantity variance?","$60 favorable","(380 − 400) × 3, and less was used.",["$60 unfavorable","$20 favorable","$114 favorable"]],
+ ["Standard labor rate $20. Actual $21 for 500 hours. Rate variance?","$500 unfavorable","(21 − 20) × 500, and the rate is higher.",["$500 favorable","$21 unfavorable","$420 unfavorable"]],
+ ["Standard hours 480 at $20. Actual hours 500. Efficiency variance?","$400 unfavorable","(500 − 480) × 20, and more hours were used.",["$400 favorable","$20 unfavorable","$500 unfavorable"]],
+ ["Standard hours 300 at $15. Actual hours 280. Efficiency variance?","$300 favorable","(280 − 300) × 15, and fewer hours were used.",["$300 unfavorable","$20 favorable","$280 favorable"]],
+ ["Standard price $2.00. Actual price $2.10 on 2,000 units. Price variance?","$200 unfavorable","(2.10 − 2.00) × 2,000.",["$200 favorable","$210 unfavorable","$20 unfavorable"]]
+];
+function varcall(area){ pickRun(area, {k:"varcall", name:"Variance Call", unit:5, items:VARS,
+  options:it => CS.shuffle([it[1]].concat(it[3])), answer:it => it[1],
+  intro:"Read the standard and actual figures and pick the variance and its direction.", win:"You can call a variance fast.", tip:"Price: (actual price − standard price) × actual quantity. Quantity: (actual − standard quantity) × standard price. Positive means unfavorable."}); }
+const FINB = ["Ratios","Time value","Valuation","Risk and return","Capital budgeting"];
+const FINT = [
+ ["Current ratio",0,"A liquidity ratio."],["Quick ratio",0,"A liquidity ratio."],["Times interest earned",0,"A coverage ratio."],["DuPont identity",0,"It breaks down ROE."],["Debt ratio",0,"A leverage ratio."],["Inventory turnover",0,"An efficiency ratio."],
+ ["Future value",1,"Compounding forward."],["Annuity",1,"A stream of equal payments."],["Effective annual rate",1,"The true yearly rate."],["Rule of 72",1,"Estimates years to double."],["Perpetuity",1,"A payment that never ends."],
+ ["Yield to maturity",2,"A bond's return if held to maturity."],["Constant growth model",2,"Values a stock from dividends."],["Coupon rate",2,"A bond's stated interest rate."],["Current yield",2,"Coupon divided by price."],["Preferred stock",2,"A fixed-dividend security."],
+ ["Beta",3,"Sensitivity to the market."],["CAPM",3,"Links return to beta."],["Diversification",3,"Reduces unsystematic risk."],["Market risk premium",3,"The reward for bearing market risk."],["Standard deviation",3,"A measure of total risk."],
+ ["Net present value",4,"Accept if positive."],["Internal rate of return",4,"The rate that makes NPV zero."],["WACC",4,"The usual discount rate."],["Payback period",4,"Years to recover the investment."],["Profitability index",4,"PV of inflows ÷ investment."],["Depreciation tax shield",4,"Depreciation × tax rate."]
+];
+function finsort(area){ sortRun(area, {k:"finsort", name:"Finance Sorter", unit:2, items:FINT, buckets:FINB,
+  intro:"A finance term appears. Decide which topic it belongs to.", win:"You can place every finance idea.", tip:"Group by job: ratios read statements, time value moves money through time, valuation prices assets, risk and return links reward to risk, and capital budgeting picks projects."}); }
+const RATIOS = [
+ ["Current assets $200, current liabilities $100. Current ratio?","2.0","200 ÷ 100.",["0.5","100","1.0"]],
+ ["Net income $60, equity $400. ROE?","15%","60 ÷ 400.",["6.7%","60%","1.5%"]],
+ ["EBIT $120, interest $20. Times interest earned?","6.0","120 ÷ 20.",["0.17","100","12.0"]],
+ ["Stock price $30, EPS $2. P/E?","15","30 ÷ 2.",["60","0.07","28"]],
+ ["$1,000 at 5% for 3 years. Future value?","$1,157.63","1,000 × 1.05³.",["$1,150.00","$1,050.00","$1,215.51"]],
+ ["Perpetuity of $50 a year at a 5% rate. Value?","$1,000","50 ÷ 0.05.",["$250","$2.50","$55"]],
+ ["Next dividend $2, growth 4%, required return 10%. Stock price?","$33.33","2 ÷ (0.10 − 0.04).",["$20.00","$50.00","$14.29"]],
+ ["Risk-free 3%, beta 1.2, market risk premium 6%. CAPM return?","10.2%","3 + 1.2 × 6.",["7.2%","9.0%","4.2%"]],
+ ["Equity 60% at 12%, debt 40% at 8% pre-tax, tax rate 25%. WACC?","9.6%","0.6 × 12 + 0.4 × 8 × 0.75.",["10.4%","10.0%","8.0%"]],
+ ["Days inventory 60, days receivables 40, days payables 30. Cash conversion cycle?","70 days","60 + 40 − 30.",["130 days","10 days","30 days"]]
+];
+function ratiorun(area){ pickRun(area, {k:"ratiorun", name:"Ratio Reader", unit:1, items:RATIOS,
+  options:it => CS.shuffle([it[1]].concat(it[3])), answer:it => it[1],
+  intro:"Read the numbers and compute the value.", win:"You calculate like an analyst.", tip:"Write the formula first, then plug in the numbers."}); }
 
 /* CSE 2111: Function Sort (sortRun) and Formula Lab (pickRun) */
 const FNSORT_B = ["Logical","Lookup","Financial","Text","Date","Math & stats"];

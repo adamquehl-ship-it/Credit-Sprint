@@ -1,0 +1,22 @@
+window.CS_FRQS = [
+ {id:"o1", title:"Journal entries for a month", kind:"Journal entries", minutes:15, units:[2],
+  prompt:"A company (1) is started by an owner investing $20,000 cash, (2) buys $5,000 of equipment on account, (3) earns $3,000 of service revenue on account and (4) pays $800 of rent.",
+  parts:["(a) Write the journal entry for each transaction.","(b) Compute total assets after the four transactions (before any other entries).","(c) Compute total liabilities and total equity, and show that the equation balances."],
+  rubric:["(a) (1) Dr Cash 20,000, Cr Owner's Capital 20,000. (2) Dr Equipment 5,000, Cr Accounts Payable 5,000. (3) Dr Accounts Receivable 3,000, Cr Service Revenue 3,000. (4) Dr Rent Expense 800, Cr Cash 800.","(b) Cash 19,200 + Equipment 5,000 + Receivable 3,000 = 27,200.","(c) Liabilities 5,000. Equity = 20,000 + 3,000 − 800 = 22,200. 5,000 + 22,200 = 27,200."],
+  sample:"Assets 27,200 = Liabilities 5,000 + Equity 22,200."},
+ {id:"o2", title:"Adjusting entries", kind:"Adjustments", minutes:15, units:[3],
+  prompt:"At December 31, a company has: (1) supplies of $900 on hand at the start of December, with $350 still on hand at year-end; (2) equipment costing $24,000 with a 4-year life and no salvage value; (3) $2,000 of salaries earned but unpaid.",
+  parts:["(a) Prepare the adjusting entry for supplies.","(b) Compute and record one year of straight-line depreciation.","(c) Record the salaries entry.","(d) Which of these entries affects Cash?"],
+  rubric:["(a) Supplies used = 900 − 350 = 550. Dr Supplies Expense 550, Cr Supplies 550.","(b) 24,000 ÷ 4 = 6,000. Dr Depreciation Expense 6,000, Cr Accumulated Depreciation 6,000.","(c) Dr Salaries Expense 2,000, Cr Salaries Payable 2,000.","(d) None. Adjusting entries do not involve cash."],
+  sample:"(a) 550 (b) 6,000 (c) 2,000 (d) None."},
+ {id:"o3", title:"Inventory costing", kind:"Inventory", minutes:15, units:[4],
+  prompt:"A company begins with 100 units at $8. It then buys 200 units at $10. It sells 150 units for $20 each.",
+  parts:["(a) Compute COGS and ending inventory using FIFO.","(b) Compute COGS using the weighted average cost method.","(c) Compute gross profit under FIFO.","(d) Which method gives the higher gross profit in rising prices, and why?"],
+  rubric:["(a) COGS = 100 × 8 + 50 × 10 = 1,300. Ending inventory = 150 × 10 = 1,500.","(b) Average = (800 + 2,000) ÷ 300 = 9.33; COGS = 150 × 9.33 = 1,400.","(c) Sales 3,000 − COGS 1,300 = 1,700.","(d) FIFO; it uses the older, lower costs for COGS."],
+  sample:"(a) COGS 1,300, EI 1,500 (b) 1,400 (c) 1,700 (d) FIFO."},
+ {id:"o4", title:"Bank reconciliation", kind:"Cash", minutes:12, units:[5],
+  prompt:"The bank statement balance is $8,400. Deposits in transit are $1,200 and outstanding checks are $900. The bank also charged a $25 fee that the company has not yet recorded.",
+  parts:["(a) Compute the adjusted bank balance.","(b) Compute the book balance before the fee, if the books and adjusted bank balance must agree after the fee.","(c) Record the entry for the fee."],
+  rubric:["(a) 8,400 + 1,200 − 900 = 8,700.","(b) The book balance before the fee is 8,725, because 8,725 − 25 = 8,700.","(c) Dr Bank Service Charge Expense 25, Cr Cash 25."],
+  sample:"(a) 8,700 (b) 8,725 (c) Dr Bank Service Charge Expense 25; Cr Cash 25."}
+];

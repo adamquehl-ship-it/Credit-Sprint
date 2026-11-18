@@ -6,6 +6,9 @@ const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 /* Ohio State track: ECON 2002.01 reuses the original Macroeconomics question bank and adds an Ohio State layer (assets/data/osu/econ2002/) */
 const OSU2002 = MACRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2002/"+f));
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
+const OSU2200 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2200/"+f);
+const OSU2300 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2300/"+f);
+const OSU3220 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/fin3220/"+f);
 const OSU2001 = MICRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2001/"+f));
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
@@ -132,6 +135,21 @@ const C = window.CS_COURSES = {
     exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
     chainDesc:"Put the steps in order: building a loan model, a PivotTable, finding an error, designing a database and loading a web page.",
     planGames:["Function Sort","Formula Lab","Sprint","True or False","Chain Reaction"]},
+  osu2200:{k:"osu2200", track:"osu", osu:true, apOnly:true, name:"ACCTMIS 2200 Financial Accounting", short:"ACCTMIS 2200", ap:"ACCTMIS 2200 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Balance Sheet Brute",2:"The Debit Demon",3:"The Accrual Ghoul",4:"The Inventory Imp",5:"The Receivables Rogue",6:"The Depreciation Dragon",7:"The Cash Flow Colossus"}, key:"creditsprint.osu2200.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"The accounting equation, debits and credits, adjusting entries, inventory, receivables, long-term assets and liabilities, equity and cash flows.", icon:"chart", data:OSU2200, nUnits:7, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: the accounting cycle, an adjusting entry, a bank reconciliation and a cash flow statement.",
+    planGames:["Account Sorter","Entry Builder","Sprint","True or False","Chain Reaction"]},
+  osu2300:{k:"osu2300", track:"osu", osu:true, apOnly:true, name:"ACCTMIS 2300 Managerial Accounting", short:"ACCTMIS 2300", ap:"ACCTMIS 2300 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Cost Classifier",2:"The Overhead Ogre",3:"The Break-Even Beast",4:"The Budget Banshee",5:"The Variance Vampire",6:"The Decision Dragon",7:"The Payback Phantom"}, key:"creditsprint.osu2300.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Cost concepts, job-order costing, cost-volume-profit analysis, budgeting, standard cost variances, relevant costs and capital budgeting.", icon:"chart", data:OSU2300, nUnits:7, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: the flow of costs, a master budget, a variance analysis and a special order decision.",
+    planGames:["Cost Sorter","Variance Call","Sprint","True or False","Chain Reaction"]},
+  osu3220:{k:"osu3220", track:"osu", osu:true, apOnly:true, name:"BUSFIN 3220 Business Finance", short:"BUSFIN 3220", ap:"BUSFIN 3220 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Ratio Rogue",2:"The Compounding Colossus",3:"The Bond Baron",4:"The Beta Beast",5:"The NPV Ninja",6:"The Leverage Lord"}, key:"creditsprint.osu3220.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Ratio analysis, the time value of money, bond and stock valuation, risk and return, capital budgeting and capital structure.", icon:"chart", data:OSU3220, nUnits:6, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: evaluating a project, pricing a bond, finding a CAPM return and computing WACC.",
+    planGames:["Finance Sorter","Ratio Reader","Sprint","True or False","Chain Reaction"]},
   apstat:{k:"apstat", name:"Statistics", short:"Statistics", ap:"AP\u00AE Statistics", clep:"", clepShort:"", apOnly:true,
     key:"creditsprint.apstat.v1", col:"#0369A1", soft:"#F0F9FF", apFmt:"42 multiple choice and 4 free-response questions in 3 hours", clepFmt:"", blurb:"Exploring data and collecting data, probability and distributions, inference for proportions and means, and regression: built for the redesigned course and its first exam in May 2027.", icon:"chart", data:APSTAT, nUnits:5, cat:"Math & statistics",
     graphs:false, unitWord:"Unit",
@@ -201,7 +219,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002|osu1151|osu1430|osu2111)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002|osu1151|osu1430|osu2111|osu2200|osu2300|osu3220)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

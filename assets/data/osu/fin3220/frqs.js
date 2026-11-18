@@ -1,0 +1,22 @@
+window.CS_FRQS = [
+ {id:"o1", title:"Saving for a goal", kind:"Time value", minutes:15, units:[2],
+  prompt:"A student wants $20,000 in 5 years. The account pays 6% per year, compounded annually.",
+  parts:["(a) How much must be deposited today as a single lump sum? (Use 1.06⁵ = 1.3382.)","(b) How much must be deposited at the end of each year? (Use the FV annuity factor 5.6371.)","(c) Which approach needs less total cash from the student? Explain."],
+  rubric:["(a) 20,000 ÷ 1.3382 ≈ $14,945.","(b) 20,000 ÷ 5.6371 ≈ $3,548 a year.","(c) The lump sum needs $14,945 total; the annual deposits total about $17,740. The lump sum costs less in total because the money earns interest longer."],
+  sample:"(a) $14,945 (b) $3,548 (c) Lump sum totals less."},
+ {id:"o2", title:"Valuing a bond", kind:"Bonds", minutes:15, units:[3],
+  prompt:"A $1,000 face value bond pays a 6% annual coupon and matures in 2 years. The market yield is 8%.",
+  parts:["(a) Compute the price of the bond. (Use 1.08² = 1.1664.)","(b) Is it priced at a premium or a discount? Why?","(c) What happens to the price if the yield falls to 5%?"],
+  rubric:["(a) 60 ÷ 1.08 + 1,060 ÷ 1.1664 = 55.56 + 908.78 = $964.33.","(b) Discount, because the coupon (6%) is below the yield (8%).","(c) The price rises, because the cash flows are discounted at a lower rate."],
+  sample:"(a) $964.33 (b) Discount (c) Price rises."},
+ {id:"o3", title:"Required return and stock value", kind:"CAPM and DDM", minutes:15, units:[3,4],
+  prompt:"The risk-free rate is 4%, the market return is 10% and a stock has a beta of 1.5. The stock will pay a $3 dividend next year, growing at 5%.",
+  parts:["(a) Find the required return using the CAPM.","(b) Find the stock's value using the constant growth model.","(c) Explain what a beta of 1.5 says about the stock's risk."],
+  rubric:["(a) 4 + 1.5 × (10 − 4) = 13%.","(b) 3 ÷ (0.13 − 0.05) = $37.50.","(c) It moves about 1.5 times as much as the market, so it has above-average systematic risk."],
+  sample:"(a) 13% (b) $37.50 (c) More market risk."},
+ {id:"o4", title:"Evaluating a project", kind:"Capital budgeting", minutes:15, units:[5],
+  prompt:"A project costs $100,000 and produces $45,000 a year for 3 years. The firm finances itself 70% with equity at 12% and 30% with debt at 6% after tax.",
+  parts:["(a) Compute the WACC.","(b) Compute the NPV using the WACC. (Annuity factor for 3 years at 10.2%: 2.4781.)","(c) Should the firm accept? Explain.","(d) Name one cash flow that should be left out of the analysis."],
+  rubric:["(a) 0.7 × 12 + 0.3 × 6 = 8.4 + 1.8 = 10.2%.","(b) PV of inflows ≈ 45,000 × 2.4781 = $111,515; NPV ≈ $11,515.","(c) Accept: NPV is positive.","(d) Any sunk cost, such as a study already paid for."],
+  sample:"(a) 10.2% (b) about $11,515 (c) Accept (d) Sunk costs."}
+];

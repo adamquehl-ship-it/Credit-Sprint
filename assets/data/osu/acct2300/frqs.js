@@ -1,0 +1,22 @@
+window.CS_FRQS = [
+ {id:"o1", title:"Cost of goods manufactured", kind:"Cost flow", minutes:12, units:[1],
+  prompt:"A manufacturer reports: direct materials used $80,000; direct labor $50,000; manufacturing overhead $30,000; beginning WIP $12,000; ending WIP $8,000; beginning finished goods $20,000; ending finished goods $26,000.",
+  parts:["(a) Compute the total manufacturing cost for the period.","(b) Compute the cost of goods manufactured.","(c) Compute cost of goods sold."],
+  rubric:["(a) 80,000 + 50,000 + 30,000 = 160,000.","(b) 160,000 + 12,000 − 8,000 = 164,000.","(c) 20,000 + 164,000 − 26,000 = 158,000."],
+  sample:"(a) 160,000 (b) 164,000 (c) 158,000."},
+ {id:"o2", title:"Break-even analysis", kind:"CVP", minutes:15, units:[3],
+  prompt:"A company sells a product for $80 with variable costs of $50 per unit. Fixed costs are $90,000 per year.",
+  parts:["(a) Compute the contribution margin per unit and the CM ratio.","(b) Compute break-even units and break-even sales.","(c) How many units are needed for a profit of $30,000?","(d) If the company sells 4,000 units, find the margin of safety in dollars."],
+  rubric:["(a) CM = 30; CM ratio = 30 ÷ 80 = 37.5%.","(b) 90,000 ÷ 30 = 3,000 units; 3,000 × 80 = $240,000.","(c) (90,000 + 30,000) ÷ 30 = 4,000 units.","(d) 4,000 × 80 = 320,000 − 240,000 = $80,000."],
+  sample:"(a) $30, 37.5% (b) 3,000 units, $240,000 (c) 4,000 (d) $80,000."},
+ {id:"o3", title:"Variance analysis", kind:"Standard costs", minutes:15, units:[5],
+  prompt:"A product's standard is 3 lbs of material at $4 per lb. The company produced 500 units, bought and used 1,600 lbs at $4.25 per lb.",
+  parts:["(a) Compute standard quantity allowed for the 500 units.","(b) Compute the materials price variance.","(c) Compute the materials quantity variance.","(d) Mark each as favorable or unfavorable."],
+  rubric:["(a) 500 × 3 = 1,500 lbs.","(b) (4.25 − 4.00) × 1,600 = $400 unfavorable.","(c) (1,600 − 1,500) × 4 = $400 unfavorable.","(d) Both are unfavorable."],
+  sample:"(a) 1,500 lbs (b) $400 U (c) $400 U (d) Both U."},
+ {id:"o4", title:"Capital investment decision", kind:"Capital budgeting", minutes:15, units:[7],
+  prompt:"A company can invest $50,000 in a machine that returns $20,000 a year for 3 years. The required return is 10%, and the annuity factor for 3 years at 10% is 2.4869.",
+  parts:["(a) Compute the payback period.","(b) Compute the NPV.","(c) Should the company invest? Explain.","(d) Name one weakness of the payback method."],
+  rubric:["(a) 50,000 ÷ 20,000 = 2.5 years.","(b) 20,000 × 2.4869 = 49,738; 49,738 − 50,000 = −$262.","(c) No: NPV is negative, so the return is below 10%.","(d) It ignores the time value of money and cash flows after payback."],
+  sample:"(a) 2.5 years (b) −$262 (c) Reject (d) Ignores time value."}
+];
