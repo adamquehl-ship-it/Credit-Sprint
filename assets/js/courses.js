@@ -6,13 +6,13 @@ const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","q
 /* Ohio State track: ECON 2002.01 reuses the original Macroeconomics question bank and adds an Ohio State layer (assets/data/osu/econ2002/) */
 const OSU2002 = MACRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2002/"+f));
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
-const APBPF = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/apbpf/"+f);
-const OSU3230 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/ops3230/"+f);
-const OSU3200 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/ob3200/"+f);
-const OSU3500 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/legal3500/"+f);
-const OSU2200 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2200/"+f);
-const OSU2300 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2300/"+f);
-const OSU3220 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/fin3220/"+f);
+const APBPF = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/apbpf/"+f);
+const OSU3230 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/ops3230/"+f);
+const OSU3200 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/ob3200/"+f);
+const OSU3500 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/legal3500/"+f);
+const OSU2200 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2200/"+f);
+const OSU2300 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/acct2300/"+f);
+const OSU3220 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/fin3220/"+f);
 const OSU2001 = MICRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2001/"+f));
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
@@ -28,9 +28,9 @@ const APLANG = ["cards.js","cards2.js","terms.js","x1.js","x2.js","r1.js","r2.js
 const APHUG = ["cards.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/aphug/"+f);
 const CALC_AB_FILES = ["cards.js","c1.js","c2.js","g1.js","g2.js","g3.js","g4.js","g5.js","g6.js","g7.js","g8.js","content.js","content2.js","frqs.js","drills.js","games.js"];
 const CALCAB = CALC_AB_FILES.map(f=>"assets/data/calc/"+f);
-const OSU1151 = CALCAB.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/math1151/"+f));
-const OSU1430 = APSTAT.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/stat1430/"+f));
-const OSU2111 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/cse2111/"+f);
+const OSU1151 = CALCAB.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/math1151/"+f));
+const OSU1430 = APSTAT.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/stat1430/"+f));
+const OSU2111 = ["content.js","questions.js","questions2.js","cards.js","frqs.js"].map(f => "assets/data/osu/cse2111/"+f);
 const CALCBC = CALCAB.concat(["cards.js","c1.js","g9.js","g10.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/calc/bc/"+f));
 const PRECALC = ["cards.js","c1.js","g1.js","g2.js","g3.js","g4.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/precalc/"+f);
 const C = window.CS_COURSES = {
