@@ -53,3 +53,5 @@
 .osu .hero-card{background:linear-gradient(135deg,#BB0000 0%,#6E0000 100%)}
 .osu .hero-card .btn{color:#6E0000}
 .osu .qlegend,.osu .courses-bar .muted.small{font-size:.8rem}
+
+.osu .dq-rw.dq-gems,.osu .dq-rw.dq-egg,.osu .dq-rw.dq-creds,.osu .pet-mini{display:none!important}

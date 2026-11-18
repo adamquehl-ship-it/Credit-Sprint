@@ -29,7 +29,7 @@ CS.trackCourses = () => Object.values(COURSES).filter(c => trackOf(c) === trackO
 if (!OSU) return;
 
 document.documentElement.classList.add("osu");
-document.title = "Credit Sprint for Ohio State · ECON 2002.01 Study Hub";
+document.title = "Credit Sprint for Ohio State · " + (CS.C.short || "ECON") + " Study Hub";
 
 /* ---------- free while the Ohio State track is in launch ---------- */
 const hasAccess = CS.hasAccess;
@@ -132,4 +132,24 @@ const predict = CS.predict;
 CS.predict = () => { const r = predict(); if (!r || !r.ready) return r;
   const p = r.p, g = p >= 0.93 ? "A" : p >= 0.9 ? "A-" : p >= 0.87 ? "B+" : p >= 0.83 ? "B" : p >= 0.8 ? "B-" : p >= 0.77 ? "C+" : p >= 0.73 ? "C" : p >= 0.7 ? "C-" : p >= 0.6 ? "D" : "E";
   return {ready:true, p, label:g, sub:"Estimated exam grade", pass:p >= 0.7}; };
+
+/* ---------- cleanup for the Ohio State skin: no pets, gems, eggs, AP/CLEP wording ---------- */
+CS.petCard = () => "";
+const leagueCard = CS.leagueCard; if (leagueCard) CS.leagueCard = () => String(leagueCard()).replace("keep your streak, pets and XP safe", "keep your streak and XP safe");
+(function(){
+  const course = CS.C.short || "ECON";
+  const foot = document.querySelector("footer");
+  if (foot) foot.innerHTML = 'Credit Sprint for Ohio State is an independent study tool. It is not affiliated with, sponsored by or endorsed by The Ohio State University or the Fisher College of Business. All practice questions are original. Grade estimates are rough guides, not predictions of an official grade. Progress is saved in this browser. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a>';
+  const SUBS = [[/For real past exam questions, see Learn → Official resources\./g, "Check your answer against the point-by-point rubric."], [/ · finish all three for \+25 gems and \+60 XP/g, " · finish all three for +60 XP"], [/streak, pets and XP/g, "streak and XP"], [/Unlock your score estimate/g, "Your grade estimate"], [/Unlocked\. Download it, share it, put it on a college application/g, "Earned. Download it or share it"], [/Certificate of exam readiness/g, "Course readiness certificate"]];
+  let busy = false;
+  const clean = () => { if (busy) return; busy = true;
+    try {
+      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+      while ((n = w.nextNode())) { let t = n.nodeValue, o = t; SUBS.forEach(([a, b]) => { t = t.replace(a, b); }); if (t !== o) n.nodeValue = t; }
+      const team = document.getElementById("v-team");
+      if (team && team.innerHTML.indexOf("Who's behind") >= 0) {
+        team.innerHTML = '<div class="page-head"><div class="stack" style="gap:6px"><span class="eyebrow">About</span><h1>Credit Sprint for Ohio State</h1><p class="muted">A free study hub for Fisher students, built around the public course descriptions for ' + esc(course) + '. Every question, flashcard and problem is original, and none of it comes from instructor slides, exams or textbook publishers.</p></div></div><div class="panel"><h3>How to use it</h3><p class="muted">Work one unit at a time on the Dashboard roadmap, check yourself in Practice, drill terms in Flashcards, and use Games to make the ideas stick. Your Career rank rises as you earn XP.</p></div>'; }
+    } finally { busy = false; } };
+  new MutationObserver(clean).observe(document.body, {childList:true, subtree:true, characterData:true}); clean();
+})();
 })();
