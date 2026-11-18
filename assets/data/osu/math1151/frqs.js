@@ -1,0 +1,22 @@
+window.CS_FRQS = (window.CS_FRQS || []).concat([
+ {id:"o1", title:"Maximizing profit", kind:"Applications · Business", minutes:15, units:[2,5],
+  prompt:"A company's revenue is R(q) = 60q − 0.2q² dollars and its cost is C(q) = 400 + 12q dollars for q units.",
+  parts:["(a) Find the marginal revenue and marginal cost.","(b) Write the profit function P(q).","(c) Find the quantity that maximizes profit and justify your answer.","(d) Find the maximum profit."],
+  rubric:["(a) R′(q) = 60 − 0.4q and C′(q) = 12.","(b) P(q) = −0.2q² + 48q − 400.","(c) P′(q) = −0.4q + 48 = 0 gives q = 120, and P″ = −0.4 < 0 so it is a maximum.","(d) P(120) = −2,880 + 5,760 − 400 = $2,480."],
+  sample:"(a) 60 − 0.4q and 12. (b) −0.2q² + 48q − 400. (c) q = 120, P″ < 0. (d) $2,480."},
+ {id:"o2", title:"A tank of inventory", kind:"Accumulation", minutes:15, units:[6],
+  prompt:"Inventory arrives at a warehouse at a rate of A(t) = 40 + 6t units per day and ships out at a constant 100 units per day. The warehouse holds 500 units at t = 0.",
+  parts:["(a) Find the net rate of change of inventory at t = 5.","(b) Write an integral for the number of units that arrive during the first 10 days and evaluate it.","(c) How many units are in the warehouse at t = 10?","(d) At what time is inventory at its minimum? Justify."],
+  rubric:["(a) A(5) − 100 = 70 − 100 = −30 units per day.","(b) ∫₀¹⁰ (40 + 6t) dt = 400 + 300 = 700.","(c) 500 + 700 − 1000 = 200 units.","(d) Net rate 6t − 60 = 0 at t = 10; it changes from negative to positive, so t = 10 is a minimum."],
+  sample:"(a) −30. (b) 700. (c) 200. (d) t = 10, net rate changes sign from − to +."},
+ {id:"o3", title:"Price and revenue", kind:"Related rates · Implicit", minutes:15, units:[3,4],
+  prompt:"The demand for a product is given by p = 100 − 0.5q, where p is the price in dollars and q the quantity in units. Sales are rising at 10 units per week.",
+  parts:["(a) Write revenue as a function of q.","(b) How fast is the price changing when sales are rising?","(c) How fast is revenue changing when q = 60?","(d) At what quantity does revenue stop increasing?"],
+  rubric:["(a) R = q(100 − 0.5q) = 100q − 0.5q².","(b) dp/dt = −0.5 · 10 = −$5 per week.","(c) dR/dt = (100 − q) · dq/dt = 40 · 10 = $400 per week.","(d) R′(q) = 100 − q = 0 at q = 100."],
+  sample:"(a) 100q − 0.5q². (b) −$5 per week. (c) $400 per week. (d) q = 100."},
+ {id:"o4", title:"Consumer surplus and growth", kind:"Applications of integration", minutes:15, units:[7,8],
+  prompt:"A product's demand curve is p = 40 − 2q. The market price is $10. Separately, an account earns interest continuously at 6% per year.",
+  parts:["(a) Find the equilibrium quantity at a price of $10.","(b) Compute the consumer surplus.","(c) Write a differential equation for the account balance A(t) and solve it for an initial deposit of $2,000.","(d) What is the balance after 5 years?"],
+  rubric:["(a) 10 = 40 − 2q gives q = 15.","(b) ∫₀¹⁵ (40 − 2q − 10) dq = [30q − q²]₀¹⁵ = 450 − 225 = $225.","(c) dA/dt = 0.06A and A(t) = 2000e^(0.06t).","(d) A(5) = 2000e^(0.3) ≈ $2,699.72."],
+  sample:"(a) 15. (b) $225. (c) dA/dt = 0.06A, A = 2000e^(0.06t). (d) about $2,700."}
+]);

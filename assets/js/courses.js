@@ -4,9 +4,9 @@
 "use strict";
 const MACRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","fifth.js","content.js","content2.js","frqs2.js","drills.js","content3.js","extra.js"].map(f => "assets/data/"+f);
 /* Ohio State track: ECON 2002.01 reuses the original Macroeconomics question bank and adds an Ohio State layer (assets/data/osu/econ2002/) */
-const OSU2002 = MACRO.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2002/"+f));
+const OSU2002 = MACRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2002/"+f));
 const MICRO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/micro/"+f);
-const OSU2001 = MICRO.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2001/"+f));
+const OSU2001 = MICRO.concat(["units.js","questions.js","questions2.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/econ2001/"+f));
 const BIO = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/bio/"+f);
 const CHEM = ["questions.js","questions2.js","questions3.js","questions4.js","questions5.js","questions6.js","questions7.js","questions8.js","content.js","content2.js","frqs2.js","drills.js","extra.js"].map(f => "assets/data/chem/"+f);
 /* n1–n10 (set 2 questions) and vocab2.js load after the originals so existing question and card ids never change */
@@ -21,6 +21,9 @@ const APLANG = ["cards.js","cards2.js","terms.js","x1.js","x2.js","r1.js","r2.js
 const APHUG = ["cards.js","p1.js","p2.js","p3.js","p4.js","p5.js","p6.js","p7.js","p8.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/aphug/"+f);
 const CALC_AB_FILES = ["cards.js","c1.js","c2.js","g1.js","g2.js","g3.js","g4.js","g5.js","g6.js","g7.js","g8.js","content.js","content2.js","frqs.js","drills.js","games.js"];
 const CALCAB = CALC_AB_FILES.map(f=>"assets/data/calc/"+f);
+const OSU1151 = CALCAB.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/math1151/"+f));
+const OSU1430 = APSTAT.concat(["units.js","questions.js","cards.js","frqs.js","content.js"].map(f => "assets/data/osu/stat1430/"+f));
+const OSU2111 = ["content.js","questions.js","cards.js","frqs.js"].map(f => "assets/data/osu/cse2111/"+f);
 const CALCBC = CALCAB.concat(["cards.js","c1.js","g9.js","g10.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/calc/bc/"+f));
 const PRECALC = ["cards.js","c1.js","g1.js","g2.js","g3.js","g4.js","content.js","content2.js","frqs.js","drills.js","games.js"].map(f=>"assets/data/precalc/"+f);
 const C = window.CS_COURSES = {
@@ -110,6 +113,25 @@ const C = window.CS_COURSES = {
     crunchDesc:"Two minutes of psychology math: z-scores, IQ, means, medians and percents. Fresh numbers every time.",
     drillDesc:"Do the statistics: z-scores, IQ, means, medians, ranges, percents and the normal curve. Fresh numbers every time.",
     planGames:["Famous Studies Match","Brain Check","Disorder Sort","Bias Spotter","Sprint","True or False"]},
+  osu1151:{k:"osu1151", track:"osu", osu:true, apOnly:true, name:"MATH 1151 Calculus I (Business)", short:"MATH 1151", ap:"MATH 1151 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Limit Lurker",2:"The Rule Ranger",3:"The Chain Wraith",4:"The Rate Racer",5:"The Optimizer",6:"The Integral Imp",7:"The Growth Giant",8:"The Area Auditor"}, key:"creditsprint.osu1151.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Limits and continuity, derivatives and rules, curve analysis and optimization, rates of change, integrals and accumulation, and growth models, with business applications.", icon:"integral", data:OSU1151, nUnits:8, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: limits, related rates, optimization and integrals.",
+    crunchDesc:"Two minutes of calculus math: derivatives, limits, tangent lines and integrals. Type the number.",
+    drillDesc:"Derivatives, limits, tangent lines, rates and integrals: fresh numbers every time.",
+    planGames:["Derivative Dash","Tangent Shot","Graph Detective","Integral Sprint","Sprint","True or False"]},
+  osu1430:{k:"osu1430", track:"osu", osu:true, apOnly:true, name:"STAT 1430 Business Statistics", short:"STAT 1430", ap:"STAT 1430 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Outlier Ogre",2:"The Dice Demon",3:"The Margin Monster",4:"The T-Rex Tyrant",5:"The Residual Wraith"}, key:"creditsprint.osu1430.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Data and sampling, probability and distributions, confidence intervals and tests for proportions and means, and regression, with business examples.", icon:"chart", data:OSU1430, nUnits:5, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: a hypothesis test, a confidence interval, an experiment and a regression analysis.",
+    crunchDesc:"Two minutes of statistics math: z-scores, expected values, standard errors, test statistics and regression.",
+    drillDesc:"Z-scores, expected values, standard errors, t and z statistics, slopes and residuals: fresh numbers every time.",
+    planGames:["Which Test?","Shape Match","Bias Spotter","Probability Plinko","Sprint","True or False"]},
+  osu2111:{k:"osu2111", track:"osu", osu:true, apOnly:true, name:"CSE 2111 Spreadsheets and Databases", short:"CSE 2111", ap:"CSE 2111 exam", clep:"", clepShort:"", examWord:"exam",
+    bosses:{1:"The Reference Rogue",2:"The Nested IF Knight",3:"The Lookup Lich",4:"The Pivot Phantom",5:"The Error Eater",6:"The Key Keeper",7:"The Packet Pirate"}, key:"creditsprint.osu2111.v1", col:"#BB0000", soft:"#FDEDED", apFmt:"Midterms and a final (format varies by instructor)", clepFmt:"", blurb:"Spreadsheet formulas and references, logical, lookup and financial functions, charts and PivotTables, what-if modeling and auditing, Access databases, and web basics.", icon:"grid", data:OSU2111, nUnits:7, cat:"Fisher College of Business", graphs:false, unitWord:"Unit", frqHead:"Short problems and written explanations",
+    exams:{ap:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}, clep:{full:{n:50, min:75, name:"Full practice exam"}, mini:{n:15, min:20, name:"Quick check"}}},
+    chainDesc:"Put the steps in order: building a loan model, a PivotTable, finding an error, designing a database and loading a web page.",
+    planGames:["Function Sort","Formula Lab","Sprint","True or False","Chain Reaction"]},
   apstat:{k:"apstat", name:"Statistics", short:"Statistics", ap:"AP\u00AE Statistics", clep:"", clepShort:"", apOnly:true,
     key:"creditsprint.apstat.v1", col:"#0369A1", soft:"#F0F9FF", apFmt:"42 multiple choice and 4 free-response questions in 3 hours", clepFmt:"", blurb:"Exploring data and collecting data, probability and distributions, inference for proportions and means, and regression: built for the redesigned course and its first exam in May 2027.", icon:"chart", data:APSTAT, nUnits:5, cat:"Math & statistics",
     graphs:false, unitWord:"Unit",
@@ -179,7 +201,7 @@ const C = window.CS_COURSES = {
 };
 let k = null;
 try {
-  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002)\b/.exec(location.search);
+  const m = /[?&]course=(macro|micro|osu2001|bio|chem|mkt|apush|apworld|apgov|appsych|apstat|aplit|aplang|calcab|calcbc|aphug|precalc|osu2002|osu1151|osu1430|osu2111)\b/.exec(location.search);
   if (m) { k = m[1]; localStorage.setItem("creditsprint.course", k); }
   else k = localStorage.getItem("creditsprint.course");
 } catch(e) {}

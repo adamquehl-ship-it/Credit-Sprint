@@ -257,7 +257,7 @@ render.home = () => {
     </div>
     <div class="panel flat" style="flex-direction:row;align-items:center;gap:18px;flex-wrap:wrap">
       <span class="g-ico" style="width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:${cert?"var(--mint-soft)":"var(--surface-2)"};color:${cert?"var(--good)":"var(--faint)"}">${I("cap")}</span>
-      <div class="stack" style="gap:2px;flex:1;min-width:200px"><h3>Certificate of exam readiness</h3><span class="muted small">${cert?"Unlocked. Download it, share it, put it on a college application.":"Unlocks when you beat all six unit bosses or reach 70% mastery in every unit."}</span></div>
+      <div class="stack" style="gap:2px;flex:1;min-width:200px"><h3>Certificate of exam readiness</h3><span class="muted small">${cert?"Unlocked. Download it, share it, put it on a college application.":"Unlocks when you beat all "+CS.UNITS.length+" unit bosses or reach 70% mastery in every unit."}</span></div>
       <button class="btn ${cert?"":"ghost"}" id="cert-btn" ${cert?"":"disabled"}>${cert?"Get my certificate":`${Object.keys(s.bosses).length}/${CS.UNITS.length} bosses`}</button></div>
     ${CS.badgeSVG ? (() => { const got = Object.keys(s.badges).filter(k => CS.badgeDef(k)).sort((a, b) => s.badges[b] - s.badges[a]);
       const next = CS.BADGES.filter(b => !s.badges[b.k]).slice(0, Math.max(0, 6 - got.length));
@@ -312,11 +312,12 @@ render.learn = (o) => {
         <div class="stack" style="gap:8px"><button class="btn" data-go="practice" data-mode="unit" data-unit="${u.id}">Quiz this unit</button>
           <button class="btn ghost" id="learn-cards">${I("cards")}Unit ${u.id} flashcards</button>
           <button class="btn ghost" data-go="games" data-game="boss" data-unit="${u.id}">${I("sword")}Fight the Unit ${u.id} boss</button>
-          ${u.lab?`<button class="btn ghost" data-go="learn" data-lab="${u.lab}">${I("chart")}Open in Graph Lab</button>`:""}
+          ${CS.C.osu?`<button class="btn ghost" id="learn-sheet">${I("ext")}Unit ${u.id} review sheet</button>`:""}${u.lab?`<button class="btn ghost" data-go="learn" data-lab="${u.lab}">${I("chart")}Open in Graph Lab</button>`:""}
           ${(window.CS_EXPLAINERS||[]).filter(x=>x.u===u.id).map(x=>`<button class="btn ghost" data-go="learn" data-mode="vid" data-game="${x.id}">${I("spark")}Watch: ${esc(x.title)}</button>`).join("")}${learnLinks(u.id)}</div>
       </div>
     </div>`;
   $("#learn-cards").onclick = () => { CS.cardFilter = u.id; CS.go("cards"); };
+  if ($("#learn-sheet")) $("#learn-sheet").onclick = () => reviewSheet(u.id);
 };
 /* the free study guide page and worked practice pages for a unit (written by scripts/build-site.js into guide-links.js) */
 function learnLinks(id){
@@ -382,9 +383,10 @@ function renderRes(){
 
 /* ---------- practice ---------- */
 let pMode = "unit", pUnit = 1, run = null, exam = null, examTimer = null, drill = null;
-function sampleExam(n){
-  const wk = S().exam === "ap" ? "wAP" : "wCLEP", tot = CS.UNITS.reduce((s,u)=>s+u[wk],0);
-  const pools = Object.fromEntries(CS.UNITS.map(u=>[u.id, CS.shuffle(CS.QS.filter(q=>q.u===u.id))]));
+function sampleExam(n, only){
+  const UU = only ? CS.UNITS.filter(u=>only.includes(u.id)) : CS.UNITS;
+  const wk = S().exam === "ap" ? "wAP" : "wCLEP", tot = UU.reduce((s,u)=>s+(u[wk]||1),0);
+  const pools = Object.fromEntries(UU.map(u=>[u.id, CS.shuffle(CS.QS.filter(q=>q.u===u.id))]));
   let picks = [];
   if (CS.hasPassages) { /* reading exams are built from passage sets (like the real exam), unit by unit, then everything in set order */
     const withP = CS.QS.filter(q=>q.p), base = withP.length >= n*1.5 ? withP : CS.QS;
@@ -395,7 +397,7 @@ function sampleExam(n){
     for (let i = picks.length - 1; i >= 0 && picks.length > n; i--) if (!picks[i].p) picks.splice(i, 1);
     return picks.slice(0, n).map(CS.prepQ);
   }
-  CS.UNITS.forEach(u => { const k = Math.min(pools[u.id].length, Math.round(n*u[wk]/tot)); picks = picks.concat(pools[u.id].splice(0,k)); });
+  UU.forEach(u => { const k = Math.min(pools[u.id].length, Math.round(n*(u[wk]||1)/tot)); picks = picks.concat(pools[u.id].splice(0,k)); });
   const rest = CS.shuffle(Object.values(pools).flat()); while (picks.length < n && rest.length) picks.push(rest.pop());
   return CS.shuffle(picks.slice(0,n)).map(CS.prepQ);
 }
@@ -477,10 +479,10 @@ render.practice = (o) => {
     body.innerHTML = `<div class="panel">
       <h3>${esc(examName())} practice exam</h3>
       <p class="muted" style="max-width:70ch">${S().exam==="ap" ? (CS.C.apExamText || "The real exam has 60 multiple-choice questions in 70 minutes (about two-thirds of your score), then 3 free-response questions in 60 minutes. Practice FRQs in the Free response tab.") : `The real exam has ${CS.C.clepQ || (CS.C.clepOnly ? "about 100" : "about 80")} multiple-choice questions in 90 minutes. Many colleges award credit for a score of 50. There's no free-response section.`} Questions are drawn in proportion to the official unit weights. No feedback until you submit.</p>
-      <div class="row-wrap"><button class="btn" id="ex-full">${CS.hasAccess()?"":I("lock")}Start full exam · ${ex.full.n} Q · ${ex.full.min} min</button><button class="btn ghost" id="ex-mini">Mini exam · ${ex.mini.n} Q · ${ex.mini.min} min</button></div>
+      <div class="row-wrap"><button class="btn" id="ex-full">${CS.hasAccess()?"":I("lock")}Start full exam · ${ex.full.n} Q · ${ex.full.min} min</button><button class="btn ghost" id="ex-mini">Mini exam · ${ex.mini.n} Q · ${ex.mini.min} min</button>${CS.C.osu ? `<button class="btn ghost" id="ex-mid">Midterm practice · ${midCfg().n} Q · ${midCfg().min} min</button>` : ""}</div>${CS.C.osu ? `<p class="muted small" style="max-width:70ch">Midterm practice covers Units 1 to ${midCfg().units.length}. The full exam covers everything, like a final.</p>` : ""}
       ${past.length?`<div class="stack" style="gap:6px"><span class="eyebrow">Recent attempts</span>${past.map(e=>`<div class="spread small"><span>${new Date(e.at).toLocaleDateString()} · ${e.n} questions</span><span><b>${e.score}/${e.n}</b> · ${Math.round(e.score/e.n*100)}%</span></div>`).join("")}</div>`:""}
     </div>`;
-    $("#ex-full").onclick = () => CS.hasAccess() ? startExam(ex.full) : CS.openUpgrade("exam"); $("#ex-mini").onclick = () => startExam(ex.mini);
+    $("#ex-full").onclick = () => CS.hasAccess() ? startExam(ex.full) : CS.openUpgrade("exam"); $("#ex-mini").onclick = () => startExam(ex.mini); if ($("#ex-mid")) $("#ex-mid").onclick = () => startExam(midCfg());
   }
 };
 
@@ -611,8 +613,23 @@ function diagnostic(body){
   $("#d-again").onclick = () => { D = null; diagnostic(body); };
 }
 
+/* Ohio State: midterm practice (first half of the units) and printable unit review sheets */
+function midCfg(){ const k = Math.ceil(CS.UNITS.length/2); return {n:Math.min(30, 5*k), min:Math.min(45, 7*k), name:"Midterm practice", units:CS.UNITS.slice(0,k).map(u=>u.id)}; }
+function reviewSheet(id){
+  const u = CS.UNITS[id-1], cards = CS.CARDS.filter(c=>c.u===id), tf = (CS.TF||[]).filter(t=>t[0]===id), fr = (CS.FRQS||[]).filter(f=>(f.units||[]).includes(id));
+  const h = `<!doctype html><meta charset="utf-8"><title>Unit ${id} review sheet</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:760px;margin:28px auto;padding:0 18px;color:#222}h1{color:#BB0000;margin:0 0 4px}h2{border-bottom:2px solid #BB0000;padding-bottom:3px;margin-top:22px}.f{background:#f3f3f3;padding:5px 9px;border-radius:6px;margin:4px 0;font-family:ui-monospace,monospace}.t{border-left:4px solid #BB0000;padding:3px 9px;margin:6px 0;background:#fdeded}dt{font-weight:700;margin-top:6px}dd{margin:0 0 4px}button{padding:8px 14px;background:#BB0000;color:#fff;border:0;border-radius:8px;font-weight:700;cursor:pointer}@media print{button{display:none}}</style>
+  <button onclick="print()">Print or save as PDF</button><h1>${esc(CS.C.short)} · Unit ${id}: ${esc(u.name)}</h1><p>${esc(u.summary)}</p>
+  <h2>Key points</h2><ul>${u.points.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  <h2>Formulas and examples</h2>${u.formulas.map(f=>`<div class="f">${esc(f)}</div>`).join("")}
+  <h2>Watch for</h2>${u.traps.map(t=>`<div class="t">${esc(t)}</div>`).join("")}
+  <h2>Key terms</h2><dl>${cards.map(c=>`<dt>${esc(c.front)}</dt><dd>${esc(c.back)}</dd>`).join("")}</dl>
+  ${tf.length?`<h2>True or false</h2><ol>${tf.map(t=>`<li>${esc(t[1])} <b>${t[2]?"True":"False"}.</b> ${esc(t[3]||"")}</li>`).join("")}</ol>`:""}
+  ${fr.length?`<h2>Written problems to try</h2><ol>${fr.map(f=>`<li><b>${esc(f.title)}.</b> ${esc(f.prompt)}</li>`).join("")}</ol>`:""}`;
+  const w = window.open(URL.createObjectURL(new Blob([h], {type:"text/html"})), "_blank"); if (!w) CS.toast && CS.toast("Allow pop-ups to open the review sheet.");
+}
+
 /* timed exam */
-function startExam(cfg){ exam = {qs: sampleExam(cfg.n), i:0, ans:{}, flags:{}, end: Date.now()+cfg.min*60e3, name:cfg.name, done:false}; renderExam(); }
+function startExam(cfg){ exam = {qs: sampleExam(cfg.n, cfg.units), i:0, ans:{}, flags:{}, end: Date.now()+cfg.min*60e3, name:cfg.name, done:false}; renderExam(); }
 function fmt(ms){ const s = Math.max(0, Math.round(ms/1000)); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
 function tick(){
   if (!exam || exam.done) { clearInterval(examTimer); examTimer = null; return; }

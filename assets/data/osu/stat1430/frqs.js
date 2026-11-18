@@ -1,0 +1,22 @@
+window.CS_FRQS = (window.CS_FRQS || []).concat([
+ {id:"o1", title:"Customer satisfaction survey", kind:"Proportions · Business", minutes:15, units:[1,3],
+  prompt:"A company surveys a random sample of 400 customers. 232 say they are satisfied.",
+  parts:["(a) Find the sample proportion who are satisfied.","(b) Check the conditions for a normal-based confidence interval.","(c) Construct and interpret a 95% confidence interval for the true proportion of satisfied customers.","(d) The company claims that at least 55% of customers are satisfied. Does the interval support or contradict this claim?"],
+  rubric:["(a) p̂ = 232 ÷ 400 = 0.58.","(b) Random sample; np̂ = 232 ≥ 10 and n(1 − p̂) = 168 ≥ 10; the sample is under 10% of customers.","(c) SE = √(0.58 × 0.42 ÷ 400) ≈ 0.0247; interval 0.58 ± 1.96(0.0247) ≈ (0.532, 0.628). We are 95% confident the true proportion is in this interval.","(d) 0.55 is inside the interval, so the data are consistent with the claim."],
+  sample:"(a) 0.58. (b) Random sample and enough successes and failures. (c) About (0.532, 0.628). (d) Consistent with the claim since 0.55 is in the interval."},
+ {id:"o2", title:"Delivery time test", kind:"Means · Hypothesis test", minutes:15, units:[4],
+  prompt:"A distributor claims its mean delivery time is 3.0 days. A random sample of 36 deliveries has a mean of 3.45 days and a standard deviation of 1.2 days.",
+  parts:["(a) State the hypotheses.","(b) Compute the test statistic and degrees of freedom.","(c) The p-value is about 0.031 for a two-sided test. State a conclusion at the 5% level in context.","(d) Explain why the result may be statistically significant but not practically important, or the reverse."],
+  rubric:["(a) H₀: μ = 3.0; Hₐ: μ ≠ 3.0.","(b) SE = 1.2 ÷ 6 = 0.2; t = (3.45 − 3.0) ÷ 0.2 = 2.25; df = 35.","(c) p = 0.031 < 0.05: reject H₀; there is evidence that the true mean delivery time differs from 3.0 days.","(d) Any reasonable point: a 0.45-day difference could matter for customers; with a very large sample, even a tiny difference can be significant."],
+  sample:"(a) H₀: μ = 3.0, Hₐ: μ ≠ 3.0. (b) t = 2.25, df = 35. (c) Reject H₀ at 5%. (d) Significance does not measure importance."},
+ {id:"o3", title:"Advertising and sales regression", kind:"Regression", minutes:15, units:[5],
+  prompt:"A regional chain finds that, across 30 stores, weekly sales (thousands of dollars) are predicted by weekly advertising (thousands of dollars) with ŷ = 20 + 4x. The correlation is r = 0.8 and advertising ranges from 2 to 15.",
+  parts:["(a) Interpret the slope in context.","(b) Predict sales for a store that spends 10 thousand on advertising.","(c) What percent of the variation in sales is explained by advertising?","(d) A store spent 8 and had sales of 58. Find the residual.","(e) Explain why predicting sales at an ad budget of 50 would be a problem."],
+  rubric:["(a) Each additional $1,000 in advertising is associated with a predicted $4,000 increase in weekly sales.","(b) ŷ = 20 + 4(10) = 60 thousand.","(c) r² = 0.64, or 64%.","(d) Predicted 52; residual = 58 − 52 = 6 thousand.","(e) 50 is far outside the observed range of 2 to 15, so it is extrapolation."],
+  sample:"(a) +$4,000 per $1,000. (b) 60 thousand. (c) 64%. (d) 6 thousand. (e) Extrapolation beyond 2 to 15."},
+ {id:"o4", title:"Designing a pricing experiment", kind:"Experiments", minutes:15, units:[1,2],
+  prompt:"A company wants to learn whether a 10% discount raises online purchases. It can show the discount to some website visitors.",
+  parts:["(a) Identify the explanatory and response variables.","(b) Describe how to carry out the experiment using random assignment.","(c) Explain why the company should include a group that sees no discount.","(d) The result shows more purchases in the discount group. What can the company conclude, and why?"],
+  rubric:["(a) Explanatory: discount or no discount. Response: whether a visitor purchases (or the purchase amount).","(b) Randomly assign each visitor to the discount or the no-discount page, with a large enough sample.","(c) The control group gives a baseline to compare with.","(d) Because treatments were randomly assigned, the company can conclude that the discount caused the difference, if it is larger than chance would explain."],
+  sample:"(a) Discount/no discount; purchase. (b) Randomly assign visitors. (c) A baseline. (d) A cause-and-effect conclusion is possible because of random assignment."}
+]);

@@ -182,6 +182,10 @@ ${landing(COURSES, ic)}
       <a class="btn" href="app.html?course=${c.k}" style="align-self:flex-start;background:${c.col}">Study ${c.name}</a></div>`).join("")}
   </div>
 </div></section>
+<section class="sec" id="ohio-state"><div class="wrap">
+      <div class="sec-head"><span class="eyebrow" style="color:#BB0000">For Ohio State students</span><h2>Credit Sprint for Ohio State: free</h2><p class="muted">Practice for Fisher College of Business core courses. Unit guides, practice questions with explained answers, flashcards, written problems, midterm and final practice, and games. No account and no payment needed. Independent of Ohio State and not affiliated with the university.</p></div>
+      <div class="pro-courses"><a href="app.html?course=osu2001" style="--cc:#BB0000"><b>ECON 2001.01 Microeconomics</b><span>Free</span><em>Start →</em></a><a href="app.html?course=osu2002" style="--cc:#BB0000"><b>ECON 2002.01 Macroeconomics</b><span>Free</span><em>Start →</em></a><a href="app.html?course=osu1151" style="--cc:#BB0000"><b>MATH 1151 Calculus I (Business)</b><span>Free</span><em>Start →</em></a><a href="app.html?course=osu1430" style="--cc:#BB0000"><b>STAT 1430 Business Statistics</b><span>Free</span><em>Start →</em></a><a href="app.html?course=osu2111" style="--cc:#BB0000"><b>CSE 2111 Spreadsheets and Databases</b><span>Free</span><em>Start →</em></a></div>
+    </div></section>
 <section class="sec" id="features"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Features</span><h2>Everything you need to pass, nothing you don't</h2><p>Built around how the exams actually work: graphs, cause and effect, and a lot of practice.</p></div>
   <div class="feat">

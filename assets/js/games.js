@@ -33,12 +33,12 @@ const GAMES = [
     {k:"brainreg", n:"Brain Check", ic:"bolt", d:"60 seconds. A clue describes a brain region or chemical messenger; name it before time runs out.", best:()=>S().best.brainreg!=null?`Best: ${S().best.brainreg} named`:"Not played yet", isNew:true},
     {k:"dsort", n:"Disorder Sort", ic:"cards", d:"60 seconds. Sort each set of symptoms into the right family of disorders. A mistake costs 3 seconds.", best:()=>S().best.dsort!=null?`Best: ${S().best.dsort} sorted`:"Not played yet", isNew:true},
     {k:"bias", n:"Bias Spotter", ic:"cards", d:"A short scenario describes a thinking error, social effect or defense mechanism. Name it.", best:()=>S().best.bias!=null?`Best: ${S().best.bias}/8`:"Not played yet", isNew:true}] : []),
-  ...(CS.COURSE==="apstat" ? [
+  ...((CS.COURSE==="apstat"||CS.COURSE==="osu1430") ? [
     {k:"whichtest", n:"Which Test?", ic:"cards", d:"A study scenario appears. Pick the right procedure: one- or two-sample z or t, matched pairs, chi-square or regression.", best:()=>S().best.whichtest!=null?`Best: ${S().best.whichtest}/8`:"Not played yet", isNew:true},
     {k:"shapes", n:"Shape Match", ic:"chart", d:"60 seconds. A clue describes a distribution or scatterplot; name its shape, center or association. A mistake costs 3 seconds.", best:()=>S().best.shapes!=null?`Best: ${S().best.shapes} matched`:"Not played yet", isNew:true},
     {k:"sbias", n:"Bias Spotter", ic:"cards", d:"A short study description hides a flaw: undercoverage, voluntary response, confounding, no control group. Name it.", best:()=>S().best.sbias!=null?`Best: ${S().best.sbias}/8`:"Not played yet", isNew:true},
     {k:"plinko", n:"Probability Plinko", ic:"star", d:"Solve a probability problem and drop the ball. Right answers land in the jackpot slot. Binomial, independence, conditional probability and more.", best:()=>S().best.plinko!=null?`Best: ${S().best.plinko}/8`:"Not played yet", isNew:true}] : []),
-  ...((CS.COURSE==="calcab"||CS.COURSE==="calcbc") ? [
+  ...((CS.COURSE==="calcab"||CS.COURSE==="calcbc"||CS.COURSE==="osu1151") ? [
     {k:"deriv", n:"Derivative Dash", ic:"bolt", d:"60 seconds. A function appears; tap its derivative. Power, product, quotient and chain rules at speed. A mistake costs 3 seconds.", best:()=>S().best.deriv!=null?`Best: ${S().best.deriv} correct`:"Not played yet", isNew:true},
     {k:"tshot", n:"Tangent Shot", ic:"target", d:"A curve and a point. Four lines pass through it; only one is the tangent. Read the slope and take the shot.", best:()=>S().best.tshot!=null?`Best: ${S().best.tshot}/8`:"Not played yet", isNew:true},
     {k:"graphd", n:"Graph Detective", ic:"chart", d:"A clue about f′ or f″ appears. Decide what it tells you about f: increasing, concave down, a relative maximum, an inflection point and more.", best:()=>S().best.graphd!=null?`Best: ${S().best.graphd}/8`:"Not played yet", isNew:true},
@@ -53,6 +53,9 @@ const GAMES = [
     {k:"diffsort", n:"Diffusion Sort", ic:"bolt", d:"60 seconds. Sort each example into relocation, contagious, hierarchical or stimulus diffusion. A mistake costs 3 seconds.", best:()=>S().best.diffsort!=null?`Best: ${S().best.diffsort} sorted`:"Not played yet", isNew:true},
     {k:"pyramid", n:"Pyramid Reader", ic:"chart", d:"A population pyramid appears. Read its shape and name the demographic transition stage, from Stage 1 to Stage 5.", best:()=>S().best.pyramid!=null?`Best: ${S().best.pyramid}/8`:"Not played yet", isNew:true},
     {k:"sectsort", n:"Sector Sort", ic:"cards", d:"60 seconds. Sort each job into the primary, secondary, tertiary, quaternary or quinary sector. A mistake costs 3 seconds.", best:()=>S().best.sectsort!=null?`Best: ${S().best.sectsort} sorted`:"Not played yet", isNew:true}] : []),
+  ...(CS.COURSE==="osu2111" ? [
+    {k:"fnsort", n:"Function Sort", ic:"cards", d:"60 seconds. A spreadsheet function appears; sort it into Logical, Lookup, Financial, Text, Date or Math and stats. A mistake costs 3 seconds.", best:()=>S().best.fnsort!=null?`Best: ${S().best.fnsort} sorted`:"Not played yet", isNew:true},
+    {k:"fglab", n:"Formula Lab", ic:"calc", d:"A small sheet and a formula appear. Work out the result the cell will show. Eight rounds, with every answer explained.", best:()=>S().best.fglab!=null?`Best: ${S().best.fglab}/8`:"Not played yet", isNew:true}] : []),
   ...(CS.COURSE==="precalc" ? [
     {k:"famsort", n:"Function Family Sort", ic:"bolt", d:"60 seconds. Sort each clue, equation or real-world situation into its function family: linear, quadratic, exponential, logarithmic or sinusoidal. A mistake costs 3 seconds.", best:()=>S().best.famsort!=null?`Best: ${S().best.famsort} sorted`:"Not played yet", isNew:true},
     {k:"transform", n:"Transformation Match", ic:"chart", d:"A transformed function appears. Name what it does to the graph: shifts, stretches, reflections, new periods and moved asymptotes.", best:()=>S().best.transform!=null?`Best: ${S().best.transform}/8`:"Not played yet", isNew:true},
@@ -96,7 +99,7 @@ CS.render.games = (o) => {
   if (!CS.FREE_GAMES.includes(g.k) && !CS.hasAccess()) { v.innerHTML = `<div class="row-wrap"><button class="btn ghost sm" id="g-back">← All games</button></div>` + CS.lockPanel(`${g.n} is a paid game`, `Free includes the Daily Challenge, True or False and Match-up. Unlock ${g.n}, every boss battle and every other game.`); $("#g-back").onclick = () => { active = null; CS.render.games({}); }; return; }
   v.innerHTML = `<div class="spread"><div class="row-wrap" style="gap:12px"><span class="g-ico" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">${I(g.ic)}</span><div><span class="eyebrow">Games</span><h2>${g.n}</h2></div></div><button class="btn sm ghost" id="g-back">← All games</button></div><div class="panel" id="g-area"></div>`;
   $("#g-back").onclick = () => { active = null; CS.render.games({}); };
-  ({daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, segs:segsniper, plc:plcladder, pricepick, promomix, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort, famsort, transform, ucircle, logrules})[active]($("#g-area"));
+  ({fnsort, fglab, daily, boss, shift, sprint, chain, tf, crunch, fed, match, profit, nash, cross, balance, crisis, elastic, sorter, periodic, mix, position, segs:segsniper, plc:plcladder, pricepick, promomix, timeline, source, court, branch, amend, studies, brainreg, dsort, bias, whichtest, shapes, sbias, plinko, deriv, tshot, graphd, integ, series, device, form, pov, tone, appeal, fallacy, claimev, rhet, models, diffsort, pyramid, sectsort, famsort, transform, ucircle, logrules})[active]($("#g-area"));
 };
 function finish(points){ CS.addXP(Math.max(5, Math.round(points))); CS.markTask("game"); if (CS.dqEvent) CS.dqEvent("game", active);
   { const g = GAMES.find(x => x.k === active), pts = Math.max(5, Math.round(points)); setTimeout(() => { if (CS.shareBar && active !== "daily") CS.shareBar($("#g-area"), {game: g ? g.n : "a game", points: pts}); }, 150); } S().games = (S().games||0)+1; CS.refresh(); }
@@ -994,6 +997,51 @@ function pickRun(area, cfg){
     $("#pr-again").onclick = () => { i = 0; right = 0; pool = CS.shuffle(cfg.items.slice()); round(); };
   }
 }
+
+/* CSE 2111: Function Sort (sortRun) and Formula Lab (pickRun) */
+const FNSORT_B = ["Logical","Lookup","Financial","Text","Date","Math & stats"];
+const FNSORT = [
+ ["IF",0,"IF tests a condition and returns one of two results."],["AND",0,"AND is TRUE only if every test is true."],["OR",0,"OR is TRUE if any test is true."],["NOT",0,"NOT reverses TRUE and FALSE."],["IFERROR",0,"IFERROR replaces an error with another value, so it is a logical function."],["IFS",0,"IFS checks several conditions in order."],
+ ["VLOOKUP",1,"VLOOKUP finds a value in the first column of a table."],["HLOOKUP",1,"HLOOKUP looks across the top row of a table."],["XLOOKUP",1,"XLOOKUP searches any column or row."],["INDEX",1,"INDEX returns the value at a position in a range."],["MATCH",1,"MATCH returns the position of a value in a range."],
+ ["PMT",2,"PMT gives a loan payment."],["FV",2,"FV is a future value."],["PV",2,"PV is a present value."],["NPV",2,"NPV discounts cash flows."],["IRR",2,"IRR is the internal rate of return."],["RATE",2,"RATE finds the interest rate per period."],
+ ["LEFT",3,"LEFT takes characters from the start of text."],["RIGHT",3,"RIGHT takes characters from the end of text."],["MID",3,"MID takes characters from the middle."],["LEN",3,"LEN counts characters."],["TRIM",3,"TRIM removes extra spaces."],["UPPER",3,"UPPER changes text to capitals."],["CONCAT",3,"CONCAT joins text."],
+ ["TODAY",4,"TODAY returns the current date."],["NOW",4,"NOW returns the current date and time."],["EDATE",4,"EDATE adds months to a date."],["EOMONTH",4,"EOMONTH returns the last day of a month."],["YEAR",4,"YEAR extracts the year from a date."],["WEEKDAY",4,"WEEKDAY returns the day of the week."],
+ ["SUM",5,"SUM adds numbers."],["AVERAGE",5,"AVERAGE finds the mean."],["ROUND",5,"ROUND sets the number of decimals."],["COUNTIF",5,"COUNTIF counts cells that meet a condition."],["SUMIF",5,"SUMIF adds cells that meet a condition."],["MAX",5,"MAX returns the largest value."],["MIN",5,"MIN returns the smallest value."],["COUNTA",5,"COUNTA counts non-empty cells."],["MEDIAN",5,"MEDIAN returns the middle value."]
+];
+function fnsort(area){ sortRun(area, {k:"fnsort", name:"Function Sort", unit:2, items:FNSORT, buckets:FNSORT_B,
+  intro:"A spreadsheet function appears. Decide which family it belongs to.", win:"You know your way around the function library.", tip:"Group by job: Logical decides, Lookup finds, Financial values money over time, Text edits words, Date counts days and Math and stats summarize numbers."}); }
+const FGLAB = [
+ ["A1 = 4, A2 = 6, A3 = 10. What does =SUM(A1:A3)/COUNT(A1:A3) return?","6.67","The sum is 20 and there are 3 numbers: 20 ÷ 3 = 6.67.",["20","6","10"]],
+ ["A1 = 5. What does =IF(A1>5,\"High\",\"Low\") return?","Low","5 is not greater than 5, so the false result appears.",["High","TRUE","5"]],
+ ["A1 = 8, B1 = 3. What does =A1-B1*2 return?","2","Multiplication comes first: 3 × 2 = 6, then 8 − 6 = 2.",["10","5","16"]],
+ ["A1 = 3. What does =A1^2+1 return?","10","3 squared is 9, then + 1.",["7","16","36"]],
+ ["A1:A4 hold 2, 4, 6, 8. What does =COUNTIF(A1:A4,\">4\") return?","2","Only 6 and 8 are greater than 4.",["3","4","6"]],
+ ["A1:A4 hold 2, 4, 6, 8 and B1:B4 hold 10, 20, 30, 40. What does =SUMIF(A1:A4,\">4\",B1:B4) return?","70","The rows with 6 and 8 match, so it adds 30 + 40.",["14","100","30"]],
+ ["A1 = \"Ohio\". What does =LEFT(A1,2)&RIGHT(A1,1) return?","Oho","LEFT gives Oh, RIGHT gives o, and & joins them.",["Ohio","Oh","Ooo"]],
+ ["A1 holds \"  Fisher  \" with two spaces on each side. What does =LEN(TRIM(A1)) return?","6","TRIM removes the extra spaces, leaving Fisher, which has 6 characters.",["10","8","4"]],
+ ["A1 = 10, B1 = 0. What does =IFERROR(A1/B1,-1) return?","-1","Dividing by zero is an error, so IFERROR returns the second argument.",["#DIV/0!","0","10"]],
+ ["A1 = TRUE, B1 = FALSE. What does =AND(A1,B1) return?","FALSE","AND needs every value to be TRUE.",["TRUE","1","#VALUE!"]],
+ ["A1 = TRUE, B1 = FALSE. What does =OR(A1,B1) return?","TRUE","OR needs only one TRUE value.",["FALSE","#VALUE!","2"]],
+ ["A2:C4 holds the rows 101 / Pens / 2, 102 / Ink / 5 and 103 / Pads / 3. What does =VLOOKUP(102,A2:C4,3,FALSE) return?","5","It finds 102 in column A and returns column 3 of that row.",["Ink","3","#N/A"]],
+ ["Same table. What does =VLOOKUP(104,A2:C4,3,FALSE) return?","#N/A","104 is not in the first column, and an exact match was requested.",["0","3","#REF!"]],
+ ["Same table. What does =VLOOKUP(103,A2:C4,2,FALSE) return?","Pads","Column 2 of the row for 103 holds Pads.",["3","103","Ink"]],
+ ["Same table. What does =INDEX(B2:B4,MATCH(102,A2:A4,0)) return?","Ink","MATCH finds 102 in position 2, and INDEX returns the second value of B2:B4.",["2","5","Pens"]],
+ ["About how much is =PMT(0.12/12,12,-1000)?","88.85","A 1% monthly rate over 12 months on 1,000 gives a payment of about 88.85.",["83.33","100.00","8.89"]],
+ ["What does =FV(0.05,2,-100) return?","205","Two yearly deposits of 100 at 5%: 100 × 1.05 + 100 = 205.",["210.25","200","110.25"]],
+ ["A1 = 2026-01-10 and B1 = 2026-02-10. What does =B1-A1 return?","31","Subtracting dates gives the number of days between them.",["1","30","32"]],
+ ["What does =ROUND(7.46,1) return?","7.5","Rounded to one decimal place, 7.46 becomes 7.5.",["7.4","7","7.46"]],
+ ["A1:A4 hold 2, 4, 6, 8. What does =MAX(A1:A4)-MIN(A1:A4) return?","6","8 − 2 = 6.",["8","2","20"]],
+ ["A1 = 2 and B1 = 3. What does =A1&B1 return?","23","The & operator joins them as text.",["5","6","2 3"]],
+ ["A1 = 50. What does =IF(AND(A1>=40,A1<=60),\"In range\",\"Out\") return?","In range","Both conditions are true for 50.",["Out","TRUE","50"]],
+ ["C1 holds =A1*$B$1 with B1 = 3. It is copied to C3, where A3 = 5 and B3 = 100. What does C3 show?","15","C3 holds =A3*$B$1, which is 5 × 3. The $B$1 reference does not move.",["500","12","300"]],
+ ["A1:A4 hold 2, 4, 6 and the word x. What does =AVERAGE(A1:A4) return?","4","AVERAGE ignores text: 12 ÷ 3 = 4.",["3","6","#VALUE!"]],
+ ["A1:A4 hold 2, 4, 6 and the word x. What does =COUNTA(A1:A4) return?","4","COUNTA counts every non-empty cell, including text.",["3","12","0"]],
+ ["What does =MID(\"Spreadsheet\",7,5) return?","sheet","Starting at character 7, it takes 5 characters.",["dshee","sprea","reads"]]
+];
+function fglab(area){ pickRun(area, {k:"fglab", name:"Formula Lab", unit:3, items:FGLAB,
+  options:it => CS.shuffle([it[1]].concat(it[3])), answer:it => it[1],
+  intro:"Read the sheet and the formula, then pick the value the cell will show.",
+  win:"You read formulas like a spreadsheet does.", tip:"Evaluate from the inside out: references first, then operators in order, then the function."}); }
 
 /* Segment Sniper: [scenario, bucket, why]. 0 geographic, 1 demographic, 2 psychographic, 3 behavioral */
 const SEGS = [

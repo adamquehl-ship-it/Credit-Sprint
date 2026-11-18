@@ -1,0 +1,22 @@
+window.CS_FRQS = [
+ {id:"o1", title:"Grade book formulas", kind:"Excel · Logic", minutes:12, units:[1,2],
+  prompt:"Cells B2:B21 hold student exam scores. Cell E1 holds the passing score (70). Cell E2 holds the bonus (5).",
+  parts:["(a) Write a formula for C2 that returns Pass if B2 is at least E1, otherwise Fail. It must copy down correctly.","(b) Write a formula that counts how many students passed.","(c) Write a formula that finds the average of the scores plus the bonus.","(d) Explain why the formula in (a) uses $E$1 rather than E1."],
+  rubric:["(a) =IF(B2>=$E$1,\"Pass\",\"Fail\").","(b) =COUNTIF(B2:B21,\">=\"&E1).","(c) =AVERAGE(B2:B21)+E2.","(d) E1 must stay fixed when the formula is copied down, so it uses an absolute reference."],
+  sample:"(a) =IF(B2>=$E$1,\"Pass\",\"Fail\") (b) =COUNTIF(B2:B21,\">=\"&E1) (c) =AVERAGE(B2:B21)+E2 (d) Absolute reference keeps E1 fixed."},
+ {id:"o2", title:"Car loan model", kind:"Excel · Financial", minutes:12, units:[3,5],
+  prompt:"A buyer borrows $24,000 at 6% annual interest for 4 years with monthly payments. Inputs are in B1 (loan), B2 (annual rate) and B3 (years).",
+  parts:["(a) Write the PMT formula using the input cells.","(b) Explain the units used for the rate and the number of periods.","(c) Why does PMT return a negative number, and how can you show a positive payment?","(d) The buyer can afford only $450 per month. Which tool finds the largest loan, and what would it change?"],
+  rubric:["(a) =PMT(B2/12,B3*12,B1).","(b) The monthly rate is the annual rate ÷ 12; the number of periods is the years × 12.","(c) The payment is cash out; put a minus before PMT, as in =-PMT(...).","(d) Goal Seek: set the payment cell to −450 by changing the loan amount B1."],
+  sample:"(a) =PMT(B2/12,B3*12,B1) (b) Monthly rate and months (c) Negative sign for outflow; use =-PMT (d) Goal Seek on B1."},
+ {id:"o3", title:"Sales PivotTable", kind:"Excel · Data analysis", minutes:12, units:[4],
+  prompt:"A list has columns Date, Region, Product and Sales for 5,000 rows.",
+  parts:["(a) Describe how to build a PivotTable showing total sales by region.","(b) How would you add product as a column breakdown?","(c) After new rows are added, the PivotTable looks unchanged. What should you do?","(d) Which chart type would you use to compare regions, and why?"],
+  rubric:["(a) Insert PivotTable; Region to Rows; Sales to Values (Sum).","(b) Drag Product to Columns.","(c) Refresh the PivotTable (and make sure the source range includes the new rows, or use an Excel Table).","(d) A column or bar chart compares categories."],
+  sample:"(a) Rows = Region, Values = Sum of Sales (b) Product to Columns (c) Refresh (d) Column chart."},
+ {id:"o4", title:"Designing a small database", kind:"Access · Relational", minutes:12, units:[6],
+  prompt:"A club tracks members, events and who attended each event. A member can attend many events and an event has many members.",
+  parts:["(a) List the tables you would create and a primary key for each.","(b) What kind of relationship exists between members and events, and how do you create it in Access?","(c) Write a SQL query that lists the names of members who live in Columbus.","(d) Why is it better not to store the member's address in every attendance record?"],
+  rubric:["(a) Members (MemberID), Events (EventID), Attendance (junction table with MemberID and EventID).","(b) Many-to-many; create it with the Attendance junction table and two one-to-many relationships.","(c) SELECT Name FROM Members WHERE City = \"Columbus\".","(d) Storing it once avoids repeated data and inconsistent updates."],
+  sample:"(a) Members, Events, Attendance (b) Many-to-many via junction table (c) SELECT Name FROM Members WHERE City=\"Columbus\" (d) Normalization."}
+];
